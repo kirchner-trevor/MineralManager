@@ -1,0 +1,118 @@
+package me.hellfire212.MineralManager;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.UUID;
+
+import org.bukkit.World;
+
+public class Region implements Serializable, Comparable<Region> {
+	
+	private static final long serialVersionUID = -2885326328430836535L;
+	private String name = null;
+	private ArrayList<Point2D.Double> boundaries = null;
+	private Double floor = null;
+	private Double ceil = null;
+	private UUID world = null;
+	private double level = Math.random();
+	
+	private Configuration configuration = new Configuration();
+	
+	/**
+	 * Creates a polyprism with a given name and attributes.
+	 * @param n the unique name of the region
+	 * @param b an array of vertices that make up the bounding polygon
+	 * @param f the lowest y coordinate of the region
+	 * @param c the highest y coordinate of the region
+	 * @param w the world in which the region resides
+	 * @param l the level of the Region, higher levels are seen first
+	 */
+	public Region(String n, Configuration config, ArrayList<Point2D.Double> b, Double f, Double c, World w, int l) {
+		name = n;
+		configuration = config;
+		boundaries = b;
+		floor = f;
+		ceil = c;
+		world = w.getUID();
+		level += l;
+	}
+
+	/**
+	 * Checks whether or not the given coordinate is within the region.
+	 * @param coordinate the Coordinate to test
+	 * @return true if the region contains the coordinate
+	 */
+	public boolean contains(Coordinate coordinate) {
+		return (configuration.isGlobal() && coordinate.getWorld().getUID().equals(world)) || (coordinate.getWorld().getUID().equals(world) && coordinate.inPolygon(boundaries) && coordinate.getY() >= floor && coordinate.getY() <= ceil);
+	}
+	
+	/**
+	 * Sets the regions configuration to the given configuration
+	 * @param newConfiguration the new configuration
+	 */
+	public void setConfiguration(Configuration newConfiguration) {
+		configuration = newConfiguration;
+	}
+	
+	/**
+	 * Returns the configuration of the Region.
+	 * @return the configuration of the Region
+	 */
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+	
+	/**
+	 * Returns the level of the Region
+	 * @return the level of the Region
+	 */
+	public double getLevel() {
+		return level;
+	}
+	
+	/**
+	 * Returns the name of the Region
+	 * @return the name of the Region
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public int compareTo(Region r) {
+		double level = r.getLevel();
+		int test = this.name.equals(r.getName()) ? 0 : (level > this.level ? 1 : level < this.level ? -1 : 0);
+		return test;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Region other = (Region) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+}
