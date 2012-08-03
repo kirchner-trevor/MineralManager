@@ -9,15 +9,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * A sparse bitmap for storing boolean values about MineCraft blocks. 
+ * 
+ * This bitmap stores in a single file a single true/false value for every block 
+ * coordinate. The values all start out as false, and can be set or unset as needed.
+ * 
+ * The file is a sparse file, that is, 16x16x16 chunks are accounted for in a 524-byte record, 
+ * each of which is prefixed by the location within the world this chunk comes from, this allowing
+ * data locality and also the file to grow sensibly in a useful time-space tradeoff.
+ */
 public class BlockBitmap {
+	/* Information about records */
 	private static final int HEADER_SIZE = 12;
 	private static final int BITMAP_SIZE = 512;
 	private static final int RECORD_SIZE = HEADER_SIZE + BITMAP_SIZE;
+	
 	private RandomAccessFile bitmapFile;
 	private long firstEmpty = 0;
 	private Map<BlockCoordinate, BlockBitmapNode> nodes = new HashMap<BlockCoordinate, BlockBitmapNode>();
 
+	/**
+	 * Create a BlockBitmap, making the file if required.
+	 * @param f a File object which points to the location of the DB file this will use.
+	 */
 	public BlockBitmap(File f) {
 		try {
 			this.bitmapFile = new RandomAccessFile(f, "rw");
@@ -31,20 +46,31 @@ public class BlockBitmap {
 	
 	/* Public API */
 
+	/**
+	 * Get the boolean value at a given coordinate
+	 * @param x X component
+	 * @param y Y component (nominally 0-256)
+	 * @param z Z component
+	 * @return true if bit is set, false otherwise.
+	 */
 	public final boolean get(int x, int y, int z) {
 		BlockCoordinate baseCoord = makeBaseCoord(x, y, z);
-		System.out.println("finding for:" + baseCoord);
 		BlockBitmapNode node = nodes.get(baseCoord);
 		if (node == null) {
-			System.out.println(" -> Node not found");
 			return false;
 		} else if (!node.isLoaded()) {
-			System.out.println(" -> Node needs to be loaded");
 			node.load(bitmapFile);
 		}
 		return node.get(x & 0xF, y & 0xF, z & 0xF);
 	}
 	
+	/**
+	 * Set the value at a given coordinate
+	 * @param x X component
+	 * @param y Y component (nominally 0-256)
+	 * @param z Z component
+	 * @param value New value to set/clear.
+	 */
 	public final void set(int x, int y, int z, boolean value) {
 		BlockCoordinate baseCoord = makeBaseCoord(x, y, z);
 		BlockBitmapNode node = nodes.get(baseCoord);
@@ -56,15 +82,23 @@ public class BlockBitmap {
 		}
 		node.set(x & 0xF, y & 0xF, z & 0xF, value);
 	}
-	
+
+	/* File IO */
+
+	/**
+	 * Close this BlockBitmap, flushing any un-saved changes to disk.
+	 */
 	public void close() throws IOException {
 		flush();
 		bitmapFile.close();
 		bitmapFile = null;
 	}
 	
-	/* File IO */
 	
+	/**
+	 * Parse the input file, finding the nodes available (but not populating them)
+	 * @throws IOException
+	 */
 	private void parse() throws IOException {
 		bitmapFile.seek(0);
 		try {
@@ -72,7 +106,6 @@ public class BlockBitmap {
 			int y = bitmapFile.readInt();
 			int z = bitmapFile.readInt();
 			BlockCoordinate coord = new BlockCoordinate(x, y, z);
-			System.out.println(coord.toString());
 			nodes.put(coord, new BlockBitmapNode(bitmapFile.getFilePointer()));
 			bitmapFile.skipBytes(BITMAP_SIZE);
 		} catch (EOFException e) {
@@ -80,15 +113,39 @@ public class BlockBitmap {
 		}
 		firstEmpty = bitmapFile.getFilePointer();
 	}
-	
+
+	/**
+	 * Flush all dirty nodes to disk.
+	 * @return How many nodes were flushed.
+	 */
+	public int flush() {
+		int saved = 0;
+		// Make a list of sorted nodes, so we can seek through the file in order.
+		ArrayList<BlockBitmapNode> sortedNodes = new ArrayList<BlockBitmapNode>(nodes.values());
+		Collections.sort(sortedNodes);
+		
+		// Save all nodes
+		for (BlockBitmapNode node: sortedNodes) {
+			if (node.saveIfDirty(bitmapFile)) {
+				saved++; 
+			}
+		}
+		return saved;
+	}
+
 	/* Utility functions */
+	
+	/**
+	 * Allocate space in the file for a new record.
+	 * @param baseCoord The base coordinates of this record.
+	 * @return The newly allocated record.
+	 */
 	private BlockBitmapNode addNode(BlockCoordinate baseCoord) {
 		try {
 			bitmapFile.seek(firstEmpty);
 			baseCoord.writeAsIntsToFile(bitmapFile);
 			bitmapFile.write(new byte[512]);
 			firstEmpty += RECORD_SIZE;
-			System.out.printf("New node, offset=%d, firstEmpty=%d\n", firstEmpty-BITMAP_SIZE, firstEmpty);
 			BlockBitmapNode node = new BlockBitmapNode(firstEmpty - BITMAP_SIZE);
 			nodes.put(baseCoord, node);
 			return node;
@@ -97,19 +154,11 @@ public class BlockBitmap {
 		}	
 	}
 
+	/**
+	 * Given a coordinate, return a base coordinate
+	 */
 	private final BlockCoordinate makeBaseCoord(int x, int y, int z) {
 		return new BlockCoordinate(x >> 4, y >> 4, z >> 4);
 	}
 
-	public int flush() {
-		int saved = 0;
-		ArrayList<BlockBitmapNode> sortedNodes = new ArrayList<BlockBitmapNode>(nodes.values());
-		Collections.sort(sortedNodes);
-		for (BlockBitmapNode node: sortedNodes) {
-			if (node.saveIfDirty(bitmapFile)) {
-				saved++; 
-			}
-		}
-		return saved;
-	}
 }

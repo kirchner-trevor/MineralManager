@@ -3,7 +3,12 @@ package me.hellfire212.MineralManager.datastructures;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+/**
+ * A single node used by BlockBitmap.
+ *
+ */
 public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
+	/** Each byte stores 8 values, so we use bitmasks to extract the value out. */
 	private static final byte[] masks = {
 		(byte) 128, (byte) 64, (byte) 32, (byte) 16, (byte) 8, (byte) 4, (byte) 2, (byte) 1
 	};
@@ -13,10 +18,18 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 	private boolean loaded = false;
 	private boolean[] map;
 
+	/**
+	 * Create a new BlockBitmapNode.
+	 * @param offset The offset in the database where our bitmap starts.
+	 */
 	public BlockBitmapNode(long offset) {
 		this.fileOffset = offset;
 	}
 	
+	/**
+	 * Load our map from the database file
+	 * @param f the database file.
+	 */
 	public void load(RandomAccessFile f) {
 		map = new boolean[4096];
 		try {
@@ -35,6 +48,12 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Save this node's bytes, to the database file.
+	 * @param f Our database file
+	 * @return true if save happened, false otherwise.
+	 */
 	public boolean saveIfDirty(RandomAccessFile f) {
 		if (dirty) {
 			return save(f);
@@ -43,6 +62,11 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 		}
 	}
 	
+	/**
+	 * Save this node's bytes
+	 * @param f Our database file
+	 * @return true if save succeeded, false on error.
+	 */
 	public boolean save(RandomAccessFile f) {
 		try {
 			f.seek(fileOffset);
@@ -62,19 +86,35 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 		}
 	}
 
+	/**
+	 * Get a value from this node.
+	 * @param i 4-bit x component
+	 * @param j 4-bit y component
+	 * @param k 4-bit z component
+	 * @return
+	 */
 	public boolean get(int i, int j, int k) {
-		System.out.println(String.format("i=%d,j=%d,k=%d", i,j,k));
 		int loc = (i << 8) | (j << 4) | k;
 		return map[loc];
 	}
 	
+	/**
+	 * Set a value in the node.
+	 * @param i 4-bit x component
+	 * @param j 4-bit y component
+	 * @param k 4-bit z component
+	 * @param value
+	 */
 	public void set(int i, int j, int k, boolean value) {
-		System.out.println(String.format("i=%d,j=%d,k=%d", i,j,k));
 		int loc = (i << 8) | (j << 4) | k;
 		map[loc] = value;
 		dirty = true;
 	}
 
+	/**
+	 * 
+	 * @return true if loaded.
+	 */
 	public boolean isLoaded() {
 		return loaded;
 	}
@@ -83,6 +123,9 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 		return fileOffset;
 	}
 
+	/**
+	 * Used for sorting this node by file offsets.
+	 */
 	@Override
 	public int compareTo(BlockBitmapNode other) {
 		return new Long(fileOffset).compareTo(other.getFileOffset());
