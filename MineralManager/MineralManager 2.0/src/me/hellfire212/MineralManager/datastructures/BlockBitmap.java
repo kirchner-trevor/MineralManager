@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import me.hellfire212.MineralManager.Coordinate;
 /**
  * A sparse bitmap for storing boolean values about MineCraft blocks. 
  * 
@@ -161,4 +163,14 @@ public class BlockBitmap {
 		return new BlockCoordinate(x >> 4, y >> 4, z >> 4);
 	}
 
+	
+	/** Specialty access for holdover stuff, this will soon become deprecated */
+	
+	public final void set(Coordinate c, boolean value) {
+		int x = (int) Math.rint(c.getX());
+		int y = (int) Math.rint(c.getY());
+		int z = (int) Math.rint(c.getZ());
+		set(x, y, z, value);
+	}
+	
 }

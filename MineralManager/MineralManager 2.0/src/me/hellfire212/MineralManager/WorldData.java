@@ -3,6 +3,8 @@ package me.hellfire212.MineralManager;
 import java.io.File;
 import java.io.IOException;
 
+import org.bukkit.block.Block;
+
 import me.hellfire212.MineralManager.datastructures.BlockBitmap;
 import me.hellfire212.MineralManager.datastructures.ObjectMaker;
 import me.hellfire212.MineralManager.utils.StringTools;
@@ -45,6 +47,11 @@ public final class WorldData {
 	/** Convenience function, check the placed array without having to get it first. */
 	public boolean wasPlaced(int x, int y, int z) {
 		return placedBlocks.get(x, y, z);
+	}
+	
+	/** Convenience function for the use case of Block locations */
+	public boolean wasPlaced(Block block) {
+		return placedBlocks.get(block.getX(), block.getY(), block.getZ());
 	}
 
 	

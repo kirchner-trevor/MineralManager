@@ -19,6 +19,7 @@ import me.hellfire212.MineralManager.datastructures.DefaultDict;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -349,5 +350,9 @@ public class MineralManager extends JavaPlugin {
 
 	public HashMap<String, Configuration> getConfigurationMap() {
 		return configurationMap;
+	}
+
+	public WorldData getWorldData(World world) {
+		return worldData.ensure(world.getName());
 	}
 }

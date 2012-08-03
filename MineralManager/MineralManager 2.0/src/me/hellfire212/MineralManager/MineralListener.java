@@ -44,14 +44,15 @@ public class MineralListener implements Listener {
 		Player player = e.getPlayer();
 		Block block = e.getBlock();
 		Coordinate coordinate = new Coordinate(block.getLocation());
+		WorldData wdata = plugin.getWorldData(block.getWorld());
 		Region region = plugin.regionSet.contains(coordinate);
 		
 		if(player.hasMetadata(MineralListener.METADATA_CREATIVE)) {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
 			}
+			wdata.getPlacedBlocks().set(coordinate, false);
 			plugin.blockMap.remove(coordinate);
-			plugin.placedSet.remove(coordinate);
 			plugin.lockedSet.remove(coordinate);
 			//Save sets as well possibly.
 			return;
@@ -64,7 +65,7 @@ public class MineralListener implements Listener {
 			if(configuration.isVolatile() && plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
 				plugin.blockMap.remove(coordinate);
-				plugin.placedSet.remove(coordinate);
+				wdata.getPlacedBlocks().set(coordinate, false);
 				plugin.lockedSet.remove(coordinate);
 				//Save sets as well possibly.
 				return;
@@ -78,7 +79,7 @@ public class MineralListener implements Listener {
 					BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), placeholder.getTypeId(Type.PLACEHOLDER), placeholder.getData(Type.PLACEHOLDER));
 					
 					if(blockMap.containsKey(info)) {
-						if(!(configuration.isMineOriginalOnly() && plugin.placedSet.contains(coordinate))) {
+						if(!(configuration.isMineOriginalOnly() && wdata.wasPlaced(block))) {
 
 							if((configuration.isLocked() || plugin.lockedSet.contains(coordinate)) && player.getItemInHand().getEnchantments().toString().contains("SILK_TOUCH")) {
 								block.breakNaturally();
@@ -100,7 +101,7 @@ public class MineralListener implements Listener {
 								}
 							}
 						} else {
-							plugin.placedSet.remove(coordinate);
+							wdata.getPlacedBlocks().set(coordinate, false);
 						}
 					}
 				}
@@ -155,9 +156,9 @@ public class MineralListener implements Listener {
 		if(e.getPlayer().hasMetadata(MineralListener.METADATA_CREATIVE)) {
 			return;
 		}
-		
-		plugin.placedSet.add(new Coordinate(e.getBlock().getLocation()));
-		(new Thread(new Runnable() { public void run() { plugin.placedSetFH.saveObject(plugin.placedSet); } })).start();
+		Block block = e.getBlock();
+		WorldData wd = plugin.getWorldData(block.getWorld());
+		wd.getPlacedBlocks().set(block.getX(), block.getY(), block.getZ(), true);
 	}
 	
 	private String getCustomMessage(String message, BlockInfo info, long cooldown) {
