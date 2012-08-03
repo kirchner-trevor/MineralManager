@@ -66,8 +66,7 @@ public class MineralManager extends JavaPlugin {
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
 	
-	public Set<Coordinate> placedSet;
-	public FileHandler placedSetFH;
+
 	
 	public Set<Coordinate> lockedSet;
 	public FileHandler lockedSetFH;
@@ -87,8 +86,10 @@ public class MineralManager extends JavaPlugin {
 		regionSetFH = new FileHandler(new File(REGION_SET_PATH));
 		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
 		blockMapFH = new FileHandler(new File(BLOCK_MAP_PATH));
-		placedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
-		placedSetFH = new FileHandler(new File(PLACED_SET_PATH));
+		File placedSetFile = new File(PLACED_SET_PATH);
+		if (placedSetFile.exists()) {
+			Upgrader.convertPlaced(this, placedSetFile);
+		}
 		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
 		lockedSetFH = new FileHandler(new File(LOCKED_SET_PATH));
 		configurationMap = new HashMap<String, Configuration>();
@@ -131,9 +132,6 @@ public class MineralManager extends JavaPlugin {
 			lockedSet = lockedSetFH.loadObject(lockedSet.getClass());
 		} catch (FileNotFoundException e) {}
 		
-		try {
-			placedSet = placedSetFH.loadObject(placedSet.getClass());
-		} catch (FileNotFoundException e) {}
 		
 		(new Thread(new EnableListeners())).start();
 	}
