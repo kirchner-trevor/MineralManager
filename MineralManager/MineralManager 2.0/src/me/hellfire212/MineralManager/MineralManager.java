@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 
 import me.hellfire212.MineralManager.BlockInfo.Type;
+import me.hellfire212.MineralManager.datastructures.DefaultDict;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +25,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
 
 public class MineralManager extends JavaPlugin {
 	
@@ -76,6 +78,8 @@ public class MineralManager extends JavaPlugin {
 	private ConcurrentHashMap<Player, Selection> selectionMap;
 	
 	private Configuration defaultConfiguration;
+	private DefaultDict<String, WorldData> worldData = new DefaultDict<String, WorldData>(WorldData.getMaker());
+
 	
 	public MineralManager() {
 		regionSet = new RegionSet();
@@ -109,6 +113,7 @@ public class MineralManager extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
+		WorldData.BASE_FOLDER = plugin.getDataFolder();
 		String binPath = plugin.getDataFolder().getAbsolutePath().concat("\\bin");
 		File bin = new File(binPath);
 		bin.mkdir();
