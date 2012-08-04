@@ -15,15 +15,20 @@ public final class SaveTracker implements Runnable {
 	private int position = 0;
 	private int timeBudget;
 	private MineralManager plugin;
+	private final boolean debugMode;
 	
 	public SaveTracker(MineralManager plugin, int timeBudget) {
 		this.plugin = plugin;
 		this.timeBudget = timeBudget;
+		this.debugMode = plugin.getConfig().getBoolean("debug.saver");
 	}
 	
 	@Override
 	public void run() {
-		tracked.get(position).save(false);
+		boolean saved = tracked.get(position).save(false);
+		if (saved && debugMode) {
+			plugin.getLogger().info("Saved " + tracked.get(position).getClass().toString());
+		}
 		position = (position + 1) % tracked.size();
 		int ticks = Math.max(2, timeBudget / tracked.size());
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, ticks);
