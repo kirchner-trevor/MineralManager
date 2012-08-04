@@ -26,15 +26,22 @@ public class Upgrader {
 		FileHandler placedSetFH = new FileHandler(placedSetFile);
 		try {
 			placedSet = placedSetFH.loadObject(placedSet.getClass());
-		} catch (FileNotFoundException e) {}
+		} catch (FileNotFoundException e) {
+			return;
+		}
 		
 		// Get the world data for each item, and set the placed blocks for each.
 		for (Coordinate coord: placedSet) {
 			WorldData wdata = plugin.getWorldData(coord.getWorld());
 			wdata.getPlacedBlocks().set(coord, true);
 		}
+		plugin.getLogger().info(" -> Completed setting. Now saving...");
+		for (WorldData wdata : plugin.allWorldDatas()) {
+			wdata.getPlacedBlocks().flush();
+		}
+		plugin.getLogger().info(" -> Saved.");
+
 		// Prevent doing the conversion again in the future.
-		plugin.getLogger().info("Complete.");
 		File backupFile = new File(placedSetFile.getAbsolutePath() + ".old");
 		
 		if (placedSetFile.renameTo(backupFile)) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,8 +66,6 @@ public class MineralManager extends JavaPlugin {
 	
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
-	
-
 	
 	public Set<Coordinate> lockedSet;
 	public FileHandler lockedSetFH;
@@ -352,5 +351,9 @@ public class MineralManager extends JavaPlugin {
 
 	public WorldData getWorldData(World world) {
 		return worldData.ensure(world.getName());
+	}
+	
+	public Collection<WorldData> allWorldDatas() {
+		return worldData.values();
 	}
 }
