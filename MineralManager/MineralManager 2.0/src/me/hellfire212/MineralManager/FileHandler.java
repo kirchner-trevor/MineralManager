@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import me.hellfire212.MineralManager.utils.Saveable;
+
 public class FileHandler {
 
 	private static ConcurrentHashMap<File, FileHandler> fileMap = new ConcurrentHashMap<File, FileHandler>();
@@ -131,5 +133,22 @@ public class FileHandler {
 	@Override
 	protected void finalize() {
 		fileMap.remove(file);
+	}
+	n
+	public <T> ObjectSaver<T> getSaver(T collection) {
+		return new ObjectSaver<T>(collection);
+	}
+	
+	class ObjectSaver<T> implements Saveable {
+		private T collection;
+		
+		public ObjectSaver(T collection) {
+			this.collection = collection;
+		}
+		@Override
+		public boolean save(boolean force) {
+			return saveObject(collection);
+		}
+		
 	}
 }

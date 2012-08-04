@@ -9,7 +9,7 @@ import me.hellfire212.MineralManager.utils.Saveable;
  * @author james
  *
  */
-public final class SaveTracker implements Runnable{
+public final class SaveTracker implements Runnable {
 	private static ArrayList<Saveable> tracked = new ArrayList<Saveable>();
 	
 	private int position = 0;

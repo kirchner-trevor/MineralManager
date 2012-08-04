@@ -131,6 +131,7 @@ public class MineralManager extends JavaPlugin {
 			lockedSet = lockedSetFH.loadObject(lockedSet.getClass());
 		} catch (FileNotFoundException e) {}
 		
+		SaveTracker.track(blockMapFH.getSaver(blockMap));
 		
 		(new Thread(new EnableListeners())).start();
 	}
