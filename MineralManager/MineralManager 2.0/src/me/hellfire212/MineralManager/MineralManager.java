@@ -206,7 +206,7 @@ public class MineralManager extends JavaPlugin {
 	private boolean handleCommand(Player player, String command, String[] args) {
 		
 		//We don't want non-admins to be using these commands.
-		if(!(player.isOp() || player.hasMetadata(MineralListener.PERMISSION_ADMIN))) {
+		if(!player.hasPermission(MineralListener.PERMISSION_ADMIN)) {
 			return false;
 		}
 		
