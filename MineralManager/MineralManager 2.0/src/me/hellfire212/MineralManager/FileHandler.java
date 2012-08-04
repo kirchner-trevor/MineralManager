@@ -25,6 +25,8 @@ public class FileHandler {
 	private Lock read = null;
 	private Lock write = null;
 	private File file = null;
+
+	private boolean dirty;
 	
 	/**
 	 * Creates a new thread-safe FileHandler for reading and writing objects to a file. 
@@ -119,6 +121,7 @@ public class FileHandler {
 			} finally {
 				oos.close();
 			}
+			this.dirty = false;
 			return true;
 		} catch (FileNotFoundException e) {
 			System.err.println("File save failed with error: " + e.getLocalizedMessage());
@@ -134,7 +137,11 @@ public class FileHandler {
 	protected void finalize() {
 		fileMap.remove(file);
 	}
-	n
+	
+	public void flagDirty() {
+		this.dirty = true;
+	}
+
 	public <T> ObjectSaver<T> getSaver(T collection) {
 		return new ObjectSaver<T>(collection);
 	}
@@ -147,6 +154,7 @@ public class FileHandler {
 		}
 		@Override
 		public boolean save(boolean force) {
+			if (!dirty) return false;
 			return saveObject(collection);
 		}
 		

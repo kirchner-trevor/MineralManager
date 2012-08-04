@@ -24,7 +24,7 @@ public class PlaceholderThread implements Runnable {
 		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
 		plugin.blockMap.put(coordinate, info);
 		if(plugin.blockMapFH != null) {
-			plugin.blockMapFH.saveObject(plugin.blockMap);
+			plugin.blockMapFH.flagDirty();
 		}
 	}
 }

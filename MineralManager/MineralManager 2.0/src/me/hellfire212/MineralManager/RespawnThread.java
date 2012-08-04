@@ -25,7 +25,7 @@ public class RespawnThread implements Runnable {
 		plugin.blockMap.remove(coordinate);
 		MineralListener.taskMap.remove(coordinate);
 		if(plugin.blockMapFH != null) {
-			plugin.blockMapFH.saveObject(plugin.blockMap);
+			plugin.blockMapFH.flagDirty();
 		}
 	}
 }
