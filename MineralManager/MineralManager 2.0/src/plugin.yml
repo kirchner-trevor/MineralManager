@@ -6,7 +6,7 @@ load: POSTWORLD
 author: hellfire212
 website: http://dev.bukkit.org/server-mods/mineralmanager/
 main: me.hellfire212.MineralManager.MineralManager
-loadbefore: [Multiverse-Core]
+softdepend: [Multiverse-Core]
 commands:
   mm:
     description: Allows for access to MineralManager commands.
