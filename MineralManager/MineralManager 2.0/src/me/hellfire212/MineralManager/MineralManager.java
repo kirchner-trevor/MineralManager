@@ -3,37 +3,29 @@ package me.hellfire212.MineralManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 
-import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
-import me.hellfire212.MineralManager.tasks.RespawnTask;
+import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class MineralManager extends JavaPlugin {
-	
-	private static final String MULTIVERSE = "Multiverse-Core";
-
 	public static final ChatColor TEXT_COLOR = ChatColor.LIGHT_PURPLE;
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
 	public static final String PREFIX = ChatColor.AQUA + "[MineralManager] " + MineralManager.TEXT_COLOR;
@@ -136,10 +128,15 @@ public class MineralManager extends JavaPlugin {
 		
 		new EnableListenersTask(this).run();
 		
+		// Update configurations on all the regions to those loaded from file.
+		for (Region region: regionSet) {
+			String config_name = region.getConfiguration().getName();
+			if (configurationMap.containsKey(config_name)) {
+				region.setConfiguration(configurationMap.get(config_name));
 			}
 		}
+		
 	}
-	
 	
 	/**
 	 * Called when this plugin is disabled. 
