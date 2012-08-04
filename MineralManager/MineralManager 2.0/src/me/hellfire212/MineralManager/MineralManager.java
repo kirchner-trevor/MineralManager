@@ -17,6 +17,7 @@ import java.util.zip.DataFormatException;
 
 import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
+import me.hellfire212.MineralManager.tasks.RespawnTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -159,7 +160,7 @@ public class MineralManager extends JavaPlugin {
 				
 				coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
 				long cooldown = info.getCooldown();
-				int tid = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnThread(plugin, coordinate, info), cooldown < 0 ? 0 : cooldown * 20);
+				int tid = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown < 0 ? 0 : cooldown * 20);
 				MineralListener.taskMap.put(coordinate, tid);
 			}
 			

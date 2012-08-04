@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.hellfire212.MineralManager.BlockInfo.Type;
+import me.hellfire212.MineralManager.tasks.PlaceholderTask;
+import me.hellfire212.MineralManager.tasks.RespawnTask;
+import me.hellfire212.MineralManager.tasks.UpdateTask;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,7 +33,7 @@ public class MineralListener implements Listener {
 	public MineralListener(MineralManager p) {
 		plugin = p;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new UpdateThread(plugin), 0, UPDATE_PERIOD);
+		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new UpdateTask(plugin), 0, UPDATE_PERIOD);
 	}
 	
 	/**
@@ -91,8 +94,8 @@ public class MineralListener implements Listener {
 								long cooldown = mineral.getCooldown();
 
 								info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
-								plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderThread(plugin, coordinate, info));
-								int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnThread(plugin, coordinate, info), cooldown * 20);
+								plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
+								int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
 								MineralListener.taskMap.put(coordinate, tid);
 								
 								String message = configuration.getOnBlockBreak();

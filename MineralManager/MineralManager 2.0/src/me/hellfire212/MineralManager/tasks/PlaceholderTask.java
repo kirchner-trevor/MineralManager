@@ -1,8 +1,11 @@
-package me.hellfire212.MineralManager;
+package me.hellfire212.MineralManager.tasks;
 
+import me.hellfire212.MineralManager.BlockInfo;
+import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.MineralManager;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 
-public class PlaceholderThread implements Runnable {
+public class PlaceholderTask implements Runnable {
 
 	private final Coordinate coordinate;
 	private final BlockInfo info;
@@ -13,7 +16,7 @@ public class PlaceholderThread implements Runnable {
 	 * @param coordinate the coordinate of the block to change
 	 * @param info the BlockInfo of the place holder
 	 */
-	public PlaceholderThread(MineralManager plugin, Coordinate coordinate, BlockInfo info) {
+	public PlaceholderTask(MineralManager plugin, Coordinate coordinate, BlockInfo info) {
 		this.plugin = plugin;
 		this.coordinate = coordinate;
 		this.info = info;

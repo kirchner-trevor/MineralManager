@@ -1,12 +1,16 @@
-package me.hellfire212.MineralManager;
+package me.hellfire212.MineralManager.tasks;
 
 import java.util.Map.Entry;
 
-public class UpdateThread implements Runnable {
+import me.hellfire212.MineralManager.BlockInfo;
+import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.MineralManager;
+
+public class UpdateTask implements Runnable {
 
 	private final MineralManager plugin;
 	
-	public UpdateThread(MineralManager plugin) {
+	public UpdateTask(MineralManager plugin) {
 		this.plugin = plugin;
 	}
 	

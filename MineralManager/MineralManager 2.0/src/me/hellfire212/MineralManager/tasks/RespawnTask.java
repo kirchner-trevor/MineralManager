@@ -1,8 +1,12 @@
-package me.hellfire212.MineralManager;
+package me.hellfire212.MineralManager.tasks;
 
+import me.hellfire212.MineralManager.BlockInfo;
+import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.MineralListener;
+import me.hellfire212.MineralManager.MineralManager;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 
-public class RespawnThread implements Runnable {
+public class RespawnTask implements Runnable {
 
 	private final Coordinate coordinate;
 	private final BlockInfo info;
@@ -13,7 +17,7 @@ public class RespawnThread implements Runnable {
 	 * @param coordinate the coordinate of the block to change
 	 * @param info the BlockInfo of the Block
 	 */
-	public RespawnThread(MineralManager plugin, Coordinate coordinate, BlockInfo info) {
+	public RespawnTask(MineralManager plugin, Coordinate coordinate, BlockInfo info) {
 		this.plugin = plugin;
 		this.coordinate = coordinate;
 		this.info = info;
