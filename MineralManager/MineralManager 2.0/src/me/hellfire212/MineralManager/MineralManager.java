@@ -184,8 +184,7 @@ public class MineralManager extends JavaPlugin {
 			waiting = 0;
 				
 			coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
-			long cooldown = info.getCooldown();
-			int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown < 0 ? 0 : cooldown * 20);
+			int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown());
 			MineralListener.taskMap.put(coordinate, tid);
 			currentIndex++;
 			server.getScheduler().scheduleSyncDelayedTask(plugin, this);
