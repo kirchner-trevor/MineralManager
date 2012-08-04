@@ -134,54 +134,9 @@ public class MineralManager extends JavaPlugin {
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
 		
-		new EnableListeners().run();
-	}
-	
-	public class EnableListeners implements Runnable {
-		private ArrayList<Entry<Coordinate, BlockInfo>> blockEntryList;
-		private int currentIndex = 0;
-		private int waiting = 0;
-
-		public EnableListeners() {
-			this.blockEntryList = new ArrayList<Entry<Coordinate, BlockInfo>>(blockMap.entrySet());
-		}
-
-		@Override
-		public void run() {
-			if (currentIndex >= blockEntryList.size()) {
-				mineralListener = new MineralListener(plugin);
-				lassoListener = new LassoListener(plugin);
-				return;
-			}
-			Server server = plugin.getServer();
-			Entry<Coordinate, BlockInfo> entry = blockEntryList.get(currentIndex);
-			
-			Coordinate coordinate = entry.getKey();
-			BlockInfo info = entry.getValue();
+		new EnableListenersTask(this).run();
 		
-			// If we have Multiverse, we want to wait for the world to load.
-			Plugin multiverse = server.getPluginManager().getPlugin(MULTIVERSE);
-				
-			if(multiverse != null && coordinate.getWorld() == null) {
-				if (++waiting > 50) {
-					plugin.getLogger().severe(String.format(
-							"Was not able to get world '%s' before deadline", 
-							coordinate.getWorldName()
-					));
-					waiting = 0;
-					currentIndex++;
-				}
-				// 4 ticks is 200 milliseconds
-				server.getScheduler().scheduleSyncDelayedTask(plugin, this, 4);
-				return;
 			}
-			waiting = 0;
-				
-			coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
-			int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown());
-			MineralListener.taskMap.put(coordinate, tid);
-			currentIndex++;
-			server.getScheduler().scheduleSyncDelayedTask(plugin, this);
 		}
 	}
 	

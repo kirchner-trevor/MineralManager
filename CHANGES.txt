@@ -13,6 +13,7 @@ Not yet released
  === Fixes ===
  * Fix permissions issue with the /mm command.
  * Fix issue with configurations not being properly attached to regions.
+ * Remove the /mm update command
 
 ============
 Version 2.0

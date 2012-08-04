@@ -1,9 +1,10 @@
 package me.hellfire212.MineralManager;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-public class RegionSet implements Serializable {
+public class RegionSet implements Serializable, Iterable<Region> {
 
 	private static final long serialVersionUID = 3833726660750427658L;
 	private ConcurrentSkipListSet<Region> regionSet = null;
@@ -109,5 +110,10 @@ public class RegionSet implements Serializable {
 		} else if (!regionSet.equals(other.regionSet))
 			return false;
 		return true;
+	}
+
+	@Override
+	public Iterator<Region> iterator() {
+		return regionSet.iterator();
 	}
 }
