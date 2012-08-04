@@ -10,7 +10,6 @@ public class BlockInfo implements Serializable {
 	private final int blockData; //Must be cast to a byte when used in Block.setTypeIdandData
 	private final int placeholderData; //Must be cast to a byte when used in Block.setTypeIdandData
 	
-	private long cooldown = 0; //Number of seconds remaining until the block re-spawns
 	private long respawn = 0; //The time at which the block will re-spawn
 	public enum Type { BLOCK, PLACEHOLDER }
 
@@ -66,11 +65,7 @@ public class BlockInfo implements Serializable {
 	}
 	
 	public long getCooldown() {
-		return cooldown;
-	}
-
-	public void setCooldown(long cooldown) {
-		this.cooldown = cooldown < 0 ? 0 : cooldown;
+		return Math.max(0, (respawn - System.currentTimeMillis()) / 1000L);
 	}
 
 	public long getRespawn() {

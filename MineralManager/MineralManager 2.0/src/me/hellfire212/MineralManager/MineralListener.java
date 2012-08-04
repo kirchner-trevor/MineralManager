@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
-import me.hellfire212.MineralManager.tasks.UpdateTask;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,7 +32,6 @@ public class MineralListener implements Listener {
 	public MineralListener(MineralManager p) {
 		plugin = p;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
-		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new UpdateTask(plugin), 0, UPDATE_PERIOD);
 	}
 	
 	/**
