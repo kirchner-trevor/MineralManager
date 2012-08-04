@@ -80,6 +80,8 @@ public class MineralManager extends JavaPlugin {
 	private Configuration defaultConfiguration;
 	private DefaultDict<String, WorldData> worldData = new DefaultDict<String, WorldData>(WorldData.getMaker());
 
+	private SaveTracker saveTracker;
+
 	
 	public MineralManager() {
 		regionSet = new RegionSet();
@@ -133,6 +135,9 @@ public class MineralManager extends JavaPlugin {
 		} catch (FileNotFoundException e) {}
 		
 		SaveTracker.track(blockMapFH.getSaver(blockMap));
+		
+		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
+		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
 		
 		(new Thread(new EnableListeners())).start();
 	}
