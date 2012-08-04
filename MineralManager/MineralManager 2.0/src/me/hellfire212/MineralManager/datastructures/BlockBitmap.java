@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.utils.Saveable;
 /**
  * A sparse bitmap for storing boolean values about MineCraft blocks. 
  * 
@@ -21,7 +22,7 @@ import me.hellfire212.MineralManager.Coordinate;
  * each of which is prefixed by the location within the world this chunk comes from, this allowing
  * data locality and also the file to grow sensibly in a useful time-space tradeoff.
  */
-public class BlockBitmap {
+public class BlockBitmap implements Saveable {
 	/* Information about records */
 	private static final int HEADER_SIZE = 12;
 	private static final int BITMAP_SIZE = 512;
@@ -133,6 +134,11 @@ public class BlockBitmap {
 			}
 		}
 		return saved;
+	}
+	
+	/* Saveable contract */
+	public boolean save(boolean force) {
+		return (flush() > 0);
 	}
 
 	/* Utility functions */
