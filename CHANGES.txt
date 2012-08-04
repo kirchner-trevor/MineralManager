@@ -1,0 +1,5 @@
+Version 2.1: Not yet released
+ * Add documentation to the config examples.
+ * Fix permissions issue with the /mm command.
+ * Drastic performance improvements across the code base.
+ * Some data formats have changed, and data will be converted on first run.
