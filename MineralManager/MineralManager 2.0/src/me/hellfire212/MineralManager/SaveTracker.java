@@ -25,7 +25,8 @@ public final class SaveTracker implements Runnable {
 	public void run() {
 		tracked.get(position).save(false);
 		position = (position + 1) % tracked.size();
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, timeBudget / tracked.size());
+		int ticks = Math.max(2, timeBudget / tracked.size());
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, ticks);
 	}
 	
 	/* Static interface */
