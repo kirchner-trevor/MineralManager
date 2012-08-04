@@ -3,6 +3,7 @@ package me.hellfire212.MineralManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import me.hellfire212.MineralManager.tasks.RespawnTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -139,38 +141,55 @@ public class MineralManager extends JavaPlugin {
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
 		
-		(new Thread(new EnableListeners())).start();
+		new EnableListeners().run();
 	}
 	
 	public class EnableListeners implements Runnable {
+		private ArrayList<Entry<Coordinate, BlockInfo>> blockEntryList;
+		private int currentIndex = 0;
+		private int waiting = 0;
+
+		public EnableListeners() {
+			this.blockEntryList = new ArrayList<Entry<Coordinate, BlockInfo>>(blockMap.entrySet());
+		}
 
 		@Override
 		public void run() {
-			for(Entry<Coordinate, BlockInfo> entry : blockMap.entrySet()) {
-				Coordinate coordinate = entry.getKey();
-				BlockInfo info = entry.getValue();
-			
-				Plugin multiverse = plugin.getServer().getPluginManager().getPlugin(MULTIVERSE);
-				
-				if(multiverse != null) {
-					long target = System.currentTimeMillis() + 2000;
-					while(coordinate.getWorld() == null && System.currentTimeMillis() < target) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							System.exit(-1);
-						}
-					}
-				}
-				
-				coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
-				long cooldown = info.getCooldown();
-				int tid = Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown < 0 ? 0 : cooldown * 20);
-				MineralListener.taskMap.put(coordinate, tid);
+			if (currentIndex >= blockEntryList.size()) {
+				mineralListener = new MineralListener(plugin);
+				lassoListener = new LassoListener(plugin);
+				return;
 			}
+			Server server = plugin.getServer();
+			Entry<Coordinate, BlockInfo> entry = blockEntryList.get(currentIndex);
 			
-			mineralListener = new MineralListener(plugin);
-			lassoListener = new LassoListener(plugin);
+			Coordinate coordinate = entry.getKey();
+			BlockInfo info = entry.getValue();
+		
+			// If we have Multiverse, we want to wait for the world to load.
+			Plugin multiverse = server.getPluginManager().getPlugin(MULTIVERSE);
+				
+			if(multiverse != null && coordinate.getWorld() == null) {
+				if (++waiting > 50) {
+					plugin.getLogger().severe(String.format(
+							"Was not able to get world '%s' before deadline", 
+							coordinate.getWorldName()
+					));
+					waiting = 0;
+					currentIndex++;
+				}
+				// 4 ticks is 200 milliseconds
+				server.getScheduler().scheduleSyncDelayedTask(plugin, this, 4);
+				return;
+			}
+			waiting = 0;
+				
+			coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
+			long cooldown = info.getCooldown();
+			int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown < 0 ? 0 : cooldown * 20);
+			MineralListener.taskMap.put(coordinate, tid);
+			currentIndex++;
+			server.getScheduler().scheduleSyncDelayedTask(plugin, this);
 		}
 	}
 	

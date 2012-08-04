@@ -39,6 +39,11 @@ public final class Coordinate implements Serializable {
 	public World getWorld() {
 		return Bukkit.getWorld(worldName);
 	}
+	
+	// Useful for logging and other information, gets the world name.
+	public String getWorldName() {
+		return worldName;
+	}
 
 	//This will return null if getWorld returns null
 	public Location getLocation() {
