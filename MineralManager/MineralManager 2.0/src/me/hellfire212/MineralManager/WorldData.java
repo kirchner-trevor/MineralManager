@@ -30,6 +30,7 @@ public final class WorldData {
 	
 	private void load() {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
+		SaveTracker.track(placedBlocks);
 	}
 	
 	public void shutdown() {
