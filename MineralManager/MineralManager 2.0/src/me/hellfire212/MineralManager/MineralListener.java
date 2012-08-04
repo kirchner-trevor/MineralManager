@@ -46,7 +46,6 @@ public class MineralListener implements Listener {
 		Coordinate coordinate = new Coordinate(block.getLocation());
 		WorldData wdata = plugin.getWorldData(block.getWorld());
 		Region region = plugin.regionSet.contains(coordinate);
-		
 		if(player.hasMetadata(METADATA_CREATIVE)) {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
@@ -86,7 +85,6 @@ public class MineralListener implements Listener {
 							}
 							
 							Mineral mineral = blockMap.get(info);
-							
 							if(Math.random() > mineral.getDegrade()) {
 								long cooldown = mineral.getCooldown();
 

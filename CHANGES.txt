@@ -1,5 +1,40 @@
-Version 2.1: Not yet released
+===========
+Version 2.1
+===========
+Not yet released
+
+ === New Features ===
+
+ === Upgrades ===
  * Add documentation to the config examples.
- * Fix permissions issue with the /mm command.
- * Drastic performance improvements across the code base.
+ * Drastic performance improvements across the code base:
  * Some data formats have changed, and data will be converted on first run.
+
+ === Fixes ===
+ * Fix permissions issue with the /mm command.
+ * Fix issue with configurations not being properly attached to regions.
+
+============
+Version 2.0
+============
+Released 2012-06-29
+
+ === New Features ===
+ * Handle placed blocks that aren’t defined by the configuration file (i.e. knows which blocks were placed even if they were placed in a region). (Requested)
+ * Handles blocks with different data values. (Requested)
+ * Handles block ids. (Requested)
+ * Creative mode to allow placement of natural blocks and removal of managed blocks. (Requested)
+ * Ability to create "empty" regions that aren't managed. (Requested)
+ * Multi-world support to allow separate regions for different worlds. (Requested)
+ * Option to make blocks not re-spawn if their placeholder is destroyed (Volatile Blocks). (Requested)
+ * Multiple region selection methods. (Requested)
+
+ === Upgrades ===
+ * Overhaul of regions and the config.yml file.
+ * Rebuild the plugin from the ground up to be more robust and modular.
+ * Uses less CPU and less RAM than the old plugin over time, and thus is more accommodating to larger servers.
+ * Regions are still managed within the game but their configurations are managed via the config.yml file.
+
+ === Fixes ===
+ * Fixed a bug where multiple commands being executed simultaneously would conflict.
+ * Multitudes of little things.

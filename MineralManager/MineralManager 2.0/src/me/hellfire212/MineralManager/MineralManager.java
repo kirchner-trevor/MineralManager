@@ -90,18 +90,7 @@ public class MineralManager extends JavaPlugin {
 		selectionMap = new ConcurrentHashMap<Player, Selection>();
 		plugin = this;
 	}
-	
-	/**
-	 * Called after a plugin is loaded but before it has been enabled.
-	 */
-	@Override
-	public void onLoad() {
-		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
-			saveDefaultConfig();
-		}
 
-		getConfigurationValues();
-	}
 	
 	/**
 	 * Called when this plugin is enabled. 
@@ -109,6 +98,11 @@ public class MineralManager extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
+		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
+			saveDefaultConfig();
+		}
+		parseConfigurationValues();
+
 		// Data conversion stuff
 		File placedSetFile = new File(PLACED_SET_PATH);
 		if (placedSetFile.exists()) {
@@ -203,7 +197,7 @@ public class MineralManager extends JavaPlugin {
 	}
 	
 	//Change iterator to "for each"
-	private void getConfigurationValues() {
+	private void parseConfigurationValues() {
 		ConfigurationSection currentConfig = getConfig().getConfigurationSection("DEFAULT");
 		
 		try {
