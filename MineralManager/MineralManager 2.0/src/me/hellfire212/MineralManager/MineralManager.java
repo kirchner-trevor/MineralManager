@@ -35,10 +35,6 @@ public class MineralManager extends JavaPlugin {
 	
 	private static final String MULTIVERSE = "Multiverse-Core";
 
-	private static final String CONFIG_HEADER = "This should contain information on how to use the config.yml file." +
-												"It should also contain usage information on commands and any other" +
-												"general information that may be useful to the user.";
-
 	public static final ChatColor TEXT_COLOR = ChatColor.LIGHT_PURPLE;
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
 	public static final String PREFIX = ChatColor.AQUA + "[MineralManager] " + MineralManager.TEXT_COLOR;
@@ -89,10 +85,6 @@ public class MineralManager extends JavaPlugin {
 		regionSetFH = new FileHandler(new File(REGION_SET_PATH));
 		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
 		blockMapFH = new FileHandler(new File(BLOCK_MAP_PATH));
-		File placedSetFile = new File(PLACED_SET_PATH);
-		if (placedSetFile.exists()) {
-			Upgrader.convertPlaced(this, placedSetFile);
-		}
 		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
 		lockedSetFH = new FileHandler(new File(LOCKED_SET_PATH));
 		configurationMap = new HashMap<String, Configuration>();
@@ -105,10 +97,10 @@ public class MineralManager extends JavaPlugin {
 	 */
 	@Override
 	public void onLoad() {
-		plugin.getConfig().options().copyDefaults(true);
-		plugin.getConfig().options().header(MineralManager.CONFIG_HEADER);
-		plugin.saveConfig();
-		
+		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
+			saveDefaultConfig();
+		}
+
 		getConfigurationValues();
 	}
 	
@@ -118,10 +110,19 @@ public class MineralManager extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
-		WorldData.BASE_FOLDER = plugin.getDataFolder();
-		String binPath = plugin.getDataFolder().getAbsolutePath().concat("\\bin");
-		File bin = new File(binPath);
-		bin.mkdir();
+		// Data conversion stuff
+		File placedSetFile = new File(PLACED_SET_PATH);
+		if (placedSetFile.exists()) {
+			Upgrader.convertPlaced(this, placedSetFile);
+		}
+		File binFolder = new File(plugin.getDataFolder(), "bin");
+		if (!binFolder.isDirectory()) {
+			if (!binFolder.mkdir()) {
+				getLogger().severe("Could not create folder for plugin data");
+			}
+		}
+
+		WorldData.BASE_FOLDER = binFolder;
 		
 		try {
 			regionSet = regionSetFH.loadObject(regionSet.getClass());
@@ -221,9 +222,9 @@ public class MineralManager extends JavaPlugin {
 
 		ConfigurationSection regionConfig = getConfig().getConfigurationSection("CONFIGURATION");
 		Set<String> regionSet = regionConfig.getKeys(false);
-		Iterator<String> itr = regionSet.iterator();
-		while(itr.hasNext()) {
-			currentConfig = regionConfig.getConfigurationSection(itr.next());
+		for (String name: regionSet) {
+			getLogger().info("Section " + name);
+			currentConfig = regionConfig.getConfigurationSection(name);
 			Configuration tempConfig = null;
 			try {
 				tempConfig = new Configuration(currentConfig, defaultConfiguration);

@@ -1,14 +1,39 @@
+######### MineralManager 2.1 config
+
+# The DEFAULT section sets the defaults for the application.
 DEFAULT:
+  # If true, only applies to blocks which were there, not placed.
   mineOriginalOnly: false
+
+  # If true, you need the MineralManager.User permission for mining 
+  # to cause respawn.
   usePermissions: false
+
+  # Configurable messages.
+  # Can be interpolated with special variables:
+  #     %b = block name
+  #     %c = cooldown, in seconds
   displayMessages:
     onBlockBreak: This %b will be available in %c seconds.
     onBlockProspect: This %b has already been mined.
+
+  # What to use as the placeholder. Block ID 0 = AIR
   placeholder: 0
+
+# Here follows multiple configuration sections.
+# Configuration sections are used to define different sets of managed
+# blocks, and can be assigned to regions or even to entire worlds.
 CONFIGURATION:
-  w1_global:
+  # Section names are used in the command when adding regions.
+  # Section names must be unique and must not contain spaces.
+  EXAMPLE_global:
+    # Global configs affect an entire world.
     global: true
+    # Volatile means ????
     volatile: true
+
+    # Set the managed blocks for this config.
+    # Each managed block can have its own cooldown and
     managedBlocks:
     - type: COAL_ORE
       cooldown: 30
@@ -16,40 +41,50 @@ CONFIGURATION:
     - type: IRON_ORE
       cooldown: 60
       degrade: 0.5
-  w2_global:
-    global: true
-    managedBlocks:
-    - type: GOLD_ORE
-      cooldown: 120
-      degrade: 0.5
-    - type: DIAMOND_ORE
-      cooldown: 240
-      degrade: 0.5
-  spawn:
+
+  # Dead zones are useful for having a location within a larger region
+  # which does not have any ore respawning.
+  deadzone:
+    active: false
+
+  # Sections can even override values from the DEFAULT section,
+  # such as the placeholder and mineOriginalOnly configurations.
+  EXAMPLE_override:
     placeholder: BEDROCK
+    mineOriginalOnly: true
+
     managedBlocks:
     - type: COAL_ORE
       cooldown: 30
       degrade: 0
-    mineOriginalOnly: true
-  forest:
-    placeholder: 18 3
-    managedBlocks:
-    - type: LOG 0
-      cooldown: 30
-      degrade: 0
-    - type: LOG 1
-      cooldown: 30
-      degrade: 0
-    - type: LOG 2
-      cooldown: 30
-      degrade: 0
-    - type: 17 3
-      cooldown: 30
-      degrade: 0
-    displayMessages:
-      onBlockBreak: This tree is enchanted and will reappear in %c seconds.
-      onBlockProspect: Magic is gathering in this area... be patient.
-    mineOriginalOnly: true
-  deadzone:
-    active: false
+
+#### Additional example sections.
+#  w2_global:
+#    global: true
+#    managedBlocks:
+#    - type: GOLD_ORE
+#      cooldown: 120
+#      degrade: 0.5
+#    - type: DIAMOND_ORE
+#      cooldown: 240
+#      degrade: 0.5
+#  forest:
+#    placeholder: 18 3
+#    managedBlocks:
+#    - type: LOG 0
+#      cooldown: 30
+#      degrade: 0
+#    - type: LOG 1
+#      cooldown: 30
+#      degrade: 0
+#    - type: LOG 2
+#      cooldown: 30
+#      degrade: 0
+#    - type: 17 3
+#      cooldown: 30
+#      degrade: 0
+#    displayMessages:
+#      onBlockBreak: This tree is enchanted and will reappear in %c seconds.
+#      onBlockProspect: Magic is gathering in this area... be patient.
+#    mineOriginalOnly: true
+

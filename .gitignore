@@ -164,3 +164,7 @@ pip-log.txt
 
 # Test output
 tests/*.bin
+
+# Binary
+MineralManager.jar
+makejar.sh
