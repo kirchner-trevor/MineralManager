@@ -23,7 +23,6 @@ public class MineralListener implements Listener {
 	public static final String METADATA_CREATIVE = "MineralManager.Creative";
 	public static final String PERMISSION_USER = "MineralManager.User";
 	public static final String PERMISSION_ADMIN = "MineralManager.Admin";
-	private static final long UPDATE_PERIOD = 200;
 
 	public static ConcurrentHashMap<Coordinate, Integer> taskMap = new ConcurrentHashMap<Coordinate, Integer>();
 	
@@ -48,7 +47,7 @@ public class MineralListener implements Listener {
 		WorldData wdata = plugin.getWorldData(block.getWorld());
 		Region region = plugin.regionSet.contains(coordinate);
 		
-		if(player.hasMetadata(MineralListener.METADATA_CREATIVE)) {
+		if(player.hasMetadata(METADATA_CREATIVE)) {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
 			}
@@ -94,7 +93,7 @@ public class MineralListener implements Listener {
 								info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
 								plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
 								int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
-								MineralListener.taskMap.put(coordinate, tid);
+								taskMap.put(coordinate, tid);
 								
 								String message = configuration.getOnBlockBreak();
 								if(!message.equals("false")) {
@@ -118,17 +117,17 @@ public class MineralListener implements Listener {
 	 */
 	private void cancelRespawnAtCoordinate(Coordinate coordinate) {
 		Integer tid;
-		if((tid = MineralListener.taskMap.get(coordinate)) != null) {
+		if((tid = taskMap.get(coordinate)) != null) {
 			plugin.getServer().getScheduler().cancelTask(tid);
 		}
-		MineralListener.taskMap.remove(coordinate);
+		taskMap.remove(coordinate);
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockDamageEvent(final BlockDamageEvent e) {
 		Player player = e.getPlayer();
 		//We don't want to spam players in creative mode with messages so we simply return immediately.
-		if(player.hasMetadata(MineralListener.METADATA_CREATIVE)) {
+		if(player.hasMetadata(METADATA_CREATIVE)) {
 			return;
 		}
 
@@ -154,7 +153,7 @@ public class MineralListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(final BlockPlaceEvent e) {
 		//We don't do anything if the player is in creative mode since they're allowed to place "natural" blocks.
-		if(e.getPlayer().hasMetadata(MineralListener.METADATA_CREATIVE)) {
+		if(e.getPlayer().hasMetadata(METADATA_CREATIVE)) {
 			return;
 		}
 		Block block = e.getBlock();
