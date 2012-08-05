@@ -40,5 +40,10 @@ public final class SaveTracker implements Runnable {
 			tracked.add(trackable);
 		}
 	}
+
+	public void shutdown() {
+		tracked.clear();
+		plugin = null;
+	}
 	
 }

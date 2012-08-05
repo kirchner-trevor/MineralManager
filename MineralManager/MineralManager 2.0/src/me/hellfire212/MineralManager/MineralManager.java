@@ -124,6 +124,10 @@ public class MineralManager extends JavaPlugin {
 		if(plugin.blockMapFH != null) {
 			plugin.blockMapFH.saveObject(plugin.blockMap);
 		}
+		if (saveTracker != null) {
+			saveTracker.shutdown();
+			saveTracker = null;
+		}
 	}
 	
 	//Change iterator to "for each"
