@@ -195,14 +195,14 @@ public class MineralManager extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		boolean result = false;
 		if(sender instanceof Player) {
-			handleCommand((Player) sender, label, args);
+			handleCommand((Player) sender, command, label, args);
 		} else {
 			System.out.println("Non-player command!");
 		}
 		return result;
 	}
 	
-	private boolean handleCommand(Player player, String command, String[] args) {
+	private boolean handleCommand(Player player, Command command, String label, String[] args) {
 		
 		//We don't want non-admins to be using these commands.
 		if(!player.hasPermission(MineralListener.PERMISSION_ADMIN)) {
@@ -221,7 +221,7 @@ public class MineralManager extends JavaPlugin {
 		
 		List<Object> validList = null;
 		
-		if(command.equalsIgnoreCase("mm")) {
+		if(command.getName().equalsIgnoreCase("mm")) {
 			
 			if((validList = select.validate(argumentList)) != null) {
 				String selectList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Selection Commands]\n" + MineralManager.TEXT_COLOR +
@@ -286,7 +286,7 @@ public class MineralManager extends JavaPlugin {
 			player.sendMessage(error.isEmpty() ? commandList : MineralManager.PREFIX + "/mm " + error);
 			return false;
 			
-		} else if(command.equalsIgnoreCase("test")) {
+		} else if(label.equalsIgnoreCase("test")) {
 			Coordinate testCoord = new Coordinate(player.getLocation());
 
 			Region inRegion = regionSet.contains(testCoord);
