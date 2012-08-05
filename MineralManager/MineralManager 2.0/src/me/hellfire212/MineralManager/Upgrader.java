@@ -45,17 +45,7 @@ public class Upgrader {
 		plugin.getLogger().info(" -> Saved.");
 
 		// Prevent doing the conversion again in the future.
-		File backupFile = new File(placedSetFile.getAbsolutePath() + ".old");
-		
-		if (placedSetFile.renameTo(backupFile)) {
-			plugin.getLogger().info("Renamed file to " + backupFile.getAbsolutePath());
-		} else {
-			plugin.getLogger().severe(String.format(
-					"Could not rename file '%s' to '%s'", 
-					placedSetFile.getAbsolutePath(), 
-					backupFile.getAbsolutePath()
-			));
-		}
+		renameOld(plugin, placedSetFile, ".old");
 	
 	}
 	
@@ -70,13 +60,37 @@ public class Upgrader {
 		} catch (FileNotFoundException e) {}
 		
 		for (Region region : regionSet) {
+			String configName = region.getConfiguration().getName();
+			Configuration map_config = plugin.getConfigurationMap().get(configName);
+			if (map_config != null) {
+				region.setConfiguration(map_config);
+			}
 			plugin.getLogger().info("  -> " + region.getName());
 			World world = Bukkit.getWorld(region.getWorldUUID());
 			WorldData wd = plugin.getWorldData(world);
 			wd.getRegionSet().add(region);
 			wd.flagRegionSetDirty();
 		}
+		renameOld(plugin, regionSetFile, ".old");
 		plugin.getLogger().info("Finished.");
+	}
+	
+	private static File makeBackupFile(File orig, String addon) {
+		return new File(orig.getAbsolutePath() + addon);
+	}
+	
+	private static void renameOld(MineralManager plugin, File orig, String addon) {
+		File backupFile = makeBackupFile(orig, ".old");
+
+		if (orig.renameTo(backupFile)) {
+			plugin.getLogger().info("Renamed file to " + backupFile.getAbsolutePath());
+		} else {
+			plugin.getLogger().severe(String.format(
+					"Could not rename file '%s' to '%s'", 
+					orig.getAbsolutePath(), 
+					backupFile.getAbsolutePath()
+			));
+		}
 	}
 
 }
