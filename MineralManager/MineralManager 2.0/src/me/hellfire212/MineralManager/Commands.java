@@ -45,6 +45,12 @@ public class Commands {
 			player.sendMessage(MineralManager.PREFIX + "No region is currently selected.");
 		}
 	}
+
+
+	public static Selection selectWorld(MineralManager plugin, Player player, List<Object> validList) {
+		player.sendMessage(MineralManager.PREFIX + "Selected whole world" + player.getWorld());
+		return new Selection(new ArrayList<Point2D.Double>(), -1, -1);
+	}
 	
 	//****This method hasn't been cleaned up yet.
 	public static Selection selectLasso(MineralManager plugin, Player player, List<Object> args) {
@@ -239,4 +245,5 @@ public class Commands {
 		}
 		player.sendMessage(MineralManager.PREFIX + "You are now in " + MineralManager.HEADER_COLOR + status + MineralManager.TEXT_COLOR + " mode.");
 	}
+
 }

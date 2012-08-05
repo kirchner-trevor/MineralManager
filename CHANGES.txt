@@ -1,6 +1,4 @@
-===========
-Version 2.1
-===========
+== Version 2.1 ==
 Not yet released
 
  === New Features ===
@@ -17,9 +15,7 @@ Not yet released
  * Fix issue with configurations not being properly attached to regions.
  * Remove the /mm update command
 
-============
-Version 2.0
-============
+== Version 2.0 ==
 Released 2012-06-29
 
  === New Features ===

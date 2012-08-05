@@ -21,6 +21,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	private Double ceil = null;
 	private UUID world = null;
 	private double level = Math.random();
+	private boolean global = false;
 	
 	private Configuration configuration = new Configuration();
 	
@@ -41,6 +42,9 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		ceil = c;
 		world = w.getUID();
 		level += l;
+		// Region is global if boundaries are empty and floor/ceiling are both negative.
+		// XXX Still contains old config global setting for conversion purposes
+		global = config.isGlobal() || (b.size() == 0 && f < -0.9D && c < -0.9D);
 	}
 
 	/**
@@ -49,7 +53,10 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 * @return true if the region contains the coordinate
 	 */
 	public boolean contains(Coordinate coordinate) {
-		return (configuration.isGlobal() && coordinate.getWorld().getUID().equals(world)) || (coordinate.getWorld().getUID().equals(world) && coordinate.inPolygon(boundaries) && coordinate.getY() >= floor && coordinate.getY() <= ceil);
+		return (
+			(global && coordinate.getWorld().getUID().equals(world)) 
+			|| (coordinate.getWorld().getUID().equals(world) && coordinate.getY() >= floor && coordinate.getY() <= ceil && coordinate.inPolygon(boundaries))
+		);
 	}
 	
 	/**
@@ -58,6 +65,8 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 */
 	public void setConfiguration(Configuration newConfiguration) {
 		configuration = newConfiguration;
+		// XXX legacy compatibility holdover
+		if (newConfiguration.isGlobal()) global = true;
 	}
 	
 	/**
@@ -132,6 +141,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		values.put("ceil", ceil);
 		values.put("world", world.toString());
 		values.put("level", level);
+		if (global) values.put("global", global);
 		ArrayList<java.lang.Double> condensedBoundaries = new ArrayList<Double>();
 		for (Point2D.Double point : boundaries) {
 			condensedBoundaries.add(point.getX());
@@ -143,7 +153,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	
 	/**
 	 * De-serialize from a bukkit config.
-	 * @param values provided value.
+	 * @param values provided map describing this Region.
 	 * @return new Region instance.
 	 */
 	public static Region deserialize(Map<String, Object> values) {
@@ -167,7 +177,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 				
 		return new Region(
 				(String) values.get("name"),
-				new Configuration((String) values.get("configuration")),
+				MineralManager.getInstance().getConfigurationMap().get((String) values.get("configuration")),
 				points,
 				(Double) values.get("floor"),
 				(Double) values.get("ceil"), 

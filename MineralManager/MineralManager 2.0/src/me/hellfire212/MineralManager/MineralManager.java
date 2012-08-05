@@ -36,12 +36,14 @@ public class MineralManager extends JavaPlugin {
 	private static final String PLACED_SET_FILENAME = "placedMap.bin";
 	private static final String LOCKED_SET_FILENAME = "lockedMap.bin";
 	
-	private MineralManager plugin = null;
+	
+	private static MineralManager plugin = null;
 	
 	private MMCommand select = new MMCommand("select", true);
-	private MMCommand cube = new MMCommand("cube", new Argument(Integer.class, "xz-radius"), new Argument(Integer.class, "y-radius"));
-	private MMCommand region = new MMCommand("region", new Argument(String.class, "start / end"));
-	private MMCommand lasso = new MMCommand("lasso", new Argument(String.class, "start / end"));
+	private MMCommand select_world = new MMCommand("world");
+	private MMCommand select_cube = new MMCommand("cube", new Argument(Integer.class, "xz-radius"), new Argument(Integer.class, "y-radius"));
+	private MMCommand select_region = new MMCommand("region", new Argument(String.class, "start / end"));
+	private MMCommand select_lasso = new MMCommand("lasso", new Argument(String.class, "start / end"));
 
 	private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
 	private MMCommand remove = new MMCommand("remove", new Argument(String.class, "region name"));
@@ -214,19 +216,23 @@ public class MineralManager extends JavaPlugin {
 			
 			if((validList = select.validate(argumentList)) != null) {
 				String selectList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Selection Commands]\n" + MineralManager.TEXT_COLOR +
-									"/mm select " + cube.getUsage() + "\n" + 
-									"/mm select " + region.getUsage() + "\n" +
-									"/mm select " + lasso.getUsage() + "\n";
+									"/mm select " + select_cube.getUsage() + "\n" + 
+									"/mm select " + select_region.getUsage() + "\n" +
+									"/mm select " + select_lasso.getUsage() + "\n";
 				
 				List<String> subList = argumentList.subList(1, argumentList.size());
-	
 				
-				if((validList = cube.validate(subList)) != null) {
+				if ((validList = select_world.validate(subList)) != null) {
+					selectionMap.put(player, Commands.selectWorld(plugin, player, validList));
+					return true;
+				}
+				
+				if((validList = select_cube.validate(subList)) != null) {
 					selectionMap.put(player, Commands.selectCube(plugin, player, validList));
 					return true;
 				}
 				
-				if((validList = region.validate(subList)) != null) {
+				if((validList = select_region.validate(subList)) != null) {
 					Selection temp = Commands.selectRegion(plugin, player, validList);
 					if(temp != null) {
 						selectionMap.put(player, temp);
@@ -234,7 +240,7 @@ public class MineralManager extends JavaPlugin {
 					return true;
 				}
 				
-				if((validList = lasso.validate(subList)) != null) {
+				if((validList = select_lasso.validate(subList)) != null) {
 					Selection temp = Commands.selectLasso(plugin, player, validList);
 					if(temp != null) {
 						selectionMap.put(player, temp);
@@ -320,8 +326,7 @@ public class MineralManager extends JavaPlugin {
 		
 		File regionSetFile = new File(binFolder, REGION_SET_FILENAME);
 		if (regionSetFile.exists()) {
-			File regionYamlFile = new File(getDataFolder(), "regions.yml");
-			Upgrader.convertRegions(this, regionSetFile, regionYamlFile, this.regionSet);
+			Upgrader.convertRegions(this, regionSetFile);
 		}
 		
 	}
@@ -350,5 +355,12 @@ public class MineralManager extends JavaPlugin {
 		} catch (FileNotFoundException e) {}
 		
 		SaveTracker.track(blockMapFH.getSaver(blockMap));		
+	}
+	
+	/**
+	 * Used to get the current plugin instance, for cases we don't have the state available.
+	 */
+	public static MineralManager getInstance() {
+		return plugin;
 	}
 }
