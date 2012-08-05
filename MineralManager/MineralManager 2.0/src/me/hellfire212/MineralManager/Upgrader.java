@@ -2,9 +2,13 @@ package me.hellfire212.MineralManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.bukkit.configuration.file.YamlConfiguration;
 
 
 /**
@@ -54,6 +58,23 @@ public class Upgrader {
 			));
 		}
 	
+	}
+	
+	/** Temporary: we want to see what regions look like in yaml-land. */
+	public static void convertRegions(MineralManager plugin, File regionSetFile, File regionYamlFile, RegionSet regionSet) {
+		plugin.getLogger().info("Beginning conversion of regions to new format....");
+		ArrayList<Region> regions = new ArrayList<Region>();
+		for (Region region : regionSet) {
+			regions.add(region);
+		}
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(regionYamlFile);
+		config.set("regions", regions);
+		try {
+			config.save(regionYamlFile);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

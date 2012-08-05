@@ -87,19 +87,14 @@ public class MineralManager extends JavaPlugin {
 	/**
 	 * Called when this plugin is enabled. 
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onEnable() {
+		// Initial setup of files and paths.
 		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
 			saveDefaultConfig();
 		}
 		parseConfigurationValues();
 
-		// Data conversion stuff
-		File placedSetFile = new File(PLACED_SET_PATH);
-		if (placedSetFile.exists()) {
-			Upgrader.convertPlaced(this, placedSetFile);
-		}
 		File binFolder = new File(plugin.getDataFolder(), "bin");
 		if (!binFolder.isDirectory()) {
 			if (!binFolder.mkdir()) {
@@ -109,20 +104,9 @@ public class MineralManager extends JavaPlugin {
 
 		WorldData.BASE_FOLDER = binFolder;
 		
-		try {
-			regionSet = regionSetFH.loadObject(regionSet.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		try {
-			blockMap =  blockMapFH.loadObject(blockMap.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		try {
-			lockedSet = lockedSetFH.loadObject(lockedSet.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		SaveTracker.track(blockMapFH.getSaver(blockMap));
-		
+		loadFileHandlerDatabases();
+		performDataUpgrades();
+				
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
 		
@@ -137,7 +121,8 @@ public class MineralManager extends JavaPlugin {
 		}
 		
 	}
-	
+
+
 	/**
 	 * Called when this plugin is disabled. 
 	 */
@@ -237,6 +222,7 @@ public class MineralManager extends JavaPlugin {
 									"/mm select " + lasso.getUsage() + "\n";
 				
 				List<String> subList = argumentList.subList(1, argumentList.size());
+	
 				
 				if((validList = cube.validate(subList)) != null) {
 					selectionMap.put(player, Commands.selectCube(plugin, player, validList));
@@ -325,5 +311,38 @@ public class MineralManager extends JavaPlugin {
 	
 	public Collection<WorldData> allWorldDatas() {
 		return worldData.values();
+	}
+	
+	/* Things done at initialization */
+	private void performDataUpgrades() {
+		// Data conversion stuff
+		File placedSetFile = new File(PLACED_SET_PATH);
+		if (placedSetFile.exists()) {
+			Upgrader.convertPlaced(this, placedSetFile);
+		}
+		
+		File regionSetFile = new File(REGION_SET_PATH);
+		if (regionSetFile.exists()) {
+			File regionYamlFile = new File(getDataFolder(), "regions.yml");
+			Upgrader.convertRegions(this, regionSetFile, regionYamlFile, this.regionSet);
+		}
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadFileHandlerDatabases() {
+		try {
+			regionSet = regionSetFH.loadObject(regionSet.getClass());
+		} catch (FileNotFoundException e) {}
+		
+		try {
+			blockMap =  blockMapFH.loadObject(blockMap.getClass());
+		} catch (FileNotFoundException e) {}
+		
+		try {
+			lockedSet = lockedSetFH.loadObject(lockedSet.getClass());
+		} catch (FileNotFoundException e) {}
+		
+		SaveTracker.track(blockMapFH.getSaver(blockMap));		
 	}
 }

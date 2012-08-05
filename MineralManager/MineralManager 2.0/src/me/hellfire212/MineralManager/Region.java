@@ -130,7 +130,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		values.put("configuration", configuration.getName());
 		values.put("floor", floor);
 		values.put("ceil", ceil);
-		values.put("world", world);
+		values.put("world", world.toString());
 		values.put("level", level);
 		ArrayList<java.lang.Double> condensedBoundaries = new ArrayList<Double>();
 		for (Point2D.Double point : boundaries) {
@@ -171,8 +171,8 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 				points,
 				(Double) values.get("floor"),
 				(Double) values.get("ceil"), 
-				Bukkit.getWorld((String) values.get("world")),
-				(Integer) values.get("level")
+				Bukkit.getWorld(UUID.fromString((String) values.get("world"))),
+				((Double)values.get("level")).intValue()
 		);
 	}
 }
