@@ -49,9 +49,9 @@ public class MineralListener implements Listener {
 		if(player.hasMetadata(METADATA_CREATIVE)) {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
+				plugin.blockMap.remove(coordinate);
 			}
 			wdata.getPlacedBlocks().unset(coordinate);
-			plugin.blockMap.remove(coordinate);
 			plugin.lockedSet.remove(coordinate);
 			//Save sets as well possibly.
 			return;

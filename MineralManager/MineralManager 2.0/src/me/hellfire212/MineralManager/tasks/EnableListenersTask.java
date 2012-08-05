@@ -59,7 +59,7 @@ public class EnableListenersTask implements Runnable {
 		waiting = 0;
 			
 		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
-		int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown());
+		int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown() * 20);
 		MineralListener.taskMap.put(coordinate, tid);
 		currentIndex++;
 		server.getScheduler().scheduleSyncDelayedTask(plugin, this);
