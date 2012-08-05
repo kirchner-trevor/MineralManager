@@ -31,11 +31,10 @@ public class MineralManager extends JavaPlugin {
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
 	public static final String PREFIX = ChatColor.AQUA + "[MineralManager] " + MineralManager.TEXT_COLOR;
 	
-	private static final String BIN_PATH = "plugins/MineralManager/bin/";
-	private static final String REGION_SET_PATH = BIN_PATH + "regionSet.bin";
-	private static final String BLOCK_MAP_PATH = BIN_PATH + "blockMap.bin";
-	private static final String PLACED_SET_PATH = BIN_PATH + "placedMap.bin";
-	private static final String LOCKED_SET_PATH = BIN_PATH + "lockedMap.bin";
+	private static final String REGION_SET_FILENAME = "regionSet.bin";
+	public static final String BLOCK_MAP_FILENAME = "blockMap.bin";
+	private static final String PLACED_SET_FILENAME = "placedMap.bin";
+	private static final String LOCKED_SET_FILENAME = "lockedMap.bin";
 	
 	private MineralManager plugin = null;
 	
@@ -72,15 +71,9 @@ public class MineralManager extends JavaPlugin {
 
 	
 	public MineralManager() {
-		regionSet = new RegionSet();
-		regionSetFH = new FileHandler(new File(REGION_SET_PATH));
-		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
-		blockMapFH = new FileHandler(new File(BLOCK_MAP_PATH));
-		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
-		lockedSetFH = new FileHandler(new File(LOCKED_SET_PATH));
+		plugin = this;
 		configurationMap = new HashMap<String, Configuration>();
 		selectionMap = new ConcurrentHashMap<Player, Selection>();
-		plugin = this;
 	}
 
 	
@@ -104,8 +97,8 @@ public class MineralManager extends JavaPlugin {
 
 		WorldData.BASE_FOLDER = binFolder;
 		
-		loadFileHandlerDatabases();
-		performDataUpgrades();
+		loadFileHandlerDatabases(binFolder);
+		performDataUpgrades(binFolder);
 				
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
@@ -314,14 +307,14 @@ public class MineralManager extends JavaPlugin {
 	}
 	
 	/* Things done at initialization */
-	private void performDataUpgrades() {
+	private void performDataUpgrades(File binFolder) {
 		// Data conversion stuff
-		File placedSetFile = new File(PLACED_SET_PATH);
+		File placedSetFile = new File(binFolder, PLACED_SET_FILENAME);
 		if (placedSetFile.exists()) {
 			Upgrader.convertPlaced(this, placedSetFile);
 		}
 		
-		File regionSetFile = new File(REGION_SET_PATH);
+		File regionSetFile = new File(binFolder, REGION_SET_FILENAME);
 		if (regionSetFile.exists()) {
 			File regionYamlFile = new File(getDataFolder(), "regions.yml");
 			Upgrader.convertRegions(this, regionSetFile, regionYamlFile, this.regionSet);
@@ -330,7 +323,16 @@ public class MineralManager extends JavaPlugin {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void loadFileHandlerDatabases() {
+	private void loadFileHandlerDatabases(File binFolder) {
+		// Initial setup
+		regionSet = new RegionSet();
+		regionSetFH = new FileHandler(new File(binFolder, REGION_SET_FILENAME));
+		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
+		blockMapFH = new FileHandler(new File(binFolder, BLOCK_MAP_FILENAME));
+		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
+		lockedSetFH = new FileHandler(new File(binFolder, LOCKED_SET_FILENAME));
+
+		// Do actual loading
 		try {
 			regionSet = regionSetFH.loadObject(regionSet.getClass());
 		} catch (FileNotFoundException e) {}
