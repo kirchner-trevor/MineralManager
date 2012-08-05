@@ -57,51 +57,49 @@ public class MineralListener implements Listener {
 			return;
 		}
 		
-		if(region != null) {
+		if(region == null) return;
+		
+		Configuration configuration = region.getConfiguration();
+		if(!configuration.isActive()) return;
+		
+		if(configuration.isVolatile() && plugin.blockMap.containsKey(coordinate)) {
+			cancelRespawnAtCoordinate(coordinate);
+			plugin.blockMap.remove(coordinate);
+			wdata.getPlacedBlocks().unset(coordinate);
+			plugin.lockedSet.remove(coordinate);
+			//Save sets as well possibly.
+			return;
+		}
 
-			Configuration configuration = region.getConfiguration();
-			
-			if(configuration.isVolatile() && plugin.blockMap.containsKey(coordinate)) {
-				cancelRespawnAtCoordinate(coordinate);
-				plugin.blockMap.remove(coordinate);
-				wdata.getPlacedBlocks().set(coordinate, false);
-				plugin.lockedSet.remove(coordinate);
-				//Save sets as well possibly.
-				return;
+		
+		if(configuration.isUsePermissions() && !player.hasPermission(PERMISSION_USER)) {
+			return;
+		}
+
+		BlockInfo placeholder = configuration.getPlaceholderBlock();
+		HashMap<BlockInfo, Mineral> blockMap = configuration.getBlockMap();
+		BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), placeholder.getTypeId(Type.PLACEHOLDER), placeholder.getData(Type.PLACEHOLDER));
+		
+		if(!blockMap.containsKey(info)) return;
+		
+		if(!(configuration.isMineOriginalOnly() && wdata.wasPlaced(block))) {
+
+			if((configuration.isLocked() || plugin.lockedSet.contains(coordinate)) && player.getItemInHand().getEnchantments().toString().contains("SILK_TOUCH")) {
+				block.breakNaturally();
 			}
+			
+			Mineral mineral = blockMap.get(info);
+			if(Math.random() > mineral.getDegrade()) {
+				long cooldown = mineral.getCooldown();
 
-			if(configuration.isActive()) {
-				if(!(configuration.isUsePermissions() && player.hasPermission(PERMISSION_USER))) {
-
-					BlockInfo placeholder = configuration.getPlaceholderBlock();
-					HashMap<BlockInfo, Mineral> blockMap = configuration.getBlockMap();
-					BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), placeholder.getTypeId(Type.PLACEHOLDER), placeholder.getData(Type.PLACEHOLDER));
-					
-					if(blockMap.containsKey(info)) {
-						if(!(configuration.isMineOriginalOnly() && wdata.wasPlaced(block))) {
-
-							if((configuration.isLocked() || plugin.lockedSet.contains(coordinate)) && player.getItemInHand().getEnchantments().toString().contains("SILK_TOUCH")) {
-								block.breakNaturally();
-							}
-							
-							Mineral mineral = blockMap.get(info);
-							if(Math.random() > mineral.getDegrade()) {
-								long cooldown = mineral.getCooldown();
-
-								info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
-								plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
-								int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
-								taskMap.put(coordinate, tid);
-								
-								String message = configuration.getOnBlockBreak();
-								if(!message.equals("false")) {
-									player.sendMessage(getCustomMessage(message, info, cooldown));
-								}
-							}
-						} else {
-							wdata.getPlacedBlocks().set(coordinate, false);
-						}
-					}
+				info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
+				int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
+				taskMap.put(coordinate, tid);
+				
+				String message = configuration.getOnBlockBreak();
+				if(!message.equals("false")) {
+					player.sendMessage(getCustomMessage(message, info, cooldown));
 				}
 			}
 		} else {
