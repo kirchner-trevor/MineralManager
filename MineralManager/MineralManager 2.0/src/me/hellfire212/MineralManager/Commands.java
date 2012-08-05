@@ -211,27 +211,6 @@ public class Commands {
 		player.sendMessage(plugin.regionSet.toString());
 	}
 
-	//****Issue when calling update, if blocks are added to the managedBlocks list the placeholder block doesn't work for the the first time they're mined.
-	//1 Argument
-	public static void update(MineralManager plugin, Player player, List<Object> args) {
-		String name = (String) args.get(0);
-		Region region = plugin.regionSet.get(name);
-		String status = "Could not update";
-		if(region != null) {
-			Configuration configuration = plugin.getConfigurationMap().get(region.getConfiguration().getName());
-			if(configuration != null) {
-				plugin.regionSet.remove(region);
-				region.setConfiguration(configuration);
-				plugin.regionSet.add(region);
-				status = "Successfully updated";
-				if(!plugin.regionSetFH.saveObject(plugin.regionSet)) {
-					plugin.getServer().getLogger().severe("Failure occured when saving regionSet during update command!");
-				}
-			}
-		}
-		player.sendMessage(MineralManager.PREFIX + status + " region \"" + name + "\".");
-	}
-
 	//0 Arguments
 	public static void lock(MineralManager plugin, Player player, List<Object> args) {
 		Block targetBlock = player.getTargetBlock(null, 20); //The 20 is the maximum distance away a block can be to be "selected".

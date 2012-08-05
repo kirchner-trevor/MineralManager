@@ -7,7 +7,7 @@ Not yet released
 
  === Upgrades ===
  * Add documentation to the config examples.
- * Drastic performance improvements across the code base:
+ * Drastic performance improvements across the code base
  * Some data formats have changed, and data will be converted on first run.
 
  === Fixes ===

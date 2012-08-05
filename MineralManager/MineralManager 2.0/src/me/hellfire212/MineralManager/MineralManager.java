@@ -46,7 +46,6 @@ public class MineralManager extends JavaPlugin {
 	private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
 	private MMCommand remove = new MMCommand("remove", new Argument(String.class, "region name"));
 	private MMCommand list = new MMCommand("list");
-	private MMCommand update = new MMCommand("update", new Argument(String.class, "region name"));
 	private MMCommand lock = new MMCommand("lock");
 	private MMCommand creative = new MMCommand("creative");
 	
@@ -217,7 +216,6 @@ public class MineralManager extends JavaPlugin {
 							 "/mm " + create.getUsage() + "\n" +
 							 "/mm " + remove.getUsage() + "\n" +
 							 "/mm " + list.getUsage()   + "\n" +
-							 "/mm " + update.getUsage() + "\n" +
 							 "/mm " + lock.getUsage() + "\n" + 
 							 "/mm " + creative.getUsage() + "\n";
 		
@@ -271,11 +269,6 @@ public class MineralManager extends JavaPlugin {
 				
 			if((validList = list.validate(argumentList)) != null) {
 				Commands.list(plugin, player, validList);
-				return true;
-			}
-				
-			if((validList = update.validate(argumentList)) != null) {
-				Commands.update(plugin, player, validList);
 				return true;
 			}
 			
