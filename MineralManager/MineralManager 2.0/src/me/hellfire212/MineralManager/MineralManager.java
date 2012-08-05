@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
+import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 
 import org.bukkit.ChatColor;
@@ -222,6 +223,12 @@ public class MineralManager extends JavaPlugin {
 		List<Object> validList = null;
 		
 		if(command.getName().equalsIgnoreCase("mm")) {
+			
+			// Temporary: For the conversation dialog, soon to be done withthe proper Command classes.
+			if (argumentList.size() > 0 && argumentList.get(0).equals("conv")) {
+				new CreateRegion(this).begin(player);
+				return true;
+			}
 			
 			if((validList = select.validate(argumentList)) != null) {
 				String selectList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Selection Commands]\n" + MineralManager.TEXT_COLOR +
