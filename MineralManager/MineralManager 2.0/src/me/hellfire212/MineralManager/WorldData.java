@@ -46,6 +46,9 @@ public final class WorldData {
 			placedBlocks.close();
 		} catch (IOException e) {}
 		placedBlocks = null;
+		regionSet = null;
+		rsPersist.shutdown();
+		rsPersist = null;
 	}
 	
 	/** Get the bitmap for placed blocks */

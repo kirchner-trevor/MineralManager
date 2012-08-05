@@ -130,6 +130,11 @@ public class MineralManager extends JavaPlugin {
 			saveTracker.shutdown();
 			saveTracker = null;
 		}
+
+		for (WorldData wdata : worldData.values()) {
+			wdata.shutdown();
+		}
+		worldData.clear();
 	}
 	
 	//Change iterator to "for each"

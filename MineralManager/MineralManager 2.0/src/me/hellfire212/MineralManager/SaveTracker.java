@@ -6,7 +6,10 @@ import me.hellfire212.MineralManager.utils.Saveable;
 
 /**
  * Track things that need to be saved.
- * @author james
+ * 
+ * This is a self-scheduling repeating task that will split up all the
+ * things to be saved across a time budget, thus spreading out the IO where
+ * possible.
  *
  */
 public final class SaveTracker implements Runnable {
@@ -42,6 +45,9 @@ public final class SaveTracker implements Runnable {
 	}
 
 	public void shutdown() {
+		for (Saveable candidate : tracked) {
+			candidate.save(false);
+		}
 		tracked.clear();
 		plugin = null;
 	}

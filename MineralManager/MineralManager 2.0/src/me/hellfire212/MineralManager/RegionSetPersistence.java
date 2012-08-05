@@ -38,6 +38,11 @@ public class RegionSetPersistence implements Saveable {
 		}
 		
 	}
+	
+	public void shutdown() {
+		regionSet = null;
+		file = null;
+	}
 
 	@Override
 	public boolean save(boolean force) {
@@ -56,6 +61,7 @@ public class RegionSetPersistence implements Saveable {
 			e.printStackTrace();
 			return false;
 		}
+		dirty = false;
 		return true;
 	}
 
