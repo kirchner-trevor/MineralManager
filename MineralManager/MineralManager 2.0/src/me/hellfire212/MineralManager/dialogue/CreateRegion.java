@@ -1,11 +1,15 @@
 package me.hellfire212.MineralManager.dialogue;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import me.hellfire212.MineralManager.MineralManager;
 
 import org.bukkit.ChatColor;
+import org.bukkit.conversations.BooleanPrompt;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.conversations.ConversationContext;
@@ -20,8 +24,13 @@ import org.bukkit.entity.Player;
 public class CreateRegion implements ConversationAbandonedListener {
 	private ConversationFactory conversationFactory;
 	private RegionNamePrompt namePrompt;
+	private FinishCreatePrompt finishCreatePrompt;
+	private NumberPrompt levelNumberPrompt;
+	private MineralManager plugin;
+	private ConfigurationChoosePrompt choosePrompt;
 
 	public CreateRegion(MineralManager plugin) {
+		this.plugin = plugin;
 		this.conversationFactory = new ConversationFactory(plugin)
 			.withModality(false)
 			.withPrefix(new RegionConversationPrefix())
@@ -29,6 +38,10 @@ public class CreateRegion implements ConversationAbandonedListener {
 			.withTimeout(60)
 			.addConversationAbandonedListener(this);
 		this.namePrompt = new RegionNamePrompt();
+		this.levelNumberPrompt = new NumberPrompt("Level Number?", "level");
+		this.choosePrompt = new ConfigurationChoosePrompt();
+		this.finishCreatePrompt = new FinishCreatePrompt();
+		levelNumberPrompt.setNext(choosePrompt);
 	}
 	
 	public void begin(Player p) {
@@ -43,6 +56,20 @@ public class CreateRegion implements ConversationAbandonedListener {
 		return String.format("%s%s", ChatColor.BLUE, s);
 	}
 	
+	private String betterChoicesFormat(List<String> fixedSet) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(ChatColor.AQUA);
+		builder.append("[");
+		builder.append(ChatColor.GREEN);
+		builder.append(fixedSet.get(0));
+		for (String s: fixedSet.subList(1, fixedSet.size())) {
+			builder.append(String.format("%s, %s%s", ChatColor.AQUA, ChatColor.GREEN, s));
+		}
+		builder.append(ChatColor.AQUA);
+		builder.append("]");
+		return builder.toString();
+	}
+	
 	private class RegionConversationPrefix implements ConversationPrefix {
 		@Override
 		public String getPrefix(ConversationContext context) {
@@ -53,19 +80,19 @@ public class CreateRegion implements ConversationAbandonedListener {
 
 	private class RegionTypePrompt extends FixedSetPrompt {
 		private final String[] HELP_TEXT = {
-			formatHelp("global", "This entire world."),
+			formatHelp("world", "This entire world."),
 			formatHelp("cube", "a cube selection centered where you are standing"),
 			formatHelp("region", "Something Something mhrm mhrrr"), // FIXME
 			formatHelp("lasso", "Walk around amassing points.")
 		};
 
 		public RegionTypePrompt() {
-			super("global", "cube", "region", "lasso", "help");
+			super("world", "cube", "region", "lasso", "help");
 		}
 
 		@Override
 		public String getPromptText(ConversationContext context) {
-			return "How do you want to select a region? " + this.formatFixedSet();
+			return promptText("How do you want to select a region? \n    ") + betterChoicesFormat(this.fixedSet);
 		}
 
 		@Override
@@ -78,7 +105,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			} else {
 				context.setSessionData("region_type", s);
 				Prompt next = namePrompt;
-				if (s.equals("global")) {
+				if (s.equals("world")) {
 					return next;
 				} else if (s.equals("cube")) {
 					NumberPrompt horizontal = new NumberPrompt("Horizontal Radius?", "cube.horizontal");
@@ -115,7 +142,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 
 		@Override
 		public String getPromptText(ConversationContext context) {
-			return ptext;
+			return promptText(ptext);
 		}
 
 		@Override
@@ -137,16 +164,79 @@ public class CreateRegion implements ConversationAbandonedListener {
 		}
 
 		@Override
-		protected Prompt acceptValidatedInput(ConversationContext c, String arg1) {
+		protected Prompt acceptValidatedInput(ConversationContext c, String input) {
+			c.setSessionData("name", input);
 			c.getForWhom().sendRawMessage(String.format("Blarg %s %s %s", c.getSessionData("region_type"), c.getSessionData("cube.horizontal"), c.getSessionData("cube.vertical")));
-			return Prompt.END_OF_CONVERSATION;
+			return choosePrompt;
+		}
+
+		@Override
+		protected String getFailedValidationText(ConversationContext context,
+				String invalidInput) {
+			return "" + ChatColor.RED + "Region name must not contain spaces";
+		}
+
+		@Override
+		protected Object clone() throws CloneNotSupportedException {
+			// TODO Auto-generated method stub
+			return super.clone();
+		}
+		
+	}
+	
+	private class ConfigurationChoosePrompt implements Prompt {
+		private ArrayList<String> choices;
+		public ConfigurationChoosePrompt() {
+
+		}
+
+		@Override
+		public Prompt acceptInput(ConversationContext context, String input) {
+			if (choices.contains(input.toLowerCase())) {
+				context.setSessionData("config", plugin.getConfigurationMap().get(input.toLowerCase()));
+				return finishCreatePrompt;
+			} else {
+				context.getForWhom().sendRawMessage(ChatColor.RED + "Must be one of the provided configuration names.");
+				return this;
+			}
+		}
+
+		@Override
+		public String getPromptText(ConversationContext context) {
+			this.choices = new ArrayList<String>(plugin.getConfigurationMap().keySet());
+			Collections.sort(choices);
+			return promptText("Which configuration to use?\n   ") + betterChoicesFormat(choices);
+		}
+		
+		@Override
+		public boolean blocksForInput(ConversationContext context) {
+			return true;
+		}
+
+		
+	}
+	
+	private class FinishCreatePrompt extends BooleanPrompt {
+
+		@Override
+		public String getPromptText(ConversationContext context) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		protected Prompt acceptValidatedInput(ConversationContext context, boolean input) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}
 
 	@Override
-	public void conversationAbandoned(ConversationAbandonedEvent arg0) {
-		// TODO Auto-generated method stub
+	public void conversationAbandoned(ConversationAbandonedEvent e) {
+		if (!e.gracefulExit()) {
+			e.getContext().getForWhom().sendRawMessage(String.format("%sRegion Create cancelled", ChatColor.RED));
+		}
 		
 	}
 	

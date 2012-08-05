@@ -4,6 +4,7 @@ Version 2.1
 Not yet released
 
  === New Features ===
+ * Add dialogue for region create, instead of complex commands.
 
  === Upgrades ===
  * Add documentation to the config examples.
