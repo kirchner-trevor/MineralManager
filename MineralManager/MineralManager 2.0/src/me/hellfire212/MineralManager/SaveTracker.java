@@ -20,12 +20,18 @@ public final class SaveTracker implements Runnable {
 	private MineralManager plugin;
 	private final boolean debugMode;
 	
+	/**
+	 * Create a new SaveTracker.
+	 * @param plugin MineralManager instance.
+	 * @param timeBudget How long, in ticks, that the entire rotation ought to take.
+	 */
 	public SaveTracker(MineralManager plugin, int timeBudget) {
 		this.plugin = plugin;
 		this.timeBudget = timeBudget;
 		this.debugMode = plugin.getConfig().getBoolean("debug.saver");
 	}
 	
+	/** The meat of the saving, run every timeBudget / n ticks. */
 	@Override
 	public void run() {
 		boolean saved = tracked.get(position).save(false);
@@ -37,19 +43,24 @@ public final class SaveTracker implements Runnable {
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, ticks);
 	}
 	
-	/* Static interface */
-	public static void track(Saveable trackable) {
-		if (!tracked.contains(trackable)) {
-			tracked.add(trackable);
-		}
-	}
-
+	/** Shut down this tracker. */
 	public void shutdown() {
 		for (Saveable candidate : tracked) {
 			candidate.save(false);
 		}
 		tracked.clear();
 		plugin = null;
+	}
+	
+	/* Static interface */
+	/** 
+	 * Track something that can be saved.
+	 * @param trackable Some Saveable object
+	 */
+	public static void track(Saveable trackable) {
+		if (!tracked.contains(trackable)) {
+			tracked.add(trackable);
+		}
 	}
 	
 }

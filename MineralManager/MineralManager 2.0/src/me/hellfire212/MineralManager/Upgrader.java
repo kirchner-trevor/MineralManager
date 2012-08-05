@@ -49,7 +49,11 @@ public class Upgrader {
 	
 	}
 	
-	/** Temporary: we want to see what regions look like in yaml-land. */
+	/**
+	 * Convert old binary FileHandler regions to the new yaml-based format.
+	 * @param plugin The MineralManager plugin instance
+	 * @param regionSetFile the File where this region set is stored.
+	 */
 	public static void convertRegions(MineralManager plugin, File regionSetFile) {
 		plugin.getLogger().info("Beginning conversion of regions to new format....");
 
@@ -75,10 +79,22 @@ public class Upgrader {
 		plugin.getLogger().info("Finished.");
 	}
 	
+	/** 
+	 * Make the File object for a backup file
+	 * @param orig The original File object
+	 * @param addon What to add to the filename, e.g. ".old"
+	 * @return a new File object
+	 */
 	private static File makeBackupFile(File orig, String addon) {
 		return new File(orig.getAbsolutePath() + addon);
 	}
 	
+	/**
+	 * Rename an old file, with logging output
+	 * @param plugin An instance of MineralManager (to get logger)
+	 * @param orig Original File object
+	 * @param addon What to add to the filename, e.g. ".old"
+	 */
 	private static void renameOld(MineralManager plugin, File orig, String addon) {
 		File backupFile = makeBackupFile(orig, ".old");
 

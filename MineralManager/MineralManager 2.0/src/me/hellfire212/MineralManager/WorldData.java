@@ -13,7 +13,8 @@ import me.hellfire212.MineralManager.utils.StringTools;
  * Stores data local to a single world.
  *
  * This marshals data belonging to a given world, so that individual worlds 
- * can each have their own scope-local data.
+ * can each have their own scope-local data. It also ensures that a unique
+ * folder name for the world is created.
  */
 public final class WorldData {
 	public static File BASE_FOLDER = new File("plugins/MineralManager/bin/");
@@ -30,6 +31,7 @@ public final class WorldData {
 		this.load();
 	}
 	
+	/** Load/initialize any enclosed data structures. */
 	private void load() {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
 		SaveTracker.track(placedBlocks);
@@ -41,6 +43,10 @@ public final class WorldData {
 		SaveTracker.track(rsPersist);
 	}
 	
+	/** 
+	 * Shutdown this WorldData. 
+	 * Do not use any data structures after this has been shut down.
+	 */
 	public void shutdown() {
 		try {
 			placedBlocks.close();
@@ -71,10 +77,15 @@ public final class WorldData {
 		return regionSet;
 	}
 	
+	/** 
+	 * Flag that the RegionSet in question is dirty. 
+	 * In the future we hope it can handle this itself. 
+	 */
 	public void flagRegionSetDirty() {
 		rsPersist.flagDirty();
 	}
 
+	/** Get the associated world name. */
 	public String getWorldName() {
 		return worldName;
 	}

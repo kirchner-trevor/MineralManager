@@ -28,6 +28,7 @@ public class RegionSetPersistence implements Saveable {
 		if (file.exists()) load();
 	}
 
+	/** Load configuration from the file. */
 	public void load() {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		List<?> regions = config.getList("regions");
@@ -39,11 +40,19 @@ public class RegionSetPersistence implements Saveable {
 		
 	}
 	
+	/** 
+	 * Clean up all resources and open handles.
+	 * This object must not be used after shutdown is called.
+	 */
 	public void shutdown() {
 		regionSet = null;
 		file = null;
 	}
 
+	/**
+	 * Save the associated RegionSet to disk.
+	 * @param force If true, must save, otherwise only save if dirty.
+	 */
 	@Override
 	public boolean save(boolean force) {
 		if (!dirty  && !force) return false;
@@ -65,10 +74,14 @@ public class RegionSetPersistence implements Saveable {
 		return true;
 	}
 
+	/**
+	 * @return true if dirty
+	 */
 	public boolean isDirty() {
 		return dirty;
 	}
-
+	
+	/** Flag that the associated RegionSet is dirty. */
 	public void flagDirty() {
 		this.dirty = true;
 	}
