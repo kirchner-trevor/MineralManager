@@ -85,6 +85,10 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		return level;
 	}
 	
+	public UUID getWorldUUID() {
+		return world;
+	}
+	
 	/**
 	 * Returns the name of the Region
 	 * @return the name of the Region

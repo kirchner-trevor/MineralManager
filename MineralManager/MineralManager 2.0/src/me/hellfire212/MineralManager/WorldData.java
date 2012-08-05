@@ -63,6 +63,19 @@ public final class WorldData {
 		return placedBlocks.get(block.getX(), block.getY(), block.getZ());
 	}
 
+	/** Get the RegionSet for this world. */
+	public RegionSet getRegionSet() {
+		return regionSet;
+	}
+	
+	public void flagRegionSetDirty() {
+		rsPersist.flagDirty();
+	}
+
+	public String getWorldName() {
+		return worldName;
+	}
+
 	
 	/** Get an ObjectMaker, for use with DefaultDict. */
 	public static ObjectMaker<WorldData> getMaker() {
@@ -71,9 +84,5 @@ public final class WorldData {
 				return new WorldData((String) key);
 			}
 		};
-	}
-
-	public String getWorldName() {
-		return worldName;
 	}
 }

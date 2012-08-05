@@ -2,13 +2,12 @@ package me.hellfire212.MineralManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 
 /**
@@ -61,20 +60,23 @@ public class Upgrader {
 	}
 	
 	/** Temporary: we want to see what regions look like in yaml-land. */
-	public static void convertRegions(MineralManager plugin, File regionSetFile, File regionYamlFile, RegionSet regionSet) {
+	public static void convertRegions(MineralManager plugin, File regionSetFile) {
 		plugin.getLogger().info("Beginning conversion of regions to new format....");
-		ArrayList<Region> regions = new ArrayList<Region>();
-		for (Region region : regionSet) {
-			regions.add(region);
-		}
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(regionYamlFile);
-		config.set("regions", regions);
+
+		RegionSet regionSet = new RegionSet();
+		FileHandler regionSetFH = new FileHandler(regionSetFile);
 		try {
-			config.save(regionYamlFile);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			regionSet = regionSetFH.loadObject(regionSet.getClass());
+		} catch (FileNotFoundException e) {}
+		
+		for (Region region : regionSet) {
+			plugin.getLogger().info("  -> " + region.getName());
+			World world = Bukkit.getWorld(region.getWorldUUID());
+			WorldData wd = plugin.getWorldData(world);
+			wd.getRegionSet().add(region);
+			wd.flagRegionSetDirty();
 		}
+		plugin.getLogger().info("Finished.");
 	}
 
 }

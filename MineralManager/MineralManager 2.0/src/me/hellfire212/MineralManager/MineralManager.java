@@ -150,8 +150,8 @@ public class MineralManager extends JavaPlugin {
 		}
 
 		ConfigurationSection regionConfig = getConfig().getConfigurationSection("CONFIGURATION");
-		Set<String> regionSet = regionConfig.getKeys(false);
-		for (String name: regionSet) {
+		Set<String> configSections = regionConfig.getKeys(false);
+		for (String name: configSections) {
 			getLogger().info("Section " + name);
 			currentConfig = regionConfig.getConfigurationSection(name);
 			Configuration tempConfig = null;
@@ -334,17 +334,12 @@ public class MineralManager extends JavaPlugin {
 	@SuppressWarnings("unchecked")
 	private void loadFileHandlerDatabases(File binFolder) {
 		// Initial setup
-		regionSet = new RegionSet();
-		regionSetFH = new FileHandler(new File(binFolder, REGION_SET_FILENAME));
 		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
 		blockMapFH = new FileHandler(new File(binFolder, BLOCK_MAP_FILENAME));
 		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
 		lockedSetFH = new FileHandler(new File(binFolder, LOCKED_SET_FILENAME));
 
 		// Do actual loading
-		try {
-			regionSet = regionSetFH.loadObject(regionSet.getClass());
-		} catch (FileNotFoundException e) {}
 		
 		try {
 			blockMap =  blockMapFH.loadObject(blockMap.getClass());

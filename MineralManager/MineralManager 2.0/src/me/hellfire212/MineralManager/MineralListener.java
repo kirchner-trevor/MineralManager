@@ -45,7 +45,7 @@ public class MineralListener implements Listener {
 		Block block = e.getBlock();
 		Coordinate coordinate = new Coordinate(block.getLocation());
 		WorldData wdata = plugin.getWorldData(block.getWorld());
-		Region region = plugin.regionSet.contains(coordinate);
+		Region region = wdata.getRegionSet().contains(coordinate);
 		if(player.hasMetadata(METADATA_CREATIVE)) {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
@@ -132,7 +132,8 @@ public class MineralListener implements Listener {
 		Coordinate coordinate = new Coordinate(e.getBlock().getLocation());
 		
 		if(plugin.blockMap.containsKey(coordinate)) {
-			Region region = plugin.regionSet.contains(coordinate);
+			WorldData wdata = plugin.getWorldData(player.getWorld());
+			Region region = wdata.getRegionSet().contains(coordinate);
 			if(region != null) {
 				Configuration configuration = region.getConfiguration();
 				if(!(configuration.isUsePermissions() && !player.hasPermission(PERMISSION_USER))) {
