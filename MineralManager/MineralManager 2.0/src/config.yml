@@ -13,6 +13,7 @@ DEFAULT:
   # Can be interpolated with special variables:
   #     %b = block name
   #     %c = cooldown, in seconds
+  #     %r = remaining cooldown, in seconds
   displayMessages:
     onBlockBreak: This %b will be available in %c seconds.
     onBlockProspect: This %b has already been mined.
@@ -29,7 +30,8 @@ CONFIGURATION:
   EXAMPLE_global:
     # Global configs affect an entire world.
     global: true
-    # Volatile means ????
+    # Volatile means that if the placeholder block is broken
+    # then block it's associated with will not respawn.
     volatile: true
 
     # Set the managed blocks for this config.
