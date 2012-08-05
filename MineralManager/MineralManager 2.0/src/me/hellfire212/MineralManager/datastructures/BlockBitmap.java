@@ -178,5 +178,16 @@ public class BlockBitmap implements Saveable {
 		int z = (int) Math.rint(c.getZ());
 		set(x, y, z, value);
 	}
+
+	/** Un-set a flag without a new allocation */
+	public void unset(Coordinate c) {
+		int x = (int) Math.rint(c.getX());
+		int y = (int) Math.rint(c.getY());
+		int z = (int) Math.rint(c.getZ());
+		if (get(x, y, z)) {
+			set(x, y, z, false);
+		}
+		
+	}
 	
 }

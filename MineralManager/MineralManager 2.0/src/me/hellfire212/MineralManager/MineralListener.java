@@ -50,7 +50,7 @@ public class MineralListener implements Listener {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
 			}
-			wdata.getPlacedBlocks().set(coordinate, false);
+			wdata.getPlacedBlocks().unset(coordinate);
 			plugin.blockMap.remove(coordinate);
 			plugin.lockedSet.remove(coordinate);
 			//Save sets as well possibly.
@@ -104,6 +104,8 @@ public class MineralListener implements Listener {
 					}
 				}
 			}
+		} else {
+			wdata.getPlacedBlocks().unset(coordinate);
 		}
 	}
 
