@@ -27,22 +27,24 @@ DEFAULT:
 CONFIGURATION:
   # Section names are used in the command when adding regions.
   # Section names must be unique and must not contain spaces.
-  EXAMPLE_global:
-    # Global configs affect an entire world.
-    global: true
+  EXAMPLE_home:
     # Volatile means that if the placeholder block is broken
     # then block it's associated with will not respawn.
     volatile: true
 
     # Set the managed blocks for this config.
-    # Each managed block can have its own cooldown and
+    # Each managed block can have its own cooldown and 
+    # degrade probability.
     managedBlocks:
     - type: COAL_ORE
-      cooldown: 30
-      degrade: 0.5
+      cooldown: 30   # 30 seconds
+      degrade: 0.50  # 0.5 = 50%
     - type: IRON_ORE
-      cooldown: 60
-      degrade: 0.5
+      cooldown: 600  # 600 seconds = 10 minutes
+      degrade: 0.05  # 0.05 = 5%
+    - type: GLOWING_REDSTONE_ORE
+      cooldown: 45
+      degrade: 0.01  # 0.01 = 1%
 
   # Dead zones are useful for having a location within a larger region
   # which does not have any ore respawning.
@@ -54,6 +56,11 @@ CONFIGURATION:
   EXAMPLE_override:
     placeholder: BEDROCK
     mineOriginalOnly: true
+
+    displayMessages:
+      # Custom blockBreak message has this region not telling you 
+      # how long until the block is available again.
+      onBlockBreak: This %b will be available at some point in the future.
 
     managedBlocks:
     - type: COAL_ORE
