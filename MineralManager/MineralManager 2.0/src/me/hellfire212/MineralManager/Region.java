@@ -105,7 +105,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	@Override
 	public int compareTo(Region r) {
 		double level = r.getLevel();
-		int test = this.name.equals(r.getName()) ? 0 : (level > this.level ? 1 : level < this.level ? -1 : 0);
+		int test = this.name.equals(r.getName()) ? 0 : (level > this.level ? 1 : -1);
 		return test;
 	}
 
@@ -164,7 +164,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
 		java.lang.Double x = null;
 		int i = 0;
-		Object rawBoundaries = values.get("chestLocations");
+		Object rawBoundaries = values.get("boundaries");
 		if (rawBoundaries instanceof Collection<?>) {
 			for (Object location: (Collection<?>) rawBoundaries) {
 				if (location instanceof java.lang.Double) {

@@ -206,6 +206,7 @@ public class Commands {
 		String status = "was not";
 		for (WorldData wdata : plugin.allWorldDatas()) {
 			if(wdata.getRegionSet().remove(name)) {
+				wdata.flagRegionSetDirty();
 				status = "was";
 			}
 		}
