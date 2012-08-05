@@ -3,11 +3,16 @@ package me.hellfire212.MineralManager;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-public class Region implements Serializable, Comparable<Region> {
+
+public class Region implements Serializable, Comparable<Region>, ConfigurationSerializable {
 	
 	private static final long serialVersionUID = -2885326328430836535L;
 	private String name = null;
@@ -114,5 +119,60 @@ public class Region implements Serializable, Comparable<Region> {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	/** Used for serialization to bukkit configs.
+	 */
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> values = new java.util.HashMap<String, Object>();
+		values.put("name", name);
+		values.put("configuration", configuration.getName());
+		values.put("floor", floor);
+		values.put("ceil", ceil);
+		values.put("world", world);
+		values.put("level", level);
+		ArrayList<java.lang.Double> condensedBoundaries = new ArrayList<Double>();
+		for (Point2D.Double point : boundaries) {
+			condensedBoundaries.add(point.getX());
+			condensedBoundaries.add(point.getY());
+		}
+		values.put("boundaries", condensedBoundaries);
+		return values;
+	}
+	
+	/**
+	 * De-serialize from a bukkit config.
+	 * @param values provided value.
+	 * @return new Region instance.
+	 */
+	public static Region deserialize(Map<String, Object> values) {
+		ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+		java.lang.Double x = null;
+		int i = 0;
+		Object rawBoundaries = values.get("chestLocations");
+		if (rawBoundaries instanceof Collection<?>) {
+			for (Object location: (Collection<?>) rawBoundaries) {
+				if (location instanceof java.lang.Double) {
+					if ((i++ % 2) == 0) {
+						x = (java.lang.Double) location;
+					} else {
+						points.add(new Point2D.Double(x, (java.lang.Double) location));
+					}
+				} else {
+					System.out.printf("Expected a Double, got a %s (printed %s)", location.getClass().toString(), location.toString());
+				}
+			}
+		}
+				
+		return new Region(
+				(String) values.get("name"),
+				new Configuration((String) values.get("configuration")),
+				points,
+				(Double) values.get("floor"),
+				(Double) values.get("ceil"), 
+				Bukkit.getWorld((String) values.get("world")),
+				(Integer) values.get("level")
+		);
 	}
 }

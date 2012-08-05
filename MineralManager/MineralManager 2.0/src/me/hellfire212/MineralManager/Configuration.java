@@ -43,7 +43,13 @@ public class Configuration implements Serializable {
 	
 	public Configuration() {}
 	
+	public Configuration(String name) {
+		this();
+		this.name = name;
+	}
+	
 	public Configuration(ConfigurationSection currentConfig, Configuration def) throws ParseException, NumberFormatException, DataFormatException {
+		this(currentConfig.getName());
 		isLocked = currentConfig.contains(LOCKED) ? currentConfig.getBoolean(LOCKED) : def.isLocked();
 		isVolatile = currentConfig.contains(VOLATILE) ? currentConfig.getBoolean(VOLATILE) : def.isVolatile();
 		isGlobal = currentConfig.contains(GLOBAL) ? currentConfig.getBoolean(GLOBAL) : def.isGlobal();
@@ -52,7 +58,6 @@ public class Configuration implements Serializable {
 		usePermissions = currentConfig.contains(USE_PERMISSIONS) ? currentConfig.getBoolean(USE_PERMISSIONS) : def.isUsePermissions();
 		onBlockBreak = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_BREAK) ? currentConfig.getString(DISPLAY_MESSAGES_ON_BLOCK_BREAK) : def.getOnBlockBreak();
 		onBlockProspect = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) ? currentConfig.getString(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) : def.getOnBlockProspect();
-		name = currentConfig.getName();
 		
 		List<?> mineralList = currentConfig.contains(MANAGED_BLOCKS) ? currentConfig.getList(MANAGED_BLOCKS) : null;
 		HashMap<BlockInfo, Mineral> blockMap = def.blockMap;
