@@ -31,7 +31,7 @@ public class MineralManager extends JavaPlugin {
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
 	public static final String PREFIX = ChatColor.AQUA + "[MineralManager] " + MineralManager.TEXT_COLOR;
 	
-	private static final String REGION_SET_FILENAME = "regionSet.bin";
+	public static final String REGION_SET_FILENAME = "regionSet.bin";
 	public static final String BLOCK_MAP_FILENAME = "blockMap.bin";
 	private static final String PLACED_SET_FILENAME = "placedMap.bin";
 	private static final String LOCKED_SET_FILENAME = "lockedMap.bin";

@@ -16,10 +16,12 @@ import me.hellfire212.MineralManager.utils.StringTools;
  * can each have their own scope-local data.
  */
 public final class WorldData {
-	public static File BASE_FOLDER = new File("plugins/MineralManager/");
+	public static File BASE_FOLDER = new File("plugins/MineralManager/bin/");
 	private final String worldName;
 	private File worldFolder;
 	private BlockBitmap placedBlocks;
+	private RegionSet regionSet = new RegionSet();
+	private RegionSetPersistence rsPersist;
 
 	public WorldData(String worldName) {
 		this.worldName = worldName;
@@ -31,6 +33,12 @@ public final class WorldData {
 	private void load() {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
 		SaveTracker.track(placedBlocks);
+		
+		rsPersist = new RegionSetPersistence(
+				regionSet,
+				new File(worldFolder, MMConstants.REGION_YAML_FILENAME)
+		);
+		SaveTracker.track(rsPersist);
 	}
 	
 	public void shutdown() {
