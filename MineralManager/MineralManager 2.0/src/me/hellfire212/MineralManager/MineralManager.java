@@ -22,6 +22,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -50,10 +51,7 @@ public class MineralManager extends JavaPlugin {
 	private MMCommand list = new MMCommand("list");
 	private MMCommand lock = new MMCommand("lock");
 	private MMCommand creative = new MMCommand("creative");
-	
-	public RegionSet regionSet;
-	public FileHandler regionSetFH;
-	
+		
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
 	
@@ -106,15 +104,6 @@ public class MineralManager extends JavaPlugin {
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
 		
 		new EnableListenersTask(this).run();
-		
-		// Update configurations on all the regions to those loaded from file.
-		for (Region region: regionSet) {
-			String config_name = region.getConfiguration().getName();
-			if (configurationMap.containsKey(config_name)) {
-				region.setConfiguration(configurationMap.get(config_name));
-			}
-		}
-		
 	}
 
 
@@ -289,8 +278,8 @@ public class MineralManager extends JavaPlugin {
 			
 		} else if(label.equalsIgnoreCase("test")) {
 			Coordinate testCoord = new Coordinate(player.getLocation());
-
-			Region inRegion = regionSet.contains(testCoord);
+			WorldData wdata = getWorldData(player.getWorld());
+			Region inRegion = wdata.getRegionSet().contains(testCoord);
 			if(inRegion != null) {
 				player.sendMessage(MineralManager.PREFIX + "You are in region " + inRegion);
 			} else {
@@ -362,5 +351,11 @@ public class MineralManager extends JavaPlugin {
 	 */
 	public static MineralManager getInstance() {
 		return plugin;
+	}
+	
+	
+	/** Static block to set up Bukkit serialization */
+	static {
+		ConfigurationSerialization.registerClass(Region.class);
 	}
 }

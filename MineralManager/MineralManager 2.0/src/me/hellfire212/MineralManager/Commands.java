@@ -34,12 +34,14 @@ public class Commands {
 		Selection selection = plugin.getSelection(player);
 		if(selection != null) {
 			Region newRegion = new Region(name, configuration, selection.getBoundaries(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
-			boolean regionAdded = plugin.regionSet.add(newRegion);
+			WorldData wdata = plugin.getWorldData(player.getWorld());
+			boolean regionAdded = wdata.getRegionSet().add(newRegion);
+			wdata.flagRegionSetDirty();
 			player.sendMessage(MineralManager.PREFIX + newRegion.getName() + (regionAdded ? " was" : " was not") + " added at level " + (int) newRegion.getLevel() + " with configuration " + newRegion.getConfiguration().getName() + ".");
 			if(regionAdded) {
-				if(!plugin.regionSetFH.saveObject(plugin.regionSet)) {
+				/*if(!plugin.regionSetFH.saveObject(plugin.regionSet)) {
 					plugin.getServer().getLogger().severe("Failure occured when saving regionSet during create command!");
-				}
+				}*/ // FIXME
 			}
 		} else {
 			player.sendMessage(MineralManager.PREFIX + "No region is currently selected.");
@@ -202,10 +204,9 @@ public class Commands {
 	public static void remove(MineralManager plugin, Player player, List<Object> args) {
 		String name = (String) args.get(0);
 		String status = "was not";
-		if(plugin.regionSet.remove(name)) {
-			status = "was";
-			if(!plugin.regionSetFH.saveObject(plugin.regionSet)) {
-				plugin.getServer().getLogger().severe("Failure occured when saving regionSet during remove command!");
+		for (WorldData wdata : plugin.allWorldDatas()) {
+			if(wdata.getRegionSet().remove(name)) {
+				status = "was";
 			}
 		}
 		player.sendMessage(MineralManager.PREFIX + name + " " + status + " removed.");
@@ -214,7 +215,9 @@ public class Commands {
 	//0 Arguments
 	public static void list(MineralManager plugin, Player player, List<Object> args) {
 		player.sendMessage(MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Region List]" + MineralManager.TEXT_COLOR);
-		player.sendMessage(plugin.regionSet.toString());
+		for (WorldData wdata : plugin.allWorldDatas()) {
+			player.sendMessage(wdata.getRegionSet().toString());
+		}
 	}
 
 	//0 Arguments
