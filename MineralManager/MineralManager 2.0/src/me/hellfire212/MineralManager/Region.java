@@ -41,7 +41,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		floor = f;
 		ceil = c;
 		world = w.getUID();
-		level += l;
+		level = l;
 		// Region is global if boundaries are empty and floor/ceiling are both negative.
 		// XXX Still contains old config global setting for conversion purposes
 		global = config.isGlobal() || (b.size() == 0 && f < -0.9D && c < -0.9D);
@@ -104,9 +104,9 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	
 	@Override
 	public int compareTo(Region r) {
-		double level = r.getLevel();
-		int test = this.name.equals(r.getName()) ? 0 : (level > this.level ? 1 : -1);
-		return test;
+		int levelTest = Double.compare(level, r.getLevel());
+		// Fall back to the name test when levels are equal, for a stable sort.
+		return (levelTest != 0) ? levelTest : name.compareTo(r.getName());
 	}
 
 	@Override

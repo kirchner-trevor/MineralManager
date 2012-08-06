@@ -50,7 +50,7 @@ public class Commands {
 
 
 	public static Selection selectWorld(MineralManager plugin, Player player, List<Object> validList) {
-		player.sendMessage(MineralManager.PREFIX + "Selected whole world" + player.getWorld());
+		player.sendMessage(MineralManager.PREFIX + "Selected whole world " + player.getWorld().getName());
 		return new Selection(new ArrayList<Point2D.Double>(), -1, -1);
 	}
 	
