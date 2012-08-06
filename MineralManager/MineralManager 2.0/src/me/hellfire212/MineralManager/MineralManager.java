@@ -128,8 +128,9 @@ public class MineralManager extends JavaPlugin {
 	
 	//Change iterator to "for each"
 	private void parseConfigurationValues() {
+		boolean debug = getConfig().getBoolean("debug.config");
+		if (debug) getLogger().info("Loading configuration sections...");
 		ConfigurationSection currentConfig = getConfig().getConfigurationSection("DEFAULT");
-		
 		try {
 			defaultConfiguration = new Configuration(currentConfig, new Configuration());
 		} catch (NumberFormatException e) {
@@ -146,7 +147,7 @@ public class MineralManager extends JavaPlugin {
 		ConfigurationSection regionConfig = getConfig().getConfigurationSection("CONFIGURATION");
 		Set<String> configSections = regionConfig.getKeys(false);
 		for (String name: configSections) {
-			getLogger().info("Section " + name);
+			if (debug) getLogger().info(" -> Section " + name);
 			currentConfig = regionConfig.getConfigurationSection(name);
 			Configuration tempConfig = null;
 			try {
