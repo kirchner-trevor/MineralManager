@@ -8,7 +8,6 @@ public class RegionSet implements Serializable, Iterable<Region> {
 
 	private static final long serialVersionUID = 3833726660750427658L;
 	private ConcurrentSkipListSet<Region> regionSet = null;
-	private String toString = null;
 	
 	/**
 	 * Creates a new RegionSet that initializes the underlying ConcurrentSkipListSet.
