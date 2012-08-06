@@ -34,19 +34,31 @@ public final class SaveTracker implements Runnable {
 	/** The meat of the saving, run every timeBudget / n ticks. */
 	@Override
 	public void run() {
-		boolean saved = tracked.get(position).save(false);
-		if (saved && debugMode) {
-			plugin.getLogger().info("Saved " + tracked.get(position).getClass().toString());
-		}
+		doSave(tracked.get(position));
 		position = (position + 1) % tracked.size();
 		int ticks = Math.max(2, timeBudget / tracked.size());
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, ticks);
 	}
 	
+	private boolean doSave(Saveable obj) {
+		boolean saved = obj.save(false);
+		if (saved && debugMode) {
+			String info = obj.toString();
+			if (!info.contains(obj.getClass().toString())) {
+				info = obj.getClass().toString() + ": " + info;
+			}
+			plugin.getLogger().info("Saved " + info);
+		}
+		return saved;
+	}
+	
 	/** Shut down this tracker. */
 	public void shutdown() {
+		if (debugMode && plugin != null) {
+			plugin.getLogger().info("Beginning saver shutdown....");
+		}
 		for (Saveable candidate : tracked) {
-			candidate.save(false);
+			doSave(candidate);
 		}
 		tracked.clear();
 		plugin = null;

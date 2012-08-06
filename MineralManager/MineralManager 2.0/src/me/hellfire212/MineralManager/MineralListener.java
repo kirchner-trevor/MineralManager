@@ -50,6 +50,7 @@ public class MineralListener implements Listener {
 			if(plugin.blockMap.containsKey(coordinate)) {
 				cancelRespawnAtCoordinate(coordinate);
 				plugin.blockMap.remove(coordinate);
+				plugin.blockMapFH.flagDirty();
 			}
 			wdata.getPlacedBlocks().unset(coordinate);
 			plugin.lockedSet.remove(coordinate);
@@ -93,6 +94,8 @@ public class MineralListener implements Listener {
 				long cooldown = mineral.getCooldown();
 
 				info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
+				plugin.blockMap.put(coordinate, info);
+				plugin.blockMapFH.flagDirty();
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
 				int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
 				taskMap.put(coordinate, tid);

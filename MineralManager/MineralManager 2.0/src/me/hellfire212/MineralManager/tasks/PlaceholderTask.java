@@ -9,6 +9,8 @@ public class PlaceholderTask implements Runnable {
 
 	private final Coordinate coordinate;
 	private final BlockInfo info;
+	
+	@SuppressWarnings("unused") // XXX
 	private final MineralManager plugin;
 
 	/**
@@ -25,9 +27,5 @@ public class PlaceholderTask implements Runnable {
 	@Override
 	public void run() {
 		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
-		plugin.blockMap.put(coordinate, info);
-		if(plugin.blockMapFH != null) {
-			plugin.blockMapFH.flagDirty();
-		}
 	}
 }

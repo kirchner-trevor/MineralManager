@@ -7,6 +7,7 @@ Not yet released
  * Can select an entire world as a region
 
  === Upgrades ===
+ * Reloading server will respawn blocks at the original deadline, not at reload time.
  * Add documentation to the config examples.
  * Drastic performance improvements across the code base
  * Some data formats have changed, and data will be converted on first run.
