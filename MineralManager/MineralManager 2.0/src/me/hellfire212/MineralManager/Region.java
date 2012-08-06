@@ -178,10 +178,21 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 				}
 			}
 		}
+		
+		// Deal with the configuration allowing default.
+		MineralManager plugin = MineralManager.getInstance();
+		String configName = (String) values.get("configuration");
+		Configuration config;
+		if (configName.equals("DEFAULT")) {
+			config = plugin.getDefaultConfiguration();
+		} else {
+			config = plugin.getConfigurationMap().get(configName);
+			if (config == null) config = plugin.getDefaultConfiguration();
+		}
 				
 		return new Region(
 				(String) values.get("name"),
-				MineralManager.getInstance().getConfigurationMap().get((String) values.get("configuration")),
+				config,
 				points,
 				(Double) values.get("floor"),
 				(Double) values.get("ceil"), 
