@@ -33,19 +33,21 @@ public class Commands {
 		
 		Selection selection = plugin.getSelection(player);
 		if(selection != null) {
-			Region newRegion = new Region(name, configuration, selection.getBoundaries(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
-			WorldData wdata = plugin.getWorldData(player.getWorld());
-			boolean regionAdded = wdata.getRegionSet().add(newRegion);
-			wdata.flagRegionSetDirty();
+			Region newRegion = actuallyCreateRegion(plugin, name, configuration, selection, player, level);
+			boolean regionAdded = (newRegion != null);
 			player.sendMessage(MineralManager.PREFIX + newRegion.getName() + (regionAdded ? " was" : " was not") + " added at level " + (int) newRegion.getLevel() + " with configuration " + newRegion.getConfiguration().getName() + ".");
-			if(regionAdded) {
-				/*if(!plugin.regionSetFH.saveObject(plugin.regionSet)) {
-					plugin.getServer().getLogger().severe("Failure occured when saving regionSet during create command!");
-				}*/ // FIXME
-			}
 		} else {
 			player.sendMessage(MineralManager.PREFIX + "No region is currently selected.");
 		}
+	}
+	
+	// TODO refactor this to a utility module or something
+	public static Region actuallyCreateRegion(MineralManager plugin, String name, Configuration configuration, Selection selection, Player player, int level) {
+		Region newRegion = new Region(name, configuration, selection.getBoundaries(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
+		WorldData wdata = plugin.getWorldData(player.getWorld());
+		boolean regionAdded = wdata.getRegionSet().add(newRegion);
+		wdata.flagRegionSetDirty();
+		return regionAdded? newRegion: null;
 	}
 
 

@@ -1,8 +1,8 @@
 package me.hellfire212.MineralManager.dialogue;
 
 import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
@@ -13,6 +13,14 @@ import org.bukkit.entity.Player;
 /** Create a "Region" type selection */
 class RegionSelectPrompt extends FixedSetPrompt {
 	private Prompt next;
+	private static String endText = ChatMagic.colorize("type {VERB}end {TEXT}to mark the end location");
+	private static String verboseEndText = ChatMagic.colorize(
+			"{TEXT}Walk to the opposite corner and " + endText + "{AQUA}"
+			+ "\n - You can also type {VERB}check{AQUA} to see where the box would end{RED}"
+			+ "\n - Remember, {TEXT} to make a 3D box you will need to go to the"
+			+ "\n   top corner if you started at the bottom corner, or "
+			+ "\n   vice versa."
+	);
 
 	public RegionSelectPrompt(Prompt next) {
 		super("begin", "start", "end", "help", "check");
@@ -22,20 +30,11 @@ class RegionSelectPrompt extends FixedSetPrompt {
 	@Override
 	public String getPromptText(ConversationContext ctx) {
 		if (ctx.getSessionData("region.start") == null) {
-			return CreateRegion.promptText("Go to the start corner of the box and type start to mark the start location.");
+			return ChatMagic.colorize("{TEXT}Go to the start corner of the box and type {VERB}start{TEXT} to mark the start location.");
 		} else {
-			String endText = "type " + ChatColor.GREEN + "end" + ChatColor.BLUE + " to mark the end location"; 
 			if (ctx.getSessionData("brc") == null) {
 				ctx.setSessionData("brc", true);
-				return (
-					CreateRegion.promptText("Walk to the opposite corner and " + endText) 
-					+ ChatColor.AQUA 
-					+ "\n - You can also type check to see where the box would end"
-					+ ChatColor.RED
-					+ "\n - Remember that to make a 3D box you will need to go to the"
-					+ "\n   top corner if you started at the bottom corner, or "
-					+ "\n   vice versa."
-				);
+				return verboseEndText;
 			} else {
 				return CreateRegion.promptText(endText);
 			}
@@ -76,25 +75,26 @@ class RegionSelectPrompt extends FixedSetPrompt {
 			}
 			return this;
 		} else {
-			ctx.getForWhom().sendRawMessage(ChatColor.RED + "You're not a player, whaaat?");
+			ChatMagic.send(ctx.getForWhom(), "{RED}You're not a player, whaaat?");
 			return Prompt.END_OF_CONVERSATION;
 		}
 	}
 	
 	protected void regionCheck(ConversationContext ctx, Coordinate current) {
-		StringBuilder b = new StringBuilder();
-		b.append(ChatColor.AQUA);
-		b.append("If you were to end the region here, you'd have a region ");
 		Location loc = current.getLocation();
 		Location begin = ((Coordinate)ctx.getSessionData("region.start")).getLocation();
-		b.append(String.format("%dx%d wide, %d tall from (%d, %d, %d) to (%d, %d, %d)",
+		String tpl = (
+				  "{AQUA}If you were to end the region here, you'd have a region\n"
+				+ "   {RED}%dx%d {AQUA}wide, {RED}%d {AQUA}tall \n"
+				+ "   from (%d, %d, %d) to (%d, %d, %d)"
+		);
+		ChatMagic.send(ctx.getForWhom(), tpl,
 				Math.abs(loc.getBlockX() - begin.getBlockX()),
 				Math.abs(loc.getBlockZ() - begin.getBlockZ()),
 				Math.abs(loc.getBlockY() - begin.getBlockY()),
 				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
 				begin.getBlockZ(), begin.getBlockY(), begin.getBlockZ()
-		));
-		ctx.getForWhom().sendRawMessage(b.toString());
+		);
 	}
 	
 }

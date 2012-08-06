@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import me.hellfire212.MineralManager.Commands;
+import me.hellfire212.MineralManager.Configuration;
 import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralManager;
+import me.hellfire212.MineralManager.Region;
 import me.hellfire212.MineralManager.Selection;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
@@ -20,6 +22,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.ConversationPrefix;
 import org.bukkit.conversations.FixedSetPrompt;
+import org.bukkit.conversations.NullConversationPrefix;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.RegexPrompt;
 import org.bukkit.entity.Player;
@@ -38,7 +41,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		this.namePrompt = new RegionNamePrompt();
 		this.conversationFactory = new ConversationFactory(plugin)
 			.withModality(false)
-			.withPrefix(new RegionConversationPrefix())
+			.withPrefix(new NullConversationPrefix())
 			.withFirstPrompt(new RegionTypePrompt(namePrompt))
 			.withTimeout(60)
 			.withEscapeSequence("/quit")
@@ -59,7 +62,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	}
 	
 	static String promptText(String s) {
-		return ChatMagic.colorize("{BLUE}%s", s);
+		return ChatMagic.colorize("{TEXT}%s", s);
 	}
 	
 	private String betterChoicesFormat(List<String> fixedSet) {
@@ -68,17 +71,8 @@ public class CreateRegion implements ConversationAbandonedListener {
 		for (String s: fixedSet.subList(1, fixedSet.size())) {
 			builder.append(ChatMagic.colorize("{AQUA}, {GREEN}%s", s));
 		}
-		builder.append(ChatColor.AQUA);
-		builder.append("]");
+		builder.append(ChatMagic.colorize("{AQUA}]"));
 		return builder.toString();
-	}
-	
-	private class RegionConversationPrefix implements ConversationPrefix {
-		@Override
-		public String getPrefix(ConversationContext context) {
-			return ChatMagic.colorize("{BOLD}{YELLOW}MM{RESET}> ");
-		}
-
 	}
 
 	private class RegionTypePrompt extends FixedSetPrompt {
@@ -88,7 +82,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		private final String[] HELP_TEXT = {
 			formatHelp("world", "This entire world."),
 			formatHelp("cube", "a cube selection centered where you are standing"),
-			formatHelp("region", "Make a cube by selecting opposing corners"), // FIXME
+			formatHelp("region", "Make a cube by selecting opposing corners"),
 			formatHelp("lasso", "Walk around amassing points.")
 		};
 
@@ -147,8 +141,14 @@ public class CreateRegion implements ConversationAbandonedListener {
 
 		@Override
 		protected Prompt acceptValidatedInput(ConversationContext c, String input) {
+			// FIXME wrong variable we're looking at
+			for (Region r : plugin.allRegions()) {
+				if (r.getName().toLowerCase().equals(input.toLowerCase())) {
+					ChatMagic.send(c.getForWhom(), "{RED}A configuration with this name already exists.");
+					return this;
+				}
+			}
 			c.setSessionData("name", input);
-			//c.getForWhom().sendRawMessage(String.format("Blarg %s %s %s", c.getSessionData("region_type"), c.getSessionData("cube.horizontal"), c.getSessionData("cube.vertical")));
 			return choosePrompt;
 		}
 
@@ -199,15 +199,35 @@ public class CreateRegion implements ConversationAbandonedListener {
 	}
 	
 	private class FinishCreatePrompt extends BooleanPrompt {
+		private final String template = (
+			"{AQUA}About to make region {GREEN}%s{AQUA}, config {GREEN}%s{AQUA}\n" +
+			"With region type {GREEN}%s{AQUA} and level {RED}%d{AQUA}.\n" +
+			"Create this region?"
+		);
 
 		@Override
 		public String getPromptText(ConversationContext context) {
-			return promptText("Create this region?");
+			return ChatMagic.colorize(template,
+				context.getSessionData("name"),
+				context.getSessionData("config"),
+				context.getSessionData("region_type"),
+				context.getSessionData("level")
+			);
 		}
 
 		@Override
 		protected Prompt acceptValidatedInput(ConversationContext context, boolean input) {
-			// TODO Auto-generated method stub
+			if (input) {
+				Commands.actuallyCreateRegion(
+					plugin, 
+					(String) context.getSessionData("name"), 
+					(Configuration) context.getSessionData("config"), 
+					(Selection) context.getSessionData("selection"), 
+					(Player) context.getForWhom(), 
+					(Integer) context.getSessionData("level")
+				);
+				ChatMagic.send(context.getForWhom(), "{GREEN}Region made!");
+			}
 			return null;
 		}
 		
