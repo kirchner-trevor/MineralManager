@@ -10,6 +10,7 @@ import me.hellfire212.MineralManager.Commands;
 import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralManager;
 import me.hellfire212.MineralManager.Selection;
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.BooleanPrompt;
@@ -46,7 +47,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		this.regionPrompt = new RegionSelectPrompt(namePrompt);
 		this.choosePrompt = new ConfigurationChoosePrompt();
 		this.finishCreatePrompt = new FinishCreatePrompt();
-		levelNumberPrompt.setNext(choosePrompt);
+		levelNumberPrompt.setNext(finishCreatePrompt);
 	}
 	
 	public void begin(Player p) {
@@ -54,21 +55,18 @@ public class CreateRegion implements ConversationAbandonedListener {
 	}
 	
 	private String formatHelp(String choice, String description) {
-		return String.format("   %s%s: %s%s", ChatColor.GREEN, choice, ChatColor.BLUE, description);
+		return ChatMagic.colorize("   {GREEN}%s: {BLUE}%s", choice, description);
 	}
 	
 	static String promptText(String s) {
-		return String.format("%s%s", ChatColor.BLUE, s);
+		return ChatMagic.colorize("{BLUE}%s", s);
 	}
 	
 	private String betterChoicesFormat(List<String> fixedSet) {
 		StringBuilder builder = new StringBuilder();
-		builder.append(ChatColor.AQUA);
-		builder.append("[");
-		builder.append(ChatColor.GREEN);
-		builder.append(fixedSet.get(0));
+		builder.append(ChatMagic.colorize("{AQUA}[{GREEN}%s", fixedSet.get(0)));
 		for (String s: fixedSet.subList(1, fixedSet.size())) {
-			builder.append(String.format("%s, %s%s", ChatColor.AQUA, ChatColor.GREEN, s));
+			builder.append(ChatMagic.colorize("{AQUA}, {GREEN}%s", s));
 		}
 		builder.append(ChatColor.AQUA);
 		builder.append("]");
@@ -78,7 +76,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	private class RegionConversationPrefix implements ConversationPrefix {
 		@Override
 		public String getPrefix(ConversationContext context) {
-			return String.format("%s%sMM%s> ", ChatColor.BOLD, ChatColor.YELLOW, ChatColor.RESET);
+			return ChatMagic.colorize("{BOLD}{YELLOW}MM{RESET}> ");
 		}
 
 	}
@@ -123,10 +121,9 @@ public class CreateRegion implements ConversationAbandonedListener {
 				case REGION:
 					return regionPrompt;
 				case LASSO:
-					context.getForWhom().sendRawMessage(ChatColor.RED + "Sorry, Lasso selection is still a work in progress.");
+					context.getForWhom().sendRawMessage(ChatMagic.colorize("{RED}Sorry, Lasso selection is still a work in progress."));
 					return this;
 				}
-					
 			}
 				
 			return Prompt.END_OF_CONVERSATION; // FIXME
@@ -158,7 +155,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		@Override
 		protected String getFailedValidationText(ConversationContext context,
 				String invalidInput) {
-			return "" + ChatColor.RED + "Region name must not contain spaces";
+			return ChatMagic.colorize("{RED}Region name must not contain spaces");
 		}
 
 		@Override
@@ -179,9 +176,9 @@ public class CreateRegion implements ConversationAbandonedListener {
 		public Prompt acceptInput(ConversationContext context, String input) {
 			if (choices.contains(input.toLowerCase())) {
 				context.setSessionData("config", plugin.getConfigurationMap().get(input.toLowerCase()));
-				return finishCreatePrompt;
+				return levelNumberPrompt;
 			} else {
-				context.getForWhom().sendRawMessage(ChatColor.RED + "Must be one of the provided configuration names.");
+				ChatMagic.send(context.getForWhom(), "{RED}Must be one of the provided configuration names.");
 				return this;
 			}
 		}
@@ -219,7 +216,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	@Override
 	public void conversationAbandoned(ConversationAbandonedEvent e) {
 		if (!e.gracefulExit()) {
-			e.getContext().getForWhom().sendRawMessage(String.format("%sRegion Create cancelled", ChatColor.RED));
+			ChatMagic.send(e.getContext().getForWhom(), "{RED}Region Create cancelled");
 		}
 		
 	}
