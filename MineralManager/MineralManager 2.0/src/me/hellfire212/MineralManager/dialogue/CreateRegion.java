@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import me.hellfire212.MineralManager.Commands;
 import me.hellfire212.MineralManager.MineralManager;
+import me.hellfire212.MineralManager.Selection;
 
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.BooleanPrompt;
@@ -36,6 +38,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			.withPrefix(new RegionConversationPrefix())
 			.withFirstPrompt(new RegionTypePrompt())
 			.withTimeout(60)
+			.withEscapeSequence("/quit")
 			.addConversationAbandonedListener(this);
 		this.namePrompt = new RegionNamePrompt();
 		this.levelNumberPrompt = new NumberPrompt("Level Number?", "level");
@@ -103,20 +106,24 @@ public class CreateRegion implements ConversationAbandonedListener {
 				}
 				return this;
 			} else {
-				context.setSessionData("region_type", s);
+				Selection.Type region_type = Selection.Type.valueOf(s.toUpperCase());
+				context.setSessionData("region_type", region_type);
 				Prompt next = namePrompt;
-				if (s.equals("world")) {
+				switch (region_type) {
+				case WORLD:
 					return next;
-				} else if (s.equals("cube")) {
+				case CUBE:
 					NumberPrompt horizontal = new NumberPrompt("Horizontal Radius?", "cube.horizontal");
 					NumberPrompt vertical = new NumberPrompt("Vertical Radius?", "cube.vertical");
 					horizontal.setNext(vertical);
 					vertical.setNext(next);
 					return horizontal;
-				} else if (s.equals("region")) {
+				case REGION:
 					context.getForWhom().sendRawMessage("Sorry, Region selection still work in progress.");
-				} else if (s.equals("lasso")) {
+					break;
+				case LASSO:
 					context.getForWhom().sendRawMessage("Sorry, Lasso selection still work in progress.");
+					break;
 				}
 					
 			}
@@ -159,14 +166,18 @@ public class CreateRegion implements ConversationAbandonedListener {
 		}
 
 		@Override
-		public String getPromptText(ConversationContext arg0) {
+		public String getPromptText(ConversationContext ctx) {
+			if (ctx.getSessionData("shownSelection") == null) {
+				showSelectionInfo(ctx);
+				ctx.setSessionData("shownSelection", true);
+			}
 			return promptText("What do you want to name this region?");
 		}
 
 		@Override
 		protected Prompt acceptValidatedInput(ConversationContext c, String input) {
 			c.setSessionData("name", input);
-			c.getForWhom().sendRawMessage(String.format("Blarg %s %s %s", c.getSessionData("region_type"), c.getSessionData("cube.horizontal"), c.getSessionData("cube.vertical")));
+			//c.getForWhom().sendRawMessage(String.format("Blarg %s %s %s", c.getSessionData("region_type"), c.getSessionData("cube.horizontal"), c.getSessionData("cube.vertical")));
 			return choosePrompt;
 		}
 
@@ -220,8 +231,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 
 		@Override
 		public String getPromptText(ConversationContext context) {
-			// TODO Auto-generated method stub
-			return null;
+			return promptText("Create this region?");
 		}
 
 		@Override
@@ -237,6 +247,21 @@ public class CreateRegion implements ConversationAbandonedListener {
 		if (!e.gracefulExit()) {
 			e.getContext().getForWhom().sendRawMessage(String.format("%sRegion Create cancelled", ChatColor.RED));
 		}
+		
+	}
+
+	public void showSelectionInfo(ConversationContext ctx) {
+		Selection.Type r_type = (Selection.Type) ctx.getSessionData("region_type");
+		//String message;
+		Selection sel = null;
+		switch (r_type) {
+		case CUBE:
+			int horizontal = ((Number) ctx.getSessionData("cube.horizontal")).intValue();
+			int vertical = ((Number) ctx.getSessionData("cube.vertical")).intValue();
+			sel = Commands.selectCube(plugin, (Player)ctx.getForWhom(), horizontal, vertical);
+			
+		}
+		ctx.setSessionData("selection", sel);
 		
 	}
 	

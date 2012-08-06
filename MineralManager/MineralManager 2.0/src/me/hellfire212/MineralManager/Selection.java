@@ -4,7 +4,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class Selection {
-	
 	private ArrayList<Point2D.Double> boundaries = null;
 	private double floor = 0.0;
 	private double ceil = 0.0;
@@ -35,5 +34,12 @@ public class Selection {
 	
 	public double getCeil() {
 		return ceil;
+	}
+	
+	public enum Type {
+		WORLD,
+		CUBE,
+		REGION,
+		LASSO
 	}
 }

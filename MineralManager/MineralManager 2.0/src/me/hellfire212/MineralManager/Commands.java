@@ -104,6 +104,11 @@ public class Commands {
 	public static Selection selectCube(MineralManager plugin, Player player, List<Object> args) {
 		int xzRadius = (Integer) args.get(0);
 		int yRadius = (Integer) args.get(1);
+		return selectCube(plugin, player, xzRadius, yRadius);
+	}
+
+	public static Selection selectCube(MineralManager plugin, Player player, int xzRadius, int yRadius) {
+
 		double playerX = player.getLocation().getX();
 		double playerY = player.getLocation().getY();
 		double playerZ = player.getLocation().getZ();
