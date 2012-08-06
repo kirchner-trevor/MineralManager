@@ -18,7 +18,6 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.ConversationPrefix;
 import org.bukkit.conversations.FixedSetPrompt;
-import org.bukkit.conversations.NumericPrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.RegexPrompt;
 import org.bukkit.entity.Player;
@@ -129,33 +128,6 @@ public class CreateRegion implements ConversationAbandonedListener {
 			}
 				
 			return Prompt.END_OF_CONVERSATION; // FIXME
-		}
-		
-	}
-	
-	private class NumberPrompt extends NumericPrompt {
-		private String ptext;
-		private Prompt next;
-		private String storeAs;
-
-		public NumberPrompt(String ptext, String storeAs) {
-			this.ptext = ptext;
-			this.storeAs = storeAs;
-		}
-		
-		public void setNext(Prompt next) {
-			this.next = next;
-		}
-
-		@Override
-		public String getPromptText(ConversationContext context) {
-			return promptText(ptext);
-		}
-
-		@Override
-		protected Prompt acceptValidatedInput(ConversationContext context, Number num) {
-			context.setSessionData(storeAs, num);
-			return next;
 		}
 		
 	}
