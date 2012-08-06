@@ -312,6 +312,20 @@ public class MineralManager extends JavaPlugin {
 		return worldData.values();
 	}
 	
+	/**
+	 * Get the set of all regions known about.
+	 * @return a brand new set.
+	 */
+	public Set<Region> allRegions() {
+		HashSet<Region> allRegions = new HashSet<Region>();
+		for (WorldData wd : allWorldDatas()) {
+			for (Region r: wd.getRegionSet()) {
+				allRegions.add(r);
+			}
+		}
+		return allRegions;
+	}
+	
 	/* Things done at initialization */
 	private void performDataUpgrades(File binFolder) {
 		// Data conversion stuff
