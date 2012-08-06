@@ -79,11 +79,13 @@ public class RegionSet implements Serializable, Iterable<Region> {
 	
 	@Override
 	public String toString() {
-		toString = "";
+		StringBuilder b = new StringBuilder();
 		for(Region region : regionSet) {
-			toString += region.getName() + "\n";
+			// XXX getLevel() returns a Double but it's actually an integer value in the end.
+			// TODO fix when the binary format is eradicated
+			b.append(String.format(" %s: %s [level=%d]\n", region.getName(), region.kind(), (int) region.getLevel()));
 		}
-		return toString;
+		return b.toString();
 	}
 
 	@Override

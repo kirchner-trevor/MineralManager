@@ -96,11 +96,22 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	public String getName() {
 		return name;
 	}
+
+	/** Explain what kind of region we are. */
+	public String kind() {
+		if (global) return "World";
+		if (boundaries.size() == 7) {
+			return "Cuboid";
+		} else {
+			return String.format("Polygon (%d points)", boundaries.size() - 2);
+		}
+	}
 	
 	@Override
 	public String toString() {
 		return name;
 	}
+	
 	
 	@Override
 	public int compareTo(Region r) {
