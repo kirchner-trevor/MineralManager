@@ -203,7 +203,7 @@ public class MineralManager extends JavaPlugin {
 		
 		if(command.getName().equalsIgnoreCase("mm")) {
 			
-			// Temporary: For the conversation dialog, soon to be done withthe proper Command classes.
+			// Temporary: For the conversation dialog, soon to be done with the proper Command classes.
 			if (argumentList.size() > 0 && argumentList.get(0).equals("conv")) {
 				new CreateRegion(this).begin(player);
 				return true;
@@ -211,6 +211,7 @@ public class MineralManager extends JavaPlugin {
 			
 			if((validList = select.validate(argumentList)) != null) {
 				String selectList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Selection Commands]\n" + MineralManager.TEXT_COLOR +
+									"/mm select " + select_world.getUsage() + "\n" +
 									"/mm select " + select_cube.getUsage() + "\n" + 
 									"/mm select " + select_region.getUsage() + "\n" +
 									"/mm select " + select_lasso.getUsage() + "\n";
