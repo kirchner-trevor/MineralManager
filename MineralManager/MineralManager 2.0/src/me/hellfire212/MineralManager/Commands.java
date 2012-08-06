@@ -58,48 +58,55 @@ public class Commands {
 	public static Selection selectLasso(MineralManager plugin, Player player, List<Object> args) {
 		String toggle = (String) args.get(0);
 		if(toggle.equalsIgnoreCase(START)) {
-			//Tells the lassoListener that there is one more person listening for lasso selections.
-			if(!Commands.lassoCoordinateMap.containsKey(player)) {
-				plugin.lassoListener.add();
-			}
-			
-			//Adds the player to the lassoCoordinateMap so points can be added.
-			lassoCoordinateMap.put(player, new ArrayList<Coordinate>());
-			
+			beginLasso(plugin, player);
 			player.sendMessage(MineralManager.PREFIX + "Recording positions as selection.");
 		} else if(toggle.equalsIgnoreCase(END) && lassoCoordinateMap.containsKey(player)) {
-			ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>();
-			ArrayList<Coordinate> temp = lassoCoordinateMap.get(player);
-			double floor = Integer.MAX_VALUE;
-			double ceil = Integer.MIN_VALUE;
-			for(Coordinate coordinate : temp) {
-				double y = coordinate.getY();
-				if(y < floor) {
-					floor = y;
-				} else if(y > ceil) {
-					ceil = y;
-				}
-				boundaries.add(new Point2D.Double(coordinate.getX(), coordinate.getZ()));
-			}
-			boundaries = reduceBoundaries(boundaries);
-			if(!boundaries.isEmpty()) {
-				boundaries.add(boundaries.get(0));
-				boundaries.add(0, new Point2D.Double(0.0, 0.0));
-				boundaries.add(new Point2D.Double(0.0, 0.0));
-			}
-			
-			//Tells the lassoListener that there is one less person listening for lasso selections.
-			plugin.lassoListener.remove();
-			
-			//Removes the player from the lassoCoordinateMap since we completed our selection.
-			Commands.lassoCoordinateMap.remove(player);
-			
-			player.sendMessage(MineralManager.PREFIX + "Finished recording.");
-			return new Selection(boundaries, floor, ceil);
+			return finishLasso(plugin, player, MineralManager.PREFIX);
 		}
 		return null;
 	}
+
+	public static void beginLasso(MineralManager plugin, Player player) {
+		//Tells the lassoListener that there is one more person listening for lasso selections.
+		if(!Commands.lassoCoordinateMap.containsKey(player)) {
+			plugin.lassoListener.add();
+		}
+		
+		//Adds the player to the lassoCoordinateMap so points can be added.
+		lassoCoordinateMap.put(player, new ArrayList<Coordinate>());
+	}
 	
+	public static Selection finishLasso(MineralManager plugin, Player player, String prefix) {
+		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>();
+		ArrayList<Coordinate> temp = lassoCoordinateMap.get(player);
+		double floor = Integer.MAX_VALUE;
+		double ceil = Integer.MIN_VALUE;
+		for(Coordinate coordinate : temp) {
+			double y = coordinate.getY();
+			if(y < floor) {
+				floor = y;
+			} else if(y > ceil) {
+				ceil = y;
+			}
+			boundaries.add(new Point2D.Double(coordinate.getX(), coordinate.getZ()));
+		}
+		boundaries = reduceBoundaries(boundaries);
+		if(!boundaries.isEmpty()) {
+			boundaries.add(boundaries.get(0));
+			boundaries.add(0, new Point2D.Double(0.0, 0.0));
+			boundaries.add(new Point2D.Double(0.0, 0.0));
+		}
+		
+		//Tells the lassoListener that there is one less person listening for lasso selections.
+		plugin.lassoListener.remove();
+		
+		//Removes the player from the lassoCoordinateMap since we completed our selection.
+		Commands.lassoCoordinateMap.remove(player);
+		
+		player.sendMessage(MineralManager.PREFIX + "Finished recording.");
+		return new Selection(boundaries, floor, ceil);
+	}
+
 	//2 Arguments
 	public static Selection selectCube(MineralManager plugin, Player player, List<Object> args) {
 		int xzRadius = (Integer) args.get(0);
@@ -143,33 +150,38 @@ public class Commands {
 		} else if(toggle.equalsIgnoreCase(END) && regionStartMap.containsKey(player))  {
 			Coordinate startCoordinate = regionStartMap.get(player);
 			Coordinate endCoordinate = new Coordinate(player.getLocation());
-			
-			double x1 = startCoordinate.getX();
-			double z1 = startCoordinate.getZ();
-			double x2 = endCoordinate.getX();
-			double z2 = endCoordinate.getZ();
-			double y1 = startCoordinate.getY();
-			double y2 = endCoordinate.getY();
-			
-			ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
-			
-			Point2D.Double zero = new Point2D.Double();
-			Point2D.Double origin = new Point2D.Double(x1, z1);
-
-			boundaries.add(zero);
-			boundaries.add(origin);
-			boundaries.add(new Point2D.Double(x1, z2));
-			boundaries.add(new Point2D.Double(x2, z2));
-			boundaries.add(new Point2D.Double(x2, z1));
-			boundaries.add(origin);
-			boundaries.add(zero);
-			
-			player.sendMessage(MineralManager.PREFIX + "A cube spanning (" + (int) x1 + ", " + (int) z1 + ") to (" + (int) x2 + ", " + (int) z2 + ") was selected.");
-			return new Selection(boundaries, Math.min(y1, y2), Math.max(y1, y2));
+			return actuallySelectRegion(plugin, player, startCoordinate, endCoordinate, MineralManager.PREFIX);
 		}
 		return null;
 	}
 	
+	/** Not a command, but functionality used by the dialogue to do the actual selection. */
+	public static Selection actuallySelectRegion(MineralManager plugin, Player player, Coordinate startCoordinate, Coordinate endCoordinate, String prefix) {
+		double x1 = startCoordinate.getX();
+		double z1 = startCoordinate.getZ();
+		double x2 = endCoordinate.getX();
+		double z2 = endCoordinate.getZ();
+		double y1 = startCoordinate.getY();
+		double y2 = endCoordinate.getY();
+		
+		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
+		
+		Point2D.Double zero = new Point2D.Double();
+		Point2D.Double origin = new Point2D.Double(x1, z1);
+
+		boundaries.add(zero);
+		boundaries.add(origin);
+		boundaries.add(new Point2D.Double(x1, z2));
+		boundaries.add(new Point2D.Double(x2, z2));
+		boundaries.add(new Point2D.Double(x2, z1));
+		boundaries.add(origin);
+		boundaries.add(zero);
+		
+		player.sendMessage(prefix + "A cube spanning (" + (int) x1 + ", " + (int) z1 + ") to (" + (int) x2 + ", " + (int) z2 + ") was selected.");
+		return new Selection(boundaries, Math.min(y1, y2), Math.max(y1, y2));
+	}
+
+
 	private static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
 		int size = boundaries.size();
 		int index = 0;
