@@ -21,6 +21,8 @@ public final class ChatMagic {
 			colorMap.put("{" + c.name() + "}", c.toString());
 			colorMap.put("{" + c.name().toLowerCase() + "}", c.toString());
 		}
+		colorMap.put("{TEXT}", ChatColor.LIGHT_PURPLE.toString());
+		colorMap.put("{VERB}", ChatColor.GREEN.toString());
 	}
 	
 	public static String colorize(String template, Object ... args) {
