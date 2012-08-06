@@ -29,6 +29,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	private NumberPrompt levelNumberPrompt;
 	private MineralManager plugin;
 	private ConfigurationChoosePrompt choosePrompt;
+	private RegionSelectPrompt regionPrompt;
 
 	public CreateRegion(MineralManager plugin) {
 		this.plugin = plugin;
@@ -41,6 +42,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			.addConversationAbandonedListener(this);
 		this.namePrompt = new RegionNamePrompt();
 		this.levelNumberPrompt = new NumberPrompt("Level Number?", "level");
+		this.regionPrompt = new RegionSelectPrompt(namePrompt);
 		this.choosePrompt = new ConfigurationChoosePrompt();
 		this.finishCreatePrompt = new FinishCreatePrompt();
 		levelNumberPrompt.setNext(choosePrompt);
