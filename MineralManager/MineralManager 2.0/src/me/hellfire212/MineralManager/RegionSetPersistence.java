@@ -37,7 +37,6 @@ public class RegionSetPersistence implements Saveable {
 				regionSet.add((Region) x);
 			}
 		}
-		
 	}
 	
 	/** 

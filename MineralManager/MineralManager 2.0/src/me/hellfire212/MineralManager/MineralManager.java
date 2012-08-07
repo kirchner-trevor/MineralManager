@@ -2,7 +2,9 @@ package me.hellfire212.MineralManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,6 +39,7 @@ public class MineralManager extends JavaPlugin {
 	public static final String BLOCK_MAP_FILENAME = "blockMap.bin";
 	private static final String PLACED_SET_FILENAME = "placedMap.bin";
 	private static final String LOCKED_SET_FILENAME = "lockedMap.bin";
+	private static final String DATA_YAML_FILENAME = "data.yml";
 	
 	
 	private static MineralManager plugin = null;
@@ -63,11 +67,13 @@ public class MineralManager extends JavaPlugin {
 	
 	private HashMap<String, Configuration> configurationMap;
 	private ConcurrentHashMap<Player, Selection> selectionMap;
+	private Set<String> knownWorlds = new HashSet<String>();
 	
 	private Configuration defaultConfiguration;
 	private DefaultDict<String, WorldData> worldData = new DefaultDict<String, WorldData>(WorldData.getMaker());
 
 	private SaveTracker saveTracker;
+	private YamlConfiguration dataConfig;
 
 	
 	public MineralManager() {
@@ -101,8 +107,7 @@ public class MineralManager extends JavaPlugin {
 		performDataUpgrades(binFolder);
 				
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
-		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);
-		
+		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);		
 		new EnableListenersTask(this).run();
 	}
 
@@ -161,6 +166,11 @@ public class MineralManager extends JavaPlugin {
 			}
 			configurationMap.put(currentConfig.getName().toLowerCase(), tempConfig);
 		}
+
+		// Data.yml stuff
+		YamlConfiguration dataConfig = getDataConfig();
+		List<String> knownWorldsList = dataConfig.getStringList("knownWorlds");
+		knownWorlds.addAll(knownWorldsList);
 	}
 	
 	/**
@@ -309,7 +319,11 @@ public class MineralManager extends JavaPlugin {
 	}
 	
 	public Collection<WorldData> allWorldDatas() {
-		return worldData.values();
+		List<WorldData> items = new ArrayList<WorldData>();
+		for (String known: knownWorlds) {
+			items.add(worldData.ensure(known));
+		}
+		return items;
 	}
 	
 	/**
@@ -324,6 +338,31 @@ public class MineralManager extends JavaPlugin {
 			}
 		}
 		return allRegions;
+	}
+	
+	private YamlConfiguration getDataConfig() {
+		if (dataConfig == null) {
+			dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), DATA_YAML_FILENAME));
+		}
+		return dataConfig;
+	}
+	
+	private boolean saveDataConfig() {
+		try {
+			getDataConfig().save(new File(getDataFolder(), DATA_YAML_FILENAME));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public void addKnownWorld(String worldName) {
+		if (knownWorlds.add(worldName)) {
+			getDataConfig().set("knownWorlds", new ArrayList<String>(knownWorlds));
+			saveDataConfig();
+		}	
 	}
 	
 	/* Things done at initialization */

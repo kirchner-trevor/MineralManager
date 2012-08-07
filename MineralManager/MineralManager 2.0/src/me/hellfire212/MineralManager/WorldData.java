@@ -28,6 +28,7 @@ public final class WorldData {
 		this.worldName = worldName;
 		this.worldFolder = new File(BASE_FOLDER, StringTools.md5String(worldName));
 		if (!worldFolder.exists()) worldFolder.mkdir();
+		MineralManager.getInstance().addKnownWorld(worldName);
 		this.load();
 	}
 	
