@@ -15,9 +15,9 @@ class RegionSelectPrompt extends FixedSetPrompt {
 	private Prompt next;
 	private static String endText = ChatMagic.colorize("type {VERB}end {TEXT}to mark the end location");
 	private static String verboseEndText = ChatMagic.colorize(
-			"{TEXT}Walk to the opposite corner and " + endText + "{AQUA}"
-			+ "\n - You can also type {VERB}check{AQUA} to see where the box would end{RED}"
-			+ "\n - Remember, {TEXT} to make a 3D box you will need to go to the"
+			"{TEXT}Walk to the opposite corner and " + endText 
+			+ "\n - You can also type {VERB}check{TEXT} to see where the box would end"
+			+ "\n - {RED}NOTE{TEXT}, to make a 3D box you will need to go to the"
 			+ "\n   top corner if you started at the bottom corner, or "
 			+ "\n   vice versa."
 	);
@@ -93,7 +93,7 @@ class RegionSelectPrompt extends FixedSetPrompt {
 				Math.abs(loc.getBlockZ() - begin.getBlockZ()),
 				Math.abs(loc.getBlockY() - begin.getBlockY()),
 				loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
-				begin.getBlockZ(), begin.getBlockY(), begin.getBlockZ()
+				begin.getBlockX(), begin.getBlockY(), begin.getBlockZ()
 		);
 	}
 	
