@@ -210,6 +210,7 @@ public class MineralManager extends JavaPlugin {
 							 "/mm " + creative.getUsage() + "\n";
 		
 		List<Object> validList = null;
+		MMCommand.clearError();
 		
 		if(command.getName().equalsIgnoreCase("mm")) {
 			

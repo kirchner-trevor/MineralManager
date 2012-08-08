@@ -101,4 +101,8 @@ public class MMCommand {
 	public static String getError() {
 		return error;
 	}
+	
+	public static void clearError() {
+		error = "";
+	}
 }
