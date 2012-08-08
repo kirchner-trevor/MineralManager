@@ -27,9 +27,9 @@ DEFAULT:
 CONFIGURATION:
   # Section names are used in the command when adding regions.
   # Section names must be unique and must not contain spaces.
-  EXAMPLE_home:
+  example_home:
     # Volatile means that if the placeholder block is broken
-    # then block it's associated with will not respawn.
+    # then the block it's associated with will not respawn.
     volatile: true
 
     # Set the managed blocks for this config.
@@ -53,7 +53,7 @@ CONFIGURATION:
 
   # Sections can even override values from the DEFAULT section,
   # such as the placeholder and mineOriginalOnly configurations.
-  EXAMPLE_override:
+  example_override:
     placeholder: BEDROCK
     mineOriginalOnly: true
 
@@ -68,8 +68,7 @@ CONFIGURATION:
       degrade: 0
 
 #### Additional example sections.
-#  w2_global:
-#    global: true
+#  w2:
 #    managedBlocks:
 #    - type: GOLD_ORE
 #      cooldown: 120
