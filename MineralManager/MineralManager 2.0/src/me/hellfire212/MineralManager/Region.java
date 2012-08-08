@@ -115,7 +115,8 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	
 	@Override
 	public int compareTo(Region r) {
-		int levelTest = Double.compare(level, r.getLevel());
+		// Sort descending by level, higher levels go first.
+		int levelTest = 0 - Double.compare(level, r.getLevel());
 		// Fall back to the name test when levels are equal, for a stable sort.
 		return (levelTest != 0) ? levelTest : name.compareTo(r.getName());
 	}
