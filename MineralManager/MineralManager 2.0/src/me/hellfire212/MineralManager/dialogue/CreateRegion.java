@@ -266,7 +266,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			sel = Commands.actuallySelectRegion(plugin, player, start, end, outPrefix);
 			break;
 		case LASSO:
-			sel = Commands.finishLasso(plugin, player, outPrefix);
+			sel = Commands.finishLasso(player, outPrefix);
 			break;
 		case WORLD:
 			sel = Commands.selectWorld(plugin, player, null);

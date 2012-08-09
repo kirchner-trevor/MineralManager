@@ -60,25 +60,25 @@ public class Commands {
 	public static Selection selectLasso(MineralManager plugin, Player player, List<Object> args) {
 		String toggle = (String) args.get(0);
 		if(toggle.equalsIgnoreCase(START)) {
-			beginLasso(plugin, player);
+			beginLasso(player);
 			player.sendMessage(MineralManager.PREFIX + "Recording positions as selection.");
 		} else if(toggle.equalsIgnoreCase(END) && lassoCoordinateMap.containsKey(player)) {
-			return finishLasso(plugin, player, MineralManager.PREFIX);
+			return finishLasso(player, MineralManager.PREFIX);
 		}
 		return null;
 	}
 
-	public static void beginLasso(MineralManager plugin, Player player) {
+	public static void beginLasso(Player player) {
 		//Tells the lassoListener that there is one more person listening for lasso selections.
-		if(!Commands.lassoCoordinateMap.containsKey(player)) {
-			plugin.lassoListener.add();
+		if(!lassoCoordinateMap.containsKey(player)) {
+			MineralManager.getInstance().lassoListener.add();
 		}
 		
 		//Adds the player to the lassoCoordinateMap so points can be added.
 		lassoCoordinateMap.put(player, new ArrayList<Coordinate>());
 	}
 	
-	public static Selection finishLasso(MineralManager plugin, Player player, String prefix) {
+	public static Selection finishLasso(Player player, String prefix) {
 		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>();
 		ArrayList<Coordinate> temp = lassoCoordinateMap.get(player);
 		double floor = Integer.MAX_VALUE;
@@ -100,7 +100,7 @@ public class Commands {
 		}
 		
 		//Tells the lassoListener that there is one less person listening for lasso selections.
-		plugin.lassoListener.remove();
+		MineralManager.getInstance().lassoListener.remove();
 		
 		//Removes the player from the lassoCoordinateMap since we completed our selection.
 		Commands.lassoCoordinateMap.remove(player);

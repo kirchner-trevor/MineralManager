@@ -1,13 +1,20 @@
 package me.hellfire212.MineralManager;
 
+import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.hellfire212.MineralVein.MM13Loader;
+import me.hellfire212.MineralVein.NoData;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 
 
 /**
@@ -79,6 +86,56 @@ public class Upgrader {
 		plugin.getLogger().info("Finished.");
 	}
 	
+	public static void convertMM13(MineralManager plugin, File dir) {
+		MM13Loader loader = new MM13Loader(dir, plugin.getLogger());
+		
+		// Find candidate for the world as a region
+		World candidate = null;
+		for (World w : Bukkit.getWorlds()) {
+			if (w.getEnvironment() == Environment.NORMAL) {
+				candidate = w;
+				break;
+			}
+		}
+		WorldData wd = plugin.getWorldData(candidate);
+
+		
+		// Convert regions if possible
+		try {
+			convertMM13Regions(plugin, loader, candidate, wd);
+		} catch (NoData e) {
+			plugin.getLogger().warning(e.getMessage());
+		}
+		convertMM13Locked(plugin, loader);
+	}
+
+	private static void convertMM13Regions(MineralManager plugin,
+			MM13Loader loader, World candidate, WorldData wd) throws NoData {
+		int level = 0;
+		for (me.hellfire212.MineralVein.Region r : loader.getRegions()) {
+			int[] bits = r.getLocation();
+			 // {x1, y1, z1, x2, y2, z2}
+			double y1 = bits[1];
+			double y2 = bits[4];
+			ArrayList<Double> points = new ArrayList<Double>();
+			
+			Region n = new Region(r.getName(), plugin.getDefaultConfiguration(), points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
+			wd.getRegionSet().add(n);
+			wd.flagRegionSetDirty();
+			level += 1;
+		}
+	}
+	
+	private static void convertMM13Locked(MineralManager plugin, MM13Loader loader) {
+		try {
+			for (Location loc : loader.getLockedBlocks()) {
+				plugin.lockedSet.add(new Coordinate(loc));
+			}
+		} catch (NoData e) {
+			plugin.getLogger().warning(e.getMessage());
+		}
+	}
+
 	/** 
 	 * Make the File object for a backup file
 	 * @param orig The original File object
