@@ -38,6 +38,11 @@ public class MM13Loader {
 		return asLocs(m);
 	}
 	
+	public Set<SBlock> getActiveBlocks() throws NoData {
+		Map<SBlock, Integer> m = loadMap(new File(plugindir, "activeBlocks.bin"));
+		return m.keySet();
+	}
+	
 	public Set<Region> getRegions() throws NoData {
 		log.info("Beginning regions migration...");
 		Object o = loadObject(new File(plugindir, "regions.bin"));

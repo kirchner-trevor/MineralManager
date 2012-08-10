@@ -8,11 +8,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import me.hellfire212.MineralManager.tasks.RespawnTask;
 import me.hellfire212.MineralVein.MM13Loader;
 import me.hellfire212.MineralVein.NoData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 
@@ -108,6 +110,25 @@ public class Upgrader {
 		}
 		convertMM13Locked(plugin, loader);
 		convertMM13Placed(plugin, loader);
+		convertMM13Active(plugin, loader);
+	}
+
+	private static void convertMM13Active(MineralManager plugin,
+			MM13Loader loader) {
+		try {
+			int i = 0;
+			for (me.hellfire212.MineralVein.SBlock sb : loader.getActiveBlocks()) {
+				World w = Bukkit.getWorld(sb.getWorld());
+				Material m = Material.matchMaterial(sb.getMaterial());
+				Coordinate coord = new Coordinate(new Location(w, sb.getX(), sb.getY(), sb.getZ()));
+				BlockInfo info = new BlockInfo(BlockInfo.Type.BLOCK, m.getId(), 0);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coord, info), i++);
+			}
+		} catch (NoData e) {
+			plugin.getLogger().warning(e.getMessage());
+			e.printStackTrace();
+		}
+		
 	}
 
 	private static void convertMM13Placed(MineralManager plugin, MM13Loader loader) {
