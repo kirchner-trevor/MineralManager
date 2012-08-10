@@ -380,7 +380,11 @@ public class MineralManager extends JavaPlugin {
 		// MV 1.3 conversion stuff
 		File mvFolder = new File(getDataFolder().getParentFile(), "MineralVein");
 		if (mvFolder.exists() && mvFolder.isDirectory()) {
-			Upgrader.convertMM13(this, mvFolder);
+			try {
+				Upgrader.convertMM13(this, new File(mvFolder, "bin"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
