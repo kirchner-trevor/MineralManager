@@ -1,5 +1,8 @@
 package me.hellfire212.MineralManager;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 
 public class Tools {
@@ -113,5 +116,22 @@ public class Tools {
 			result = -1;
 		}
 		return result;
+	}
+
+	static ArrayList<Point2D.Double> squareBoundaries(double x1,
+			double z1, double x2, double z2) {
+		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
+		
+		Point2D.Double zero = new Point2D.Double();
+		Point2D.Double origin = new Point2D.Double(x1, z1);
+	
+		boundaries.add(zero);
+		boundaries.add(origin);
+		boundaries.add(new Point2D.Double(x1, z2));
+		boundaries.add(new Point2D.Double(x2, z2));
+		boundaries.add(new Point2D.Double(x2, z1));
+		boundaries.add(origin);
+		boundaries.add(zero);
+		return boundaries;
 	}
 }

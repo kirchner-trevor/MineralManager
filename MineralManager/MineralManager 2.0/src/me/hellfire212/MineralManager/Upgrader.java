@@ -99,15 +99,9 @@ public class Upgrader {
 				break;
 			}
 		}
-		WorldData wd = plugin.getWorldData(candidate);
-
 		
 		// Convert regions if possible
-		try {
-			convertMM13Regions(plugin, loader, candidate, wd);
-		} catch (NoData e) {
-			plugin.getLogger().warning(e.getMessage());
-		}
+		convertMM13Regions(plugin, loader, candidate);
 		convertMM13Locked(plugin, loader);
 		convertMM13Placed(plugin, loader);
 		convertMM13Active(plugin, loader);
@@ -143,20 +137,28 @@ public class Upgrader {
 		}
 	}
 
-	private static void convertMM13Regions(MineralManager plugin,
-			MM13Loader loader, World candidate, WorldData wd) throws NoData {
+	private static void convertMM13Regions(MineralManager plugin, MM13Loader loader, World candidate) {
 		int level = 0;
-		for (me.hellfire212.MineralVein.Region r : loader.getRegions()) {
-			int[] bits = r.getLocation();
-			 // {x1, y1, z1, x2, y2, z2}
-			double y1 = bits[1];
-			double y2 = bits[4];
-			ArrayList<Double> points = new ArrayList<Double>();
-			
-			Region n = new Region(r.getName(), plugin.getDefaultConfiguration(), points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
-			wd.getRegionSet().add(n);
-			wd.flagRegionSetDirty();
-			level += 1;
+		WorldData wd = plugin.getWorldData(candidate);
+		try {
+			for (me.hellfire212.MineralVein.Region r : loader.getRegions()) {
+				int[] bits = r.getLocation();
+				 // {x1, y1, z1, x2, y2, z2}
+				double x1 = bits[0];
+				double y1 = bits[1];
+				double z1 = bits[2];
+				double x2 = bits[3];
+				double y2 = bits[4];
+				double z2 = bits[5];
+				ArrayList<Double> points = Tools.squareBoundaries(x1, z1, x2, z2);
+				
+				Region n = new Region(r.getName(), plugin.getDefaultConfiguration(), points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
+				wd.getRegionSet().add(n);
+				wd.flagRegionSetDirty();
+				level += 1;
+			}
+		} catch (NoData e) {
+			plugin.getLogger().warning(e.getMessage());
 		}
 	}
 	

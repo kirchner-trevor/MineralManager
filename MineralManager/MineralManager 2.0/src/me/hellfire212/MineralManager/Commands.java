@@ -126,18 +126,8 @@ public class Commands {
 		double east = playerX + xzRadius;
 		double north = playerZ + xzRadius;
 		
-		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
-		
-		Point2D.Double zero = new Point2D.Double();
-		Point2D.Double origin = new Point2D.Double(west, south);
-
-		boundaries.add(zero);
-		boundaries.add(origin);
-		boundaries.add(new Point2D.Double(west, north));
-		boundaries.add(new Point2D.Double(east, north));
-		boundaries.add(new Point2D.Double(east, south));
-		boundaries.add(origin);
-		boundaries.add(zero);
+		ArrayList<Point2D.Double> boundaries = Tools.squareBoundaries(west, south,
+				east, north);
 
 		player.sendMessage(MineralManager.PREFIX + "A cube spanning (" + (int) west + ", " + (int) south + ") to (" + (int) east + ", " + (int) north + ") was selected.");
 		return new Selection(boundaries, playerY - yRadius, playerY + yRadius);
@@ -166,23 +156,11 @@ public class Commands {
 		double y1 = startCoordinate.getY();
 		double y2 = endCoordinate.getY();
 		
-		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
-		
-		Point2D.Double zero = new Point2D.Double();
-		Point2D.Double origin = new Point2D.Double(x1, z1);
-
-		boundaries.add(zero);
-		boundaries.add(origin);
-		boundaries.add(new Point2D.Double(x1, z2));
-		boundaries.add(new Point2D.Double(x2, z2));
-		boundaries.add(new Point2D.Double(x2, z1));
-		boundaries.add(origin);
-		boundaries.add(zero);
+		ArrayList<Point2D.Double> boundaries = Tools.squareBoundaries(x1, z1, x2, z2);
 		
 		player.sendMessage(prefix + "A cube spanning (" + (int) x1 + ", " + (int) z1 + ") to (" + (int) x2 + ", " + (int) z2 + ") was selected.");
 		return new Selection(boundaries, Math.min(y1, y2), Math.max(y1, y2));
 	}
-
 
 	private static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
 		int size = boundaries.size();
