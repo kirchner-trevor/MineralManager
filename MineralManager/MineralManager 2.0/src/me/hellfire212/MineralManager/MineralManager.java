@@ -377,6 +377,12 @@ public class MineralManager extends JavaPlugin {
 			Upgrader.convertRegions(this, regionSetFile);
 		}
 		
+		// MV 1.3 conversion stuff
+		File mvFolder = new File(getDataFolder().getParentFile(), "MineralVein");
+		if (mvFolder.exists() && mvFolder.isDirectory()) {
+			Upgrader.convertMM13(this, mvFolder);
+		}
+		
 	}
 
 	@SuppressWarnings("unchecked")

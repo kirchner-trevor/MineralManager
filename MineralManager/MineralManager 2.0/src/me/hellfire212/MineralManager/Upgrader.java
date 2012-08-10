@@ -107,6 +107,19 @@ public class Upgrader {
 			plugin.getLogger().warning(e.getMessage());
 		}
 		convertMM13Locked(plugin, loader);
+		convertMM13Placed(plugin, loader);
+	}
+
+	private static void convertMM13Placed(MineralManager plugin, MM13Loader loader) {
+		try {
+			for (Location loc: loader.getPlacedBlocks()) {
+				plugin.getWorldData(loc.getWorld()).getPlacedBlocks().set(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), true);
+			}
+		} catch (NoData e) {
+			// TODO Auto-generated catch block
+			plugin.getLogger().warning(e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	private static void convertMM13Regions(MineralManager plugin,
