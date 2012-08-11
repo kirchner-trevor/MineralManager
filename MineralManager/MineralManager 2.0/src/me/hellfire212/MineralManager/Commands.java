@@ -2,9 +2,12 @@ package me.hellfire212.MineralManager;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -213,8 +216,13 @@ public class Commands {
 	//0 Arguments
 	public static void list(MineralManager plugin, Player player, List<Object> args) {
 		player.sendMessage(MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Region List]" + MineralManager.TEXT_COLOR);
-		for (WorldData wdata : plugin.allWorldDatas()) {
-			player.sendMessage(wdata.getRegionSet().toString());
+		Collection<WorldData> wds = plugin.allWorldDatas();
+		boolean prefixWorld = (wds.size() > 1);
+		for (WorldData wdata : wds) {
+			RegionSet rs = wdata.getRegionSet();
+			if (rs.size() == 0) continue;
+			if (prefixWorld) player.sendMessage(ChatMagic.colorize("{TEXT}%s:", wdata.getWorldName()));
+			player.sendMessage(rs.toColorizedString());
 		}
 	}
 

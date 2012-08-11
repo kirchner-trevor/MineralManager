@@ -132,7 +132,7 @@ public class MineralManager extends JavaPlugin {
 	}
 	
 	//Change iterator to "for each"
-	private void parseConfigurationValues() {
+	public void parseConfigurationValues() {
 		boolean debug = getConfig().getBoolean("debug.config");
 		if (debug) getLogger().info("Loading configuration sections...");
 		ConfigurationSection currentConfig = getConfig().getConfigurationSection("DEFAULT");

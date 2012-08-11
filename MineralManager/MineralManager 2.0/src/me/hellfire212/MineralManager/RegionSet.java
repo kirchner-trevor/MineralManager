@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import me.hellfire212.MineralManager.utils.ChatMagic;
+
 public class RegionSet implements Serializable, Iterable<Region> {
 
 	private static final long serialVersionUID = 3833726660750427658L;
@@ -86,6 +88,19 @@ public class RegionSet implements Serializable, Iterable<Region> {
 		}
 		return b.toString();
 	}
+	
+	public String toColorizedString() {
+		StringBuilder b = new StringBuilder();
+		for(Region region : regionSet) {
+			// XXX getLevel() returns a Double but it's actually an integer value in the end.
+			// TODO fix when the binary format is eradicated
+			b.append(ChatMagic.colorize(
+					"    {AQUA}%s{TEXT}: {VERB}%s {GOLD}[{TEXT}level={VERB}%d{TEXT}, config={VERB}%s{GOLD}]\n", 
+					region.getName(), region.kind(), (int) region.getLevel(), region.getConfiguration().getName()
+			));
+		}
+		return b.toString();
+	}
 
 	@Override
 	public int hashCode() {
@@ -111,6 +126,10 @@ public class RegionSet implements Serializable, Iterable<Region> {
 		} else if (!regionSet.equals(other.regionSet))
 			return false;
 		return true;
+	}
+	
+	public int size() {
+		return regionSet.size();
 	}
 
 	@Override
