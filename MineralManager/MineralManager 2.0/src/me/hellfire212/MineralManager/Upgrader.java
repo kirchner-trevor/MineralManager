@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import me.hellfire212.MineralManager.tasks.RespawnTask;
@@ -17,7 +20,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Convert data from older versions of MineralManager to the latest format(s).
@@ -99,16 +103,59 @@ public class Upgrader {
 				break;
 			}
 		}
+		convertMM13Config(plugin, dir.getParentFile());
 		
 		// Convert regions if possible
 		convertMM13Regions(plugin, loader, candidate);
 		convertMM13Locked(plugin, loader);
 		convertMM13Placed(plugin, loader);
 		convertMM13Active(plugin, loader);
+		
+		renameOld(plugin, dir.getParentFile(), ".old");
 	}
 
-	private static void convertMM13Active(MineralManager plugin,
-			MM13Loader loader) {
+	private static void convertMM13Config(MineralManager plugin, File dir) {
+		Map<String, Object> newSection = new HashMap<String, Object>();
+		List<Object> managedBlocks = new ArrayList<Object>();
+		File configFile = new File(dir, "config.yml");
+		if (!configFile.exists()) return;
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+		ConfigurationSection sec = config.getConfigurationSection("MineralVein");
+		
+		newSection.put("mineOriginalOnly", sec.getBoolean("MineralVein"));
+		newSection.put("placeholder", sec.getString("Placeholder"));
+		newSection.put("displayMessages", sec.get("DisplayMessages"));
+		
+		// Start doing managed blocks;
+		List<Map<?, ?>> cdOrig = sec.getMapList("Cooldowns");
+		List<Map<?, ?>> degOrig = sec.getMapList("Degrade");
+		for (int i = 0; i < cdOrig.size(); i++) {
+			
+			Map.Entry<String, Number> cd = getFirstOnly(cdOrig.get(i));
+			Map.Entry<String, Number> deg = getFirstOnly(degOrig.get(i));
+			Map<String, Object> output = new HashMap<String, Object>();
+			output.put("type", cd.getKey());
+			output.put("cooldown", cd.getValue().intValue());
+			output.put("degrade", deg.getValue().doubleValue());
+			managedBlocks.add(output);
+		}
+		newSection.put("managedBlocks", managedBlocks);
+		plugin.getConfig().set("CONFIGURATION.imported", newSection);
+		plugin.saveConfig();
+		plugin.reloadConfig();
+		plugin.parseConfigurationValues();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Map.Entry<String, Number> getFirstOnly(Map<?, ?> obj) {
+		Map<String, Number> m = (Map<String, Number>) obj;
+		for (Map.Entry<String, Number> e: m.entrySet()) {
+			return e;
+		}
+		return null;
+	}
+
+	private static void convertMM13Active(MineralManager plugin, MM13Loader loader) {
 		try {
 			int i = 0;
 			for (me.hellfire212.MineralVein.SBlock sb : loader.getActiveBlocks()) {
@@ -116,24 +163,26 @@ public class Upgrader {
 				Material m = Material.matchMaterial(sb.getMaterial());
 				Coordinate coord = new Coordinate(new Location(w, sb.getX(), sb.getY(), sb.getZ()));
 				BlockInfo info = new BlockInfo(BlockInfo.Type.BLOCK, m.getId(), 0);
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coord, info), i++);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coord, info), (i++) * 3);
 			}
+			plugin.getLogger().info(String.format("-> Converted %d active blocks", i));
 		} catch (NoData e) {
 			plugin.getLogger().warning(e.getMessage());
-			e.printStackTrace();
 		}
 		
 	}
 
 	private static void convertMM13Placed(MineralManager plugin, MM13Loader loader) {
 		try {
+			int i = 0;
 			for (Location loc: loader.getPlacedBlocks()) {
+				i++;
 				plugin.getWorldData(loc.getWorld()).getPlacedBlocks().set(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), true);
 			}
+			plugin.getLogger().info(String.format("-> Converted %d placed blocks", i));
 		} catch (NoData e) {
 			// TODO Auto-generated catch block
 			plugin.getLogger().warning(e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
@@ -152,10 +201,15 @@ public class Upgrader {
 				double z2 = bits[5];
 				ArrayList<Double> points = Tools.squareBoundaries(x1, z1, x2, z2);
 				
-				Region n = new Region(r.getName(), plugin.getDefaultConfiguration(), points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
-				wd.getRegionSet().add(n);
+				Configuration conf = plugin.getConfigurationMap().get("imported");
+				if (conf == null) conf = plugin.getDefaultConfiguration();
+				
+				Region n = new Region(r.getName(), conf, points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
+				boolean added = wd.getRegionSet().add(n);
 				wd.flagRegionSetDirty();
+				plugin.getLogger().info(String.format(" -> converted region %s at level %d, added=%s", r.getName(), level, (added? "yes" : "no")));
 				level += 1;
+
 			}
 		} catch (NoData e) {
 			plugin.getLogger().warning(e.getMessage());

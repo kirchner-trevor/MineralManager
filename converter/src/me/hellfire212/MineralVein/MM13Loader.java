@@ -22,7 +22,7 @@ public class MM13Loader {
 	}
 	
 	public Set<Location> getPlacedBlocks() throws NoData {
-		log.info("Beginning placed blocks migration....");
+		log.info("Getting MM 1.3 placed blocks....");
 		Map<SBlock, Integer> m = loadMap(new File(plugindir, "placedBlocks.bin"));
 		if (m == null) {
 			return null;
@@ -31,6 +31,7 @@ public class MM13Loader {
 	}
 	
 	public Set<Location> getLockedBlocks() throws NoData {
+		log.info("Getting MM 1.3 locked blocks...");
 		Map<SBlock, Integer> m = loadMap(new File(plugindir, "lockedBlocks.bin"));
 		if (m == null) {
 			return null;
@@ -44,7 +45,7 @@ public class MM13Loader {
 	}
 	
 	public Set<Region> getRegions() throws NoData {
-		log.info("Beginning regions migration...");
+		log.info("Getting MM 1.3 regions...");
 		Object o = loadObject(new File(plugindir, "regions.bin"));
 		if (o instanceof RegionSet) {
 			Set<Region> regions = new HashSet<Region>();
