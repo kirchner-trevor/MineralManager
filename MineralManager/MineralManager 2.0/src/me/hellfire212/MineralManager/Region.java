@@ -54,8 +54,8 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 */
 	public boolean contains(Coordinate coordinate) {
 		return (
-			(global && coordinate.getWorld().getUID().equals(world)) 
-			|| (coordinate.getWorld().getUID().equals(world) && coordinate.getY() >= floor && coordinate.getY() <= ceil && coordinate.inPolygon(boundaries))
+			global
+			|| (coordinate.getY() >= floor && coordinate.getY() <= ceil && coordinate.inPolygon(boundaries))
 		);
 	}
 	
