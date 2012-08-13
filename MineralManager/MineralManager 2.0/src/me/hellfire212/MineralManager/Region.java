@@ -1,11 +1,15 @@
 package me.hellfire212.MineralManager;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+
+import me.hellfire212.MineralManager.utils.GenericUtil;
+import me.hellfire212.MineralManager.utils.ShapeUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -171,7 +175,15 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 */
 	public static Region deserialize(Map<String, Object> values) {
 		ArrayList<Point2D.Double> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
+		Shape shape;
+		if (points == null) {
+			Object oshape = values.get("shape");
+			if (oshape instanceof Map<?, ?>) {
+				Map<String, Object> shapeInfo = GenericUtil.cast(oshape);
+				shape = ShapeUtils.deserializeShape(shapeInfo);
 			}
+		} else {
+			shape = ShapeUtils.shapeFromBounds(GenericUtil.<ArrayList<Point2D>>cast(points));
 		}
 		
 		// Deal with the configuration allowing default.
