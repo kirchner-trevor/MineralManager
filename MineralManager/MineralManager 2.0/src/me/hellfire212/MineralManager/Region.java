@@ -20,35 +20,35 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	
 	private static final long serialVersionUID = -2885326328430836535L;
 	private String name = null;
-	private ArrayList<Point2D.Double> boundaries = null;
 	private Double floor = null;
 	private Double ceil = null;
 	private UUID world = null;
 	private int level = 0;
 	private boolean global = false;
+	private Shape shape;
 	
 	private Configuration configuration = new Configuration();
 	
 	/**
 	 * Creates a polyprism with a given name and attributes.
 	 * @param n the unique name of the region
-	 * @param b an array of vertices that make up the bounding polygon
+	 * @param s a shape describing the x/z bounds of the region.
 	 * @param f the lowest y coordinate of the region
 	 * @param c the highest y coordinate of the region
 	 * @param w the world in which the region resides
 	 * @param l the level of the Region, higher levels are seen first
 	 */
-	public Region(String n, Configuration config, ArrayList<Point2D.Double> b, Double f, Double c, World w, int l) {
+	public Region(String n, Configuration config, Shape s, Double f, Double c, World w, int l) {
 		name = (n != null)? n : "";
 		configuration = config;
-		boundaries = b;
+		shape = s;
 		floor = f;
 		ceil = c;
 		world = w.getUID();
 		level = l;
 		// Region is global if boundaries are empty and floor/ceiling are both negative.
 		// XXX Still contains old config global setting for conversion purposes
-		global = config.isGlobal() || (b.size() == 0 && f < -0.9D && c < -0.9D);
+		global = config.isGlobal() || (shape == null && f < -0.9D && c < -0.9D);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	public boolean contains(Coordinate coordinate) {
 		return (
 			global
-			|| (coordinate.getY() >= floor && coordinate.getY() <= ceil && coordinate.inPolygon(boundaries))
+			|| (coordinate.getY() >= floor && coordinate.getY() <= ceil && shape.contains(coordinate.getX(), coordinate.getZ()))
 		);
 	}
 	
@@ -104,11 +104,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	/** Explain what kind of region we are. */
 	public String kind() {
 		if (global) return "World";
-		if (boundaries.size() == 7) {
-			return "Cuboid";
-		} else {
-			return String.format("Polygon (%d points)", boundaries.size() - 2);
-		}
+		return ShapeUtils.describeShape(shape);
 	}
 	
 	@Override
@@ -154,17 +150,15 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		Map<String, Object> values = new java.util.HashMap<String, Object>();
 		values.put("name", name);
 		values.put("configuration", configuration.getName());
-		values.put("floor", floor);
-		values.put("ceil", ceil);
 		values.put("world", world.toString());
 		values.put("level", level);
-		if (global) values.put("global", global);
-		ArrayList<java.lang.Double> condensedBoundaries = new ArrayList<Double>();
-		for (Point2D.Double point : boundaries) {
-			condensedBoundaries.add(point.getX());
-			condensedBoundaries.add(point.getY());
+		if (global) {
+			values.put("global", global);
+		} else {
+			values.put("shape", ShapeUtils.serializeShape(shape));
+			values.put("floor", floor);
+			values.put("ceil", ceil);
 		}
-		values.put("boundaries", condensedBoundaries);
 		return values;
 	}
 	
@@ -174,16 +168,28 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 * @return new Region instance.
 	 */
 	public static Region deserialize(Map<String, Object> values) {
-		ArrayList<Point2D.Double> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
-		Shape shape;
-		if (points == null) {
-			Object oshape = values.get("shape");
-			if (oshape instanceof Map<?, ?>) {
-				Map<String, Object> shapeInfo = GenericUtil.cast(oshape);
-				shape = ShapeUtils.deserializeShape(shapeInfo);
+		boolean global = false;
+		double ceil = -1D, floor = -1D;
+		
+		Object oglobal = values.get("global");
+		if (oglobal != null && oglobal instanceof Boolean) {
+			global = ((Boolean) oglobal).booleanValue();
+		}
+		Shape shape = null;
+
+		if (!global) {
+			ceil = (Double) values.get("ceil");
+			floor = (Double) values.get("floor");
+			ArrayList<Point2D.Double> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
+			if (points == null) {
+				Object oshape = values.get("shape");
+				if (oshape instanceof Map<?, ?>) {
+					Map<String, Object> shapeInfo = GenericUtil.cast(oshape);
+					shape = ShapeUtils.deserializeShape(shapeInfo);
+				}
+			} else {
+				shape = ShapeUtils.shapeFromBounds(GenericUtil.<ArrayList<Point2D>>cast(points));
 			}
-		} else {
-			shape = ShapeUtils.shapeFromBounds(GenericUtil.<ArrayList<Point2D>>cast(points));
 		}
 		
 		// Deal with the configuration allowing default.
@@ -200,9 +206,9 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		return new Region(
 				(String) values.get("name"),
 				config,
-				points,
-				(Double) values.get("floor"),
-				(Double) values.get("ceil"), 
+				shape,
+				floor,
+				ceil,
 				Bukkit.getWorld(UUID.fromString((String) values.get("world"))),
 				((Number)values.get("level")).intValue()
 		);

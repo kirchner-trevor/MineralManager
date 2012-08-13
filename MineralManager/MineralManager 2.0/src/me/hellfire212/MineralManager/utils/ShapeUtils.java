@@ -6,7 +6,6 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -152,6 +151,16 @@ public final class ShapeUtils {
 			return points;
 		}
 		return null;
+	}
+
+	public static String describeShape(Shape shape) {
+		if (shape instanceof Rectangle2D) {
+			Rectangle2D r = (Rectangle2D) shape;
+			return String.format("Cuboid %dx%d", Math.round(r.getWidth()), Math.round(r.getHeight()));
+		} else if (shape instanceof Polygon) {
+			return String.format("Polygon (%d points)", ((Polygon) shape).npoints);
+		}
+		return "unknown shape";
 	}
 
 	/** I cannot be constructed */
