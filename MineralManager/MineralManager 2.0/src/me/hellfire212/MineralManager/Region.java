@@ -35,7 +35,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 * @param l the level of the Region, higher levels are seen first
 	 */
 	public Region(String n, Configuration config, ArrayList<Point2D.Double> b, Double f, Double c, World w, int l) {
-		name = n;
+		name = (n != null)? n : "";
 		configuration = config;
 		boundaries = b;
 		floor = f;
@@ -123,10 +123,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+		return name.hashCode();
 	}
 
 	@Override
