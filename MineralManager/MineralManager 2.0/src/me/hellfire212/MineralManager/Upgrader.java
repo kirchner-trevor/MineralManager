@@ -1,6 +1,6 @@
 package me.hellfire212.MineralManager;
 
-import java.awt.geom.Point2D.Double;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 import me.hellfire212.MineralManager.tasks.RespawnTask;
+import me.hellfire212.MineralManager.utils.GenericUtil;
+import me.hellfire212.MineralManager.utils.ShapeUtils;
 import me.hellfire212.MineralVein.MM13Loader;
 import me.hellfire212.MineralVein.NoData;
 
@@ -199,12 +201,13 @@ public class Upgrader {
 				double x2 = bits[3];
 				double y2 = bits[4];
 				double z2 = bits[5];
-				ArrayList<Double> points = Tools.squareBoundaries(x1, z1, x2, z2);
+				List<Point2D.Double> points = Tools.squareBoundaries(x1, z1, x2, z2);
+				java.awt.Shape shape = ShapeUtils.shapeFromBounds(GenericUtil.<List<Point2D>>cast(points));
 				
 				Configuration conf = plugin.getConfigurationMap().get("imported");
 				if (conf == null) conf = plugin.getDefaultConfiguration();
 				
-				Region n = new Region(r.getName(), conf, points , Math.min(y1, y2), Math.max(y1, y2), candidate, level);
+				Region n = new Region(r.getName(), conf, shape, Math.min(y1, y2), Math.max(y1, y2), candidate, level);
 				boolean added = wd.getRegionSet().add(n);
 				wd.flagRegionSetDirty();
 				plugin.getLogger().info(String.format(" -> converted region %s at level %d, added=%s", r.getName(), level, (added? "yes" : "no")));

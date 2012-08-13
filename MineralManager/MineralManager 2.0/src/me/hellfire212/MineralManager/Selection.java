@@ -1,31 +1,16 @@
 package me.hellfire212.MineralManager;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.awt.Shape;
 
 public class Selection {
-	private ArrayList<Point2D.Double> boundaries = null;
 	private double floor = 0.0;
 	private double ceil = 0.0;
+	private Shape shape = null;
 	
-	public Selection() {
-		boundaries = new ArrayList<Point2D.Double>();
-	}
-	
-	public Selection(ArrayList<Point2D.Double> b, double f, double c) {
-		boundaries = b;
-		floor = f;
-		ceil = c;
-	}
-	
-	public void changeSelection(ArrayList<Point2D.Double> b, double f, double c) {
-		boundaries = b;
-		floor = f;
-		ceil = c;
-	}
-	
-	public ArrayList<Point2D.Double> getBoundaries() {
-		return  boundaries;
+	public Selection(Shape shape, double floor, double ceil) {
+		this.shape = shape;
+		this.floor = floor;
+		this.ceil = ceil;
 	}
 	
 	public double getFloor() {
@@ -41,5 +26,9 @@ public class Selection {
 		CUBE,
 		REGION,
 		LASSO
+	}
+
+	public Shape getShape() {
+		return shape;
 	}
 }

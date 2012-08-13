@@ -165,4 +165,8 @@ public final class ShapeUtils {
 
 	/** I cannot be constructed */
 	private ShapeUtils() {}
+
+	public static void addPolyPoint(Polygon poly, Point2D p) {
+		poly.addPoint((int) Math.round(p.getX()), (int) Math.round(p.getY()));
+	}
 }

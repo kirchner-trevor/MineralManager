@@ -263,7 +263,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		case REGION:
 			Coordinate start = (Coordinate) ctx.getSessionData("region.start");
 			Coordinate end = (Coordinate) ctx.getSessionData("region.end");
-			sel = Commands.actuallySelectRegion(plugin, player, start, end, outPrefix);
+			sel = Commands.actuallySelectRegion(plugin, player, start.getLocation(), end.getLocation(), outPrefix);
 			break;
 		case LASSO:
 			sel = Commands.finishLasso(player, outPrefix);

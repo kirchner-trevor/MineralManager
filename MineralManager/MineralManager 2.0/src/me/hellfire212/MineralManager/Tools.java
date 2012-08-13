@@ -118,8 +118,7 @@ public class Tools {
 		return result;
 	}
 
-	static ArrayList<Point2D.Double> squareBoundaries(double x1,
-			double z1, double x2, double z2) {
+	static ArrayList<Point2D.Double> squareBoundaries(double x1, double z1, double x2, double z2) {
 		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
 		
 		Point2D.Double zero = new Point2D.Double();

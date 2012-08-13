@@ -1,5 +1,7 @@
 package me.hellfire212.MineralManager;
 
+import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +10,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.hellfire212.MineralManager.utils.ChatMagic;
+import me.hellfire212.MineralManager.utils.ShapeUtils;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -46,7 +50,7 @@ public class Commands {
 	
 	// TODO refactor this to a utility module or something
 	public static Region actuallyCreateRegion(MineralManager plugin, String name, Configuration configuration, Selection selection, Player player, int level) {
-		Region newRegion = new Region(name, configuration, selection.getBoundaries(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
+		Region newRegion = new Region(name, configuration, selection.getShape(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
 		WorldData wdata = plugin.getWorldData(player.getWorld());
 		boolean regionAdded = wdata.getRegionSet().add(newRegion);
 		wdata.flagRegionSetDirty();
@@ -56,7 +60,7 @@ public class Commands {
 
 	public static Selection selectWorld(MineralManager plugin, Player player, List<Object> validList) {
 		player.sendMessage(MineralManager.PREFIX + "Selected whole world " + player.getWorld().getName());
-		return new Selection(new ArrayList<Point2D.Double>(), -1, -1);
+		return new Selection(null, -1.0D, -1.0D);
 	}
 	
 	//****This method hasn't been cleaned up yet.
@@ -96,10 +100,10 @@ public class Commands {
 			boundaries.add(new Point2D.Double(coordinate.getX(), coordinate.getZ()));
 		}
 		boundaries = reduceBoundaries(boundaries);
-		if(!boundaries.isEmpty()) {
-			boundaries.add(boundaries.get(0));
-			boundaries.add(0, new Point2D.Double(0.0, 0.0));
-			boundaries.add(new Point2D.Double(0.0, 0.0));
+		
+		Polygon poly = new Polygon();
+		for (Point2D p: boundaries) {
+			ShapeUtils.addPolyPoint(poly, p);
 		}
 		
 		//Tells the lassoListener that there is one less person listening for lasso selections.
@@ -109,7 +113,7 @@ public class Commands {
 		Commands.lassoCoordinateMap.remove(player);
 		
 		player.sendMessage(MineralManager.PREFIX + "Finished recording.");
-		return new Selection(boundaries, floor, ceil);
+		return new Selection(poly, floor, ceil);
 	}
 
 	//2 Arguments
@@ -121,19 +125,18 @@ public class Commands {
 
 	public static Selection selectCube(MineralManager plugin, Player player, int xzRadius, int yRadius) {
 
-		double playerX = player.getLocation().getX();
-		double playerY = player.getLocation().getY();
-		double playerZ = player.getLocation().getZ();
-		double west = playerX - xzRadius;
-		double south = playerZ - xzRadius;
-		double east = playerX + xzRadius;
-		double north = playerZ + xzRadius;
+		int playerX = player.getLocation().getBlockX();
+		int playerY = player.getLocation().getBlockY();
+		int playerZ = player.getLocation().getBlockZ();
+		int west = playerX - xzRadius;
+		int south = playerZ - xzRadius;
+		int east = playerX + xzRadius;
+		int north = playerZ + xzRadius;
 		
-		ArrayList<Point2D.Double> boundaries = Tools.squareBoundaries(west, south,
-				east, north);
+		Rectangle rect = new Rectangle(west, south, xzRadius *2, xzRadius * 2);
 
-		player.sendMessage(MineralManager.PREFIX + "A cube spanning (" + (int) west + ", " + (int) south + ") to (" + (int) east + ", " + (int) north + ") was selected.");
-		return new Selection(boundaries, playerY - yRadius, playerY + yRadius);
+		player.sendMessage(MineralManager.PREFIX + "A cube spanning (" +  west + ", " + south + ") to (" + east + ", " + north + ") was selected.");
+		return new Selection(rect, playerY - yRadius, playerY + yRadius);
 	}
 	
 	//1 Argument
@@ -145,24 +148,30 @@ public class Commands {
 		} else if(toggle.equalsIgnoreCase(END) && regionStartMap.containsKey(player))  {
 			Coordinate startCoordinate = regionStartMap.get(player);
 			Coordinate endCoordinate = new Coordinate(player.getLocation());
-			return actuallySelectRegion(plugin, player, startCoordinate, endCoordinate, MineralManager.PREFIX);
+			return actuallySelectRegion(plugin, player, startCoordinate.getLocation(), endCoordinate.getLocation(), MineralManager.PREFIX);
 		}
 		return null;
 	}
 	
 	/** Not a command, but functionality used by the dialogue to do the actual selection. */
-	public static Selection actuallySelectRegion(MineralManager plugin, Player player, Coordinate startCoordinate, Coordinate endCoordinate, String prefix) {
-		double x1 = startCoordinate.getX();
-		double z1 = startCoordinate.getZ();
-		double x2 = endCoordinate.getX();
-		double z2 = endCoordinate.getZ();
+	public static Selection actuallySelectRegion(MineralManager plugin, Player player, Location startCoordinate, Location endCoordinate, String prefix) {
+		int x1 = startCoordinate.getBlockX();
+		int z1 = startCoordinate.getBlockZ();
+		int x2 = endCoordinate.getBlockX();
+		int z2 = endCoordinate.getBlockZ();
+		
 		double y1 = startCoordinate.getY();
 		double y2 = endCoordinate.getY();
 		
-		ArrayList<Point2D.Double> boundaries = Tools.squareBoundaries(x1, z1, x2, z2);
+		Rectangle rect = new Rectangle(
+				Math.min(x1, x2),
+				Math.min(z1, z2),
+				Math.abs(x1 - x2),
+				Math.abs(z1 - z2)
+		);
 		
-		player.sendMessage(prefix + "A cube spanning (" + (int) x1 + ", " + (int) z1 + ") to (" + (int) x2 + ", " + (int) z2 + ") was selected.");
-		return new Selection(boundaries, Math.min(y1, y2), Math.max(y1, y2));
+		player.sendMessage(prefix + "A cube spanning (" + x1 + ", " +  z1 + ") to (" + x2 + ", " + z2 + ") was selected.");
+		return new Selection(rect, Math.min(y1, y2), Math.max(y1, y2));
 	}
 
 	private static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
