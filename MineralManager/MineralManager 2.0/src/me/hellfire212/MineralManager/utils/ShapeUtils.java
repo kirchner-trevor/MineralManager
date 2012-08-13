@@ -58,6 +58,26 @@ public final class ShapeUtils {
 		}
 		return poly;
 	}
+	public static ArrayList<Point2D.Double> pointsFromCompactBounds(Object boundaries) {
+		ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+		java.lang.Double x = null;
+		int i = 0;
+		if (boundaries instanceof Collection<?>) {
+			for (Object location: (Collection<?>) boundaries) {
+				if (location instanceof java.lang.Double) {
+					if ((i++ % 2) == 0) {
+						x = (java.lang.Double) location;
+					} else {
+						points.add(new Point2D.Double(x, (java.lang.Double) location));
+					}
+				} else {
+					System.out.printf("Expected a Double, got a %s (printed %s)", location.getClass().toString(), location.toString());
+				}
+			}
+			return points;
+		}
+		return null;
+	}
 
 	/** I cannot be constructed */
 	private ShapeUtils() {}

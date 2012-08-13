@@ -170,21 +170,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 * @return new Region instance.
 	 */
 	public static Region deserialize(Map<String, Object> values) {
-		ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
-		java.lang.Double x = null;
-		int i = 0;
-		Object rawBoundaries = values.get("boundaries");
-		if (rawBoundaries instanceof Collection<?>) {
-			for (Object location: (Collection<?>) rawBoundaries) {
-				if (location instanceof java.lang.Double) {
-					if ((i++ % 2) == 0) {
-						x = (java.lang.Double) location;
-					} else {
-						points.add(new Point2D.Double(x, (java.lang.Double) location));
-					}
-				} else {
-					System.out.printf("Expected a Double, got a %s (printed %s)", location.getClass().toString(), location.toString());
-				}
+		ArrayList<Point2D.Double> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
 			}
 		}
 		
