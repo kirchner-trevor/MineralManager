@@ -169,12 +169,13 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	public static Region deserialize(Map<String, Object> values) {
 		boolean global = false;
 		double ceil = -1D, floor = -1D;
+		Configuration config;
+		Shape shape = null;
 		
 		Object oglobal = values.get("global");
 		if (oglobal != null && oglobal instanceof Boolean) {
 			global = ((Boolean) oglobal).booleanValue();
 		}
-		Shape shape = null;
 
 		if (!global) {
 			ceil = (Double) values.get("ceil");
@@ -194,14 +195,13 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		// Deal with the configuration allowing default.
 		MineralManager plugin = MineralManager.getInstance();
 		String configName = (String) values.get("configuration");
-		Configuration config;
 		if (configName.equals("DEFAULT")) {
 			config = plugin.getDefaultConfiguration();
 		} else {
 			config = plugin.getConfigurationMap().get(configName);
 			if (config == null) config = plugin.getDefaultConfiguration();
 		}
-				
+
 		return new Region(
 				(String) values.get("name"),
 				config,
