@@ -20,7 +20,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	private Double floor = null;
 	private Double ceil = null;
 	private UUID world = null;
-	private double level = Math.random();
+	private int level = 0;
 	private boolean global = false;
 	
 	private Configuration configuration = new Configuration();
@@ -81,7 +81,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	 * Returns the level of the Region
 	 * @return the level of the Region
 	 */
-	public double getLevel() {
+	public int getLevel() {
 		return level;
 	}
 	
@@ -116,7 +116,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 	@Override
 	public int compareTo(Region r) {
 		// Sort descending by level, higher levels go first.
-		int levelTest = 0 - Double.compare(level, r.getLevel());
+		int levelTest = 0 - new Integer(level).compareTo(r.getLevel());
 		// Fall back to the name test when levels are equal, for a stable sort.
 		return (levelTest != 0) ? levelTest : name.compareTo(r.getName());
 	}
@@ -209,7 +209,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 				(Double) values.get("floor"),
 				(Double) values.get("ceil"), 
 				Bukkit.getWorld(UUID.fromString((String) values.get("world"))),
-				((Double)values.get("level")).intValue()
+				((Number)values.get("level")).intValue()
 		);
 	}
 }
