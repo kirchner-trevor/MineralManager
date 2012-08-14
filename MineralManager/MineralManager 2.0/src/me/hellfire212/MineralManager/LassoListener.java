@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class LassoListener implements Listener {
+public final class LassoListener implements Listener {
 	
 	private JavaPlugin plugin = null;
 	private AtomicInteger counter = null;
@@ -33,6 +33,11 @@ public class LassoListener implements Listener {
 		if(counter.decrementAndGet() == 0) {
 			HandlerList.unregisterAll(this);
 		}
+	}
+	
+	public void shutdown() {
+		plugin = null;
+		HandlerList.unregisterAll(this);
 	}
 
 	@EventHandler

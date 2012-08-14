@@ -41,7 +41,6 @@ public class MineralManager extends JavaPlugin {
 	private static final String LOCKED_SET_FILENAME = "lockedMap.bin";
 	private static final String DATA_YAML_FILENAME = "data.yml";
 	
-	
 	private static MineralManager plugin = null;
 	
 	private MMCommand select = new MMCommand("select", true);
@@ -129,6 +128,9 @@ public class MineralManager extends JavaPlugin {
 			wdata.shutdown();
 		}
 		worldData.clear();
+		Commands.shutdown();
+		lassoListener.shutdown();
+		plugin = null;
 	}
 	
 	//Change iterator to "for each"

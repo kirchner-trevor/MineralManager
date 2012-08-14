@@ -18,7 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-public class Commands {
+public final class Commands {
 	
 	private static final String START = "start";
 	private static final String END = "end";
@@ -109,13 +109,13 @@ public class Commands {
 			ShapeUtils.addPolyPoint(poly, p);
 		}
 		
-		//Tells the lassoListener that there is one less person listening for lasso selections.
+		// Tells the lassoListener that there is one less person listening for lasso selections.
 		MineralManager.getInstance().lassoListener.remove();
 		
 		//Removes the player from the lassoCoordinateMap since we completed our selection.
 		Commands.lassoCoordinateMap.remove(player.getName());
 		
-		player.sendMessage(MineralManager.PREFIX + "Finished recording.");
+		player.sendMessage(prefix + "Finished recording.");
 		return new Selection(poly, floor, ceil);
 	}
 
@@ -230,6 +230,11 @@ public class Commands {
 			status = "CREATIVE";
 		}
 		player.sendMessage(MineralManager.PREFIX + "You are now in " + MineralManager.HEADER_COLOR + status + MineralManager.TEXT_COLOR + " mode.");
+	}
+	
+	public static void shutdown() {
+		regionStartMap.clear();
+		lassoCoordinateMap.clear();
 	}
 
 }
