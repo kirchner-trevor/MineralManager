@@ -60,7 +60,7 @@ public class Configuration implements Serializable {
 		onBlockProspect = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) ? currentConfig.getString(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) : def.getOnBlockProspect();
 		
 		List<?> mineralList = currentConfig.contains(MANAGED_BLOCKS) ? currentConfig.getList(MANAGED_BLOCKS) : null;
-		HashMap<BlockInfo, Mineral> blockMap = def.blockMap;
+		blockMap = def.blockMap;
 		
 		if(mineralList != null) {
 			blockMap = new HashMap<BlockInfo, Mineral>(8);
@@ -68,7 +68,7 @@ public class Configuration implements Serializable {
 			for(Object currList : mineralList) {
 				LinkedHashMap<?, ?> lhm = (LinkedHashMap<?, ?>) currList;
 				
-				//****I think we're allowed to pass null parameters into the "generate" methods but I need to test to be sure!
+				//****XXX I think we're allowed to pass null parameters into the "generate" methods but I need to test to be sure!
 				Object typeObject = lhm.get("type");
 				BlockInfo info = new BlockInfo(Type.BLOCK, generate(Field.TYPE_ID, count, typeObject).intValue(), generate(Field.DATA, count, typeObject).intValue());
 				blockMap.put(info, new Mineral(info, generate(Field.COOLDOWN, count, lhm.get("cooldown")).intValue(), generate(Field.DEGRADE, count, lhm.get("degrade")).doubleValue()));
@@ -76,7 +76,6 @@ public class Configuration implements Serializable {
 			}
 		}
 		
-		this.blockMap = blockMap;
 	
 		BlockInfo placeholderBlock = parsePlaceholderMaterial(currentConfig.contains(PLACEHOLDER) ? currentConfig.getString(PLACEHOLDER) : def.getPlaceholderBlock().toString(Type.PLACEHOLDER));
 		if(placeholderBlock == null) {
@@ -157,7 +156,7 @@ public class Configuration implements Serializable {
 	}
 	
 	public HashMap<BlockInfo, Mineral> getBlockMap() {
-		return blockMap == null ? new HashMap<BlockInfo, Mineral>() : blockMap;
+		return  blockMap;
 	}
 	
 	public String getName() {

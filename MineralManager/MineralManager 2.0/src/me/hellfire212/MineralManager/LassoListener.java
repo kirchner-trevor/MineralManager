@@ -43,7 +43,10 @@ public class LassoListener implements Listener {
 			Block to = e.getTo().getBlock();
 			if(!from.equals(to)) {
 				ArrayList<Coordinate> boundaries = Commands.lassoCoordinateMap.get(player);
-				boundaries.add(new Coordinate(player.getLocation()));
+				Coordinate c = new Coordinate(to.getLocation());
+				if (boundaries.size() == 0 || !c.equals(boundaries.get(boundaries.size()-1))) {
+					boundaries.add(c);
+				}
 				Commands.lassoCoordinateMap.put(player, boundaries);
 			}
 		}

@@ -82,9 +82,7 @@ public class RegionSet implements Serializable, Iterable<Region> {
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		for(Region region : regionSet) {
-			// XXX getLevel() returns a Double but it's actually an integer value in the end.
-			// TODO fix when the binary format is eradicated
-			b.append(String.format(" %s: %s [level=%d]\n", region.getName(), region.kind(), (int) region.getLevel()));
+			b.append(String.format(" %s: %s [level=%d]\n", region.getName(), region.kind(), region.getLevel()));
 		}
 		return b.toString();
 	}
@@ -92,11 +90,9 @@ public class RegionSet implements Serializable, Iterable<Region> {
 	public String toColorizedString() {
 		StringBuilder b = new StringBuilder();
 		for(Region region : regionSet) {
-			// XXX getLevel() returns a Double but it's actually an integer value in the end.
-			// TODO fix when the binary format is eradicated
 			b.append(ChatMagic.colorize(
 					"    {AQUA}%s{TEXT}: {VERB}%s {GOLD}[{TEXT}level={VERB}%d{TEXT}, config={VERB}%s{GOLD}]\n", 
-					region.getName(), region.kind(), (int) region.getLevel(), region.getConfiguration().getName()
+					region.getName(), region.kind(), region.getLevel(), region.getConfiguration().getName()
 			));
 		}
 		return b.toString();
@@ -104,11 +100,7 @@ public class RegionSet implements Serializable, Iterable<Region> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((regionSet == null) ? 0 : regionSet.hashCode());
-		return result;
+		return regionSet.hashCode();
 	}
 
 	@Override
