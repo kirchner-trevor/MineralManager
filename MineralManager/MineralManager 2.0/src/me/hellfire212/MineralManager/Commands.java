@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.hellfire212.MineralManager.tasks.LassoWatcherTask;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.block.Block;
@@ -18,7 +19,7 @@ public class Commands {
 	private static final String START = "start";
 	private static final String END = "end";
 	private static ConcurrentHashMap<Player, Coordinate> regionStartMap = new ConcurrentHashMap<Player, Coordinate>();
-	public static ConcurrentHashMap<Player, ArrayList<Coordinate>> lassoCoordinateMap = new ConcurrentHashMap<Player, ArrayList<Coordinate>>();
+	public static ConcurrentHashMap<String, ArrayList<Coordinate>> lassoCoordinateMap = new ConcurrentHashMap<String, ArrayList<Coordinate>>();
 	
 	//These methods all make the assumption that "args" contains the correct amount of arguments of the correct type.
 
@@ -65,7 +66,7 @@ public class Commands {
 		if(toggle.equalsIgnoreCase(START)) {
 			beginLasso(player);
 			player.sendMessage(MineralManager.PREFIX + "Recording positions as selection.");
-		} else if(toggle.equalsIgnoreCase(END) && lassoCoordinateMap.containsKey(player)) {
+		} else if(toggle.equalsIgnoreCase(END) && lassoCoordinateMap.containsKey(player.getName())) {
 			return finishLasso(player, MineralManager.PREFIX);
 		}
 		return null;
@@ -73,17 +74,18 @@ public class Commands {
 
 	public static void beginLasso(Player player) {
 		//Tells the lassoListener that there is one more person listening for lasso selections.
-		if(!lassoCoordinateMap.containsKey(player)) {
+		if(!lassoCoordinateMap.containsKey(player.getName())) {
 			MineralManager.getInstance().lassoListener.add();
 		}
 		
 		//Adds the player to the lassoCoordinateMap so points can be added.
-		lassoCoordinateMap.put(player, new ArrayList<Coordinate>());
+		lassoCoordinateMap.put(player.getName(), new ArrayList<Coordinate>());
+		new LassoWatcherTask(player.getName()).run();
 	}
 	
 	public static Selection finishLasso(Player player, String prefix) {
 		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>();
-		ArrayList<Coordinate> temp = lassoCoordinateMap.get(player);
+		ArrayList<Coordinate> temp = lassoCoordinateMap.get(player.getName());
 		double floor = Integer.MAX_VALUE;
 		double ceil = Integer.MIN_VALUE;
 		for(Coordinate coordinate : temp) {
@@ -106,7 +108,7 @@ public class Commands {
 		MineralManager.getInstance().lassoListener.remove();
 		
 		//Removes the player from the lassoCoordinateMap since we completed our selection.
-		Commands.lassoCoordinateMap.remove(player);
+		Commands.lassoCoordinateMap.remove(player.getName());
 		
 		player.sendMessage(MineralManager.PREFIX + "Finished recording.");
 		return new Selection(boundaries, floor, ceil);

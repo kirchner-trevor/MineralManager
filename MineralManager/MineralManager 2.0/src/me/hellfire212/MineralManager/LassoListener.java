@@ -38,13 +38,12 @@ public class LassoListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(final PlayerMoveEvent e) {
 		Player player = e.getPlayer();
-		if(Commands.lassoCoordinateMap.containsKey(player)) {
+		ArrayList<Coordinate> boundaries = Commands.lassoCoordinateMap.get(player.getName());
+		if(boundaries != null) {
 			Block from = e.getFrom().getBlock();
 			Block to = e.getTo().getBlock();
 			if(!from.equals(to)) {
-				ArrayList<Coordinate> boundaries = Commands.lassoCoordinateMap.get(player);
-				boundaries.add(new Coordinate(player.getLocation()));
-				Commands.lassoCoordinateMap.put(player, boundaries);
+				boundaries.add(new Coordinate(to.getLocation()));
 			}
 		}
 	}
