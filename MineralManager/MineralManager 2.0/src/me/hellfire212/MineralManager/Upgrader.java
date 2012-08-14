@@ -29,7 +29,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author James Crasta
  *
  */
-public class Upgrader {
+public final class Upgrader {
 
 	/**
 	 * Convert the old serialized-format of the placed blocks to the new bitmap format, separated by world.

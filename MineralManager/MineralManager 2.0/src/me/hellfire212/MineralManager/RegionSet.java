@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
-public class RegionSet implements Serializable, Iterable<Region> {
+public final class RegionSet implements Serializable, Iterable<Region> {
 
 	private static final long serialVersionUID = 3833726660750427658L;
 	private ConcurrentSkipListSet<Region> regionSet = null;

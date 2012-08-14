@@ -2,10 +2,10 @@ package me.hellfire212.MineralManager;
 
 import java.awt.Shape;
 
-public class Selection {
-	private double floor = 0.0;
-	private double ceil = 0.0;
-	private Shape shape = null;
+public final class Selection {
+	private final double floor;
+	private final double ceil;
+	private final Shape shape;
 	
 	public Selection(Shape shape, double floor, double ceil) {
 		this.shape = shape;
@@ -20,15 +20,15 @@ public class Selection {
 	public double getCeil() {
 		return ceil;
 	}
+
+	public Shape getShape() {
+		return shape;
+	}
 	
 	public enum Type {
 		WORLD,
 		CUBE,
 		REGION,
 		LASSO
-	}
-
-	public Shape getShape() {
-		return shape;
 	}
 }

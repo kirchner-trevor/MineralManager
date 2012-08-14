@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Material;
 
-public class Tools {
+public final class Tools {
 	
 	//This class is used as a toolbox of sorts for static methods that don't really belong in any specific class.
 	
