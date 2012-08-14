@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -36,25 +37,30 @@ public final class ShapeUtils {
 	private static Rectangle2D rectangleFromPoints(List<Point2D> points) {
 		double minX = points.get(0).getX();
 		double minY = points.get(0).getY();
-		double h = 0;
-		double w = 0;
+		double maxX = points.get(0).getX();
+		double maxY = points.get(0).getY();
 		for (Point2D p: points) {
-			if (p.getX() < minX) {
-				minX = p.getX();
-			} else {
-				w = Math.max(w, p.getX() - minX);
-			}
-			if (p.getY() < minY) {
-				minY = p.getY();
-			} else {
-				h = Math.max(h, p.getY() - minY);
-			}
+			if (p.getX() < minX) minX = p.getX();
+			if (p.getX() > maxX) maxX = p.getX();
+			if (p.getY() < minY) minY = p.getY();
+			if (p.getY() > maxY) maxY = p.getY();
 		}
-		return new Rectangle2D.Double(minX, minY, w, h);
+		return new Rectangle2D.Double(minX, minY, maxX-minX, maxY-minY);
 	}
 
-	private static boolean isRectanglePoints(List<Point2D> myPoints) {
-		return false;
+	/** Returns true if the given points make up a rectangle.
+	 * 
+	 *  This is done by noticing a simple property of rectangles, which is
+	 *  that the four points comprise of only two unique X and two unique Y coords.
+	 */
+	private static boolean isRectanglePoints(List<Point2D> points) {
+		HashSet<Integer> xPoints = new HashSet<Integer>();
+		HashSet<Integer> yPoints = new HashSet<Integer>();
+		for (Point2D p: points) {
+			xPoints.add((int) p.getX());
+			yPoints.add((int) p.getY());
+		}
+		return (xPoints.size() == 2 && yPoints.size() == 2);
 	}
 	
 	private static Polygon polygonFromPoints(List<Point2D> myPoints) {
