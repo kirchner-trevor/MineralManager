@@ -8,5 +8,8 @@ public final class MMConstants {
 
 	public static final int SAVE_DEADLINE = 20 * 5; // 5 seconds
 	public static final long SAVETRACKER_STARTUP_DELAY = 20 * 10; // 10 seconds
-
+	
+	
+	/** You cannot construct me. */
+	private MMConstants() {}
 }

@@ -3,7 +3,7 @@ package me.hellfire212.MineralManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-public class MMCommand {
+public final class MMCommand {
 
 	private String command = null;
 	private String usage = null;

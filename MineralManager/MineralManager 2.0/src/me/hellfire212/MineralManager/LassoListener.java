@@ -35,6 +35,9 @@ public final class LassoListener implements Listener {
 		}
 	}
 	
+	/**
+	 * Shut down this listener, cleaning up all resources we need to.
+	 */
 	public void shutdown() {
 		plugin = null;
 		HandlerList.unregisterAll(this);
