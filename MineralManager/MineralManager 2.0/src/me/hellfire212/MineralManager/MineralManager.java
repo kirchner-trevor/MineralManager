@@ -76,6 +76,7 @@ public class MineralManager extends JavaPlugin {
 
 	
 	public MineralManager() {
+		super();
 		plugin = this;
 		configurationMap = new HashMap<String, Configuration>();
 		selectionMap = new ConcurrentHashMap<Player, Selection>();
