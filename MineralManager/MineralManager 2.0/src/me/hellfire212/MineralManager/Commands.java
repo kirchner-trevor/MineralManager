@@ -99,7 +99,7 @@ public class Commands {
 			}
 			boundaries.add(new Point2D.Double(coordinate.getX(), coordinate.getZ()));
 		}
-		boundaries = reduceBoundaries(boundaries);
+		boundaries = ShapeUtils.reduceBoundaries(boundaries);
 		
 		Polygon poly = new Polygon();
 		for (Point2D p: boundaries) {
@@ -174,41 +174,6 @@ public class Commands {
 		return new Selection(rect, Math.min(y1, y2), Math.max(y1, y2));
 	}
 
-	private static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
-		int size = boundaries.size();
-		int index = 0;
-		while(index + 2 < size) {
-			if(isBetween(boundaries.get(index), boundaries.get(index + 2), boundaries.get(index + 1))) {
-				boundaries.remove(index + 1);
-				size--;
-			} else {
-				index++;
-			}
-		}
-		return boundaries;
-	}
-	
-	private static boolean isBetween(Point2D.Double a, Point2D.Double b, Point2D.Double c) {
-		double epsilon = 0.05; //Threshold to determine whether a point is "on" the line.
-		double cyMINUSay = c.y - a.y;
-		double bxMINUSax = b.x - a.x;
-		double cxMINUSax = c.x - a.x;
-		double byMINUSay = b.y - a.y;
-		double crossProduct = cyMINUSay * bxMINUSax - cxMINUSax * byMINUSay;
-		if(Math.abs(crossProduct) > epsilon) {
-			return false;
-		}
-		double dotProduct = cxMINUSax * bxMINUSax + cyMINUSay * byMINUSay;
-		if(dotProduct < 0.0) {
-			return false;
-		}
-		double squaredLengthBA = bxMINUSax * bxMINUSax + byMINUSay * byMINUSay;
-		if(dotProduct > squaredLengthBA) {
-			return false;
-		}
-		return true;
-	}
-	
 	//1 Argument
 	public static void remove(MineralManager plugin, Player player, List<Object> args) {
 		String name = (String) args.get(0);

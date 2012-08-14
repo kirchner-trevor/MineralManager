@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public final class ShapeUtils {
 	private static final Point2D.Double ORIGIN = new Point2D.Double(0, 0);
 	
@@ -163,10 +164,50 @@ public final class ShapeUtils {
 		return "unknown shape";
 	}
 
-	/** I cannot be constructed */
-	private ShapeUtils() {}
-
+	/** Add a point to a polygon, converting datatypes as needed.
+	 * 
+	 * @param poly a Polygon
+	 * @param p a Point2D
+	 */
 	public static void addPolyPoint(Polygon poly, Point2D p) {
 		poly.addPoint((int) Math.round(p.getX()), (int) Math.round(p.getY()));
 	}
+
+	public static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
+		int size = boundaries.size();
+		int index = 0;
+		while(index + 2 < size) {
+			if(ShapeUtils.isBetween(boundaries.get(index), boundaries.get(index + 2), boundaries.get(index + 1))) {
+				boundaries.remove(index + 1);
+				size--;
+			} else {
+				index++;
+			}
+		}
+		return boundaries;
+	}
+
+	public static boolean isBetween(Point2D.Double a, Point2D.Double b, Point2D.Double c) {
+		double epsilon = 0.05; //Threshold to determine whether a point is "on" the line.
+		double cyMINUSay = c.y - a.y;
+		double bxMINUSax = b.x - a.x;
+		double cxMINUSax = c.x - a.x;
+		double byMINUSay = b.y - a.y;
+		double crossProduct = cyMINUSay * bxMINUSax - cxMINUSax * byMINUSay;
+		if(Math.abs(crossProduct) > epsilon) {
+			return false;
+		}
+		double dotProduct = cxMINUSax * bxMINUSax + cyMINUSay * byMINUSay;
+		if(dotProduct < 0.0) {
+			return false;
+		}
+		double squaredLengthBA = bxMINUSax * bxMINUSax + byMINUSay * byMINUSay;
+		if(dotProduct > squaredLengthBA) {
+			return false;
+		}
+		return true;
+	}
+	
+	/** I cannot be constructed */
+	private ShapeUtils() {}
 }
