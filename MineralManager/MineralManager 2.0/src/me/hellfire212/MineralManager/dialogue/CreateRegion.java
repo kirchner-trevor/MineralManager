@@ -34,6 +34,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	private MineralManager plugin;
 	private ConfigurationChoosePrompt choosePrompt;
 	private RegionSelectPrompt regionPrompt;
+	private LassoSelectPrompt lassoPrompt;
 
 	public CreateRegion(MineralManager plugin) {
 		this.plugin = plugin;
@@ -46,6 +47,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			.withEscapeSequence("/quit")
 			.addConversationAbandonedListener(this);
 		this.levelNumberPrompt = new NumberPrompt("Level Number?", "level");
+		this.lassoPrompt = new LassoSelectPrompt(namePrompt);
 		this.regionPrompt = new RegionSelectPrompt(namePrompt);
 		this.choosePrompt = new ConfigurationChoosePrompt();
 		this.finishCreatePrompt = new FinishCreatePrompt();
@@ -114,8 +116,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 				case REGION:
 					return regionPrompt;
 				case LASSO:
-					context.getForWhom().sendRawMessage(ChatMagic.colorize("{RED}Sorry, Lasso selection is still a work in progress."));
-					return this;
+					return lassoPrompt;
 				}
 			}
 				

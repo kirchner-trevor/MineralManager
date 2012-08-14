@@ -48,6 +48,7 @@ public class LassoSelectPrompt extends FixedSetPrompt {
 		if (input.equals("finish") || input.equals("end")) {
 			return next;
 		} else if (input.equals("start") || input.equals("begin")) {
+			ctx.setSessionData("lasso.running", true);
 			Commands.beginLasso((Player) ctx.getForWhom());
 			return this;
 		}
