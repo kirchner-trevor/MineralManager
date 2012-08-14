@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import me.hellfire212.MineralManager.tasks.RespawnTask;
-import me.hellfire212.MineralManager.utils.GenericUtil;
 import me.hellfire212.MineralManager.utils.ShapeUtils;
 import me.hellfire212.MineralVein.MM13Loader;
 import me.hellfire212.MineralVein.NoData;
@@ -201,8 +200,8 @@ public class Upgrader {
 				double x2 = bits[3];
 				double y2 = bits[4];
 				double z2 = bits[5];
-				List<Point2D.Double> points = Tools.squareBoundaries(x1, z1, x2, z2);
-				java.awt.Shape shape = ShapeUtils.shapeFromBounds(GenericUtil.<List<Point2D>>cast(points));
+				List<Point2D> points = Tools.squareBoundaries(x1, z1, x2, z2);
+				java.awt.Shape shape = ShapeUtils.shapeFromBounds(points);
 				
 				Configuration conf = plugin.getConfigurationMap().get("imported");
 				if (conf == null) conf = plugin.getDefaultConfiguration();

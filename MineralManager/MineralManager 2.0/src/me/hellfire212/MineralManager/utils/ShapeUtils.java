@@ -144,8 +144,8 @@ public final class ShapeUtils {
 	}
 	
 	
-	public static ArrayList<Point2D.Double> pointsFromCompactBounds(Object boundaries) {
-		ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
+	public static ArrayList<Point2D> pointsFromCompactBounds(Object boundaries) {
+		ArrayList<Point2D> points = new ArrayList<Point2D>();
 		java.lang.Double x = null;
 		int i = 0;
 		if (boundaries instanceof Collection<?>) {

@@ -180,7 +180,7 @@ public class Region implements Serializable, Comparable<Region>, ConfigurationSe
 		if (!global) {
 			ceil = (Double) values.get("ceil");
 			floor = (Double) values.get("floor");
-			ArrayList<Point2D.Double> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
+			ArrayList<Point2D> points = ShapeUtils.pointsFromCompactBounds(values.get("boundaries"));
 			if (points == null) {
 				Object oshape = values.get("shape");
 				if (oshape instanceof Map<?, ?>) {

@@ -118,8 +118,8 @@ public class Tools {
 		return result;
 	}
 
-	static ArrayList<Point2D.Double> squareBoundaries(double x1, double z1, double x2, double z2) {
-		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>(7);
+	static ArrayList<Point2D> squareBoundaries(double x1, double z1, double x2, double z2) {
+		ArrayList<Point2D> boundaries = new ArrayList<Point2D>(7);
 		
 		Point2D.Double zero = new Point2D.Double();
 		Point2D.Double origin = new Point2D.Double(x1, z1);
