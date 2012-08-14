@@ -86,15 +86,16 @@ public class Commands {
 	}
 	
 	public static Selection finishLasso(Player player, String prefix) {
-		ArrayList<Point2D.Double> boundaries = new ArrayList<Point2D.Double>();
+		ArrayList<Point2D> boundaries = new ArrayList<Point2D>();
 		ArrayList<Coordinate> temp = lassoCoordinateMap.get(player);
 		double floor = Integer.MAX_VALUE;
 		double ceil = Integer.MIN_VALUE;
 		for(Coordinate coordinate : temp) {
 			double y = coordinate.getY();
-			if(y < floor) {
+			if (y < floor) {
 				floor = y;
-			} else if(y > ceil) {
+			}
+			if (y > ceil) {
 				ceil = y;
 			}
 			boundaries.add(new Point2D.Double(coordinate.getX(), coordinate.getZ()));

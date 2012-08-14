@@ -34,6 +34,11 @@ public final class ShapeUtils {
 		}
 	}
 	
+	/**
+	 * Create a rectangle from a list of Point2D's.
+	 * @param points a list of points.
+	 * @return a new Rectangle2D instance.
+	 */
 	private static Rectangle2D rectangleFromPoints(List<Point2D> points) {
 		double minX = points.get(0).getX();
 		double minY = points.get(0).getY();
@@ -179,7 +184,7 @@ public final class ShapeUtils {
 		poly.addPoint((int) Math.round(p.getX()), (int) Math.round(p.getY()));
 	}
 
-	public static ArrayList<Point2D.Double> reduceBoundaries(ArrayList<Point2D.Double> boundaries) {
+	public static ArrayList<Point2D> reduceBoundaries(ArrayList<Point2D> boundaries) {
 		int size = boundaries.size();
 		int index = 0;
 		while(index + 2 < size) {
@@ -193,12 +198,12 @@ public final class ShapeUtils {
 		return boundaries;
 	}
 
-	public static boolean isBetween(Point2D.Double a, Point2D.Double b, Point2D.Double c) {
+	public static boolean isBetween(Point2D a, Point2D b, Point2D c) {
 		double epsilon = 0.05; //Threshold to determine whether a point is "on" the line.
-		double cyMINUSay = c.y - a.y;
-		double bxMINUSax = b.x - a.x;
-		double cxMINUSax = c.x - a.x;
-		double byMINUSay = b.y - a.y;
+		double cyMINUSay = c.getY() - a.getY();
+		double bxMINUSax = b.getX() - a.getX();
+		double cxMINUSax = c.getX() - a.getX();
+		double byMINUSay = b.getY() - a.getY();
 		double crossProduct = cyMINUSay * bxMINUSax - cxMINUSax * byMINUSay;
 		if(Math.abs(crossProduct) > epsilon) {
 			return false;
