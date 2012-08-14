@@ -9,7 +9,7 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
 public class LassoSelectPrompt extends FixedSetPrompt {
-	private Prompt next;
+	private final Prompt next;
 	private final String LASSO_HELP = ChatMagic.colorize(
 			"  {GREEN}Lasso Selection:{TEXT} This selection works by having you\n" +
 			"  walk around and select a non-square or strange shaped region.\n" +
@@ -24,8 +24,9 @@ public class LassoSelectPrompt extends FixedSetPrompt {
 			"  {TEXT}Put in {VERB}end {TEXT} when done selecting the region."
 	);
 
-	public LassoSelectPrompt() {
+	public LassoSelectPrompt(Prompt next) {
 		super("start", "begin", "finish", "end");
+		this.next = next;
 	}
 
 	@Override
@@ -47,6 +48,7 @@ public class LassoSelectPrompt extends FixedSetPrompt {
 		if (input.equals("finish") || input.equals("end")) {
 			return next;
 		} else if (input.equals("start") || input.equals("begin")) {
+			ctx.setSessionData("lasso.running", true);
 			Commands.beginLasso((Player) ctx.getForWhom());
 			return this;
 		}
