@@ -139,7 +139,7 @@ public class MineralListener implements Listener {
 			Region region = wdata.getRegionSet().contains(coordinate);
 			if(region != null) {
 				Configuration configuration = region.getConfiguration();
-				if(!(configuration.isUsePermissions() && !player.hasPermission(PERMISSION_USER))) {
+				if(!configuration.isUsePermissions() || player.hasPermission(PERMISSION_USER)) {
 					String message = configuration.getOnBlockProspect();
 					if(!message.equals("false")) {
 						BlockInfo info = plugin.blockMap.get(coordinate);
