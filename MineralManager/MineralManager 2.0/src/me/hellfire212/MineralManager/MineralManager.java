@@ -185,7 +185,7 @@ public class MineralManager extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		boolean result = false;
 		if(sender instanceof Player) {
-			handleCommand((Player) sender, command, label, args);
+			result = handleCommand((Player) sender, command, label, args);
 		} else {
 			System.out.println("Non-player command!");
 		}
