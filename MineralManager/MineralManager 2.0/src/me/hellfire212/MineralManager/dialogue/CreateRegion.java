@@ -14,7 +14,6 @@ import me.hellfire212.MineralManager.Region;
 import me.hellfire212.MineralManager.Selection;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
-import org.bukkit.ChatColor;
 import org.bukkit.conversations.BooleanPrompt;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
@@ -254,7 +253,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 		//String message;
 		Selection sel = null;
 		Player player = (Player) ctx.getForWhom();
-		String outPrefix = "" + ChatColor.AQUA;
+		String outPrefix = ChatMagic.colorize("{AQUA}");
 		switch (r_type) {
 		case CUBE:
 			int horizontal = ((Number) ctx.getSessionData("cube.horizontal")).intValue();

@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -164,11 +164,11 @@ public class MineralListener implements Listener {
 	}
 	
 	private String getCustomMessage(String message, BlockInfo info, long cooldown) {
-		String displayMessage = ChatColor.AQUA + "[" + plugin.getName() + "] " + ChatColor.WHITE + message;
+		String displayMessage = ChatMagic.colorize("{AQUA}[%s] {WHITE}%s", plugin.getName(), message);
 		Material blockType = Material.getMaterial(info.getTypeId(Type.BLOCK));
-		displayMessage = displayMessage.replaceAll("%b", ChatColor.GOLD + "" + blockType + ChatColor.WHITE);
-		displayMessage = displayMessage.replaceAll("%c", ChatColor.GOLD + "" + cooldown + ChatColor.WHITE);
-		displayMessage = displayMessage.replaceAll("%r", ChatColor.GOLD + "" + Math.round((info.getRespawn() - System.currentTimeMillis()) / 1000) + ChatColor.WHITE);
+		displayMessage = displayMessage.replaceAll("%b", ChatMagic.colorize("{GOLD}%s{WHITE}", blockType));
+		displayMessage = displayMessage.replaceAll("%c", ChatMagic.colorize("{GOLD}%d{WHITE}", cooldown));
+		displayMessage = displayMessage.replaceAll("%r", ChatMagic.colorize("{GOLD}%d{WHITE}", Math.round((info.getRespawn() - System.currentTimeMillis()) / 1000)));
 		return displayMessage;
 	}
 }

@@ -18,6 +18,7 @@ import java.util.zip.DataFormatException;
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
 import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -33,7 +34,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MineralManager extends JavaPlugin {
 	public static final ChatColor TEXT_COLOR = ChatColor.LIGHT_PURPLE;
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
-	public static final String PREFIX = ChatColor.AQUA + "[MineralManager] " + MineralManager.TEXT_COLOR;
+	public static final String PREFIX = ChatMagic.colorize("{AQUA}[MineralManager] {TEXT}");
 	
 	public static final String REGION_SET_FILENAME = "regionSet.bin";
 	public static final String BLOCK_MAP_FILENAME = "blockMap.bin";

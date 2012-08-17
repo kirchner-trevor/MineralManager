@@ -192,13 +192,13 @@ public final class Commands {
 	
 	//0 Arguments
 	public static void list(MineralManager plugin, Player player, List<Object> args) {
-		player.sendMessage(MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Region List]" + MineralManager.TEXT_COLOR);
+		ChatMagic.send(player, "%s{HEADER}[Region List]", MineralManager.PREFIX);
 		Collection<WorldData> wds = plugin.allWorldDatas();
 		boolean prefixWorld = (wds.size() > 1);
 		for (WorldData wdata : wds) {
 			RegionSet rs = wdata.getRegionSet();
 			if (rs.size() == 0) continue;
-			if (prefixWorld) player.sendMessage(ChatMagic.colorize("{TEXT}%s:", wdata.getWorldName()));
+			if (prefixWorld) ChatMagic.send(player, "{TEXT}%s:", wdata.getWorldName());
 			player.sendMessage(rs.toColorizedString());
 		}
 	}
@@ -229,7 +229,7 @@ public final class Commands {
 			player.setMetadata(MineralListener.METADATA_CREATIVE, new FixedMetadataValue(manager, true));
 			status = "CREATIVE";
 		}
-		player.sendMessage(MineralManager.PREFIX + "You are now in " + MineralManager.HEADER_COLOR + status + MineralManager.TEXT_COLOR + " mode.");
+		ChatMagic.send(player, "%s You are now in {HEADER}%s{TEXT} mode.", MineralManager.PREFIX, status);
 	}
 	
 	public static void shutdown() {
