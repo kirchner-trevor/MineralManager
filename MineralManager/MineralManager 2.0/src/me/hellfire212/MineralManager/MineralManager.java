@@ -18,6 +18,7 @@ import java.util.zip.DataFormatException;
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
 import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
+import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -51,9 +52,12 @@ public class MineralManager extends JavaPlugin {
 	private MMCommand select_lasso = new MMCommand("lasso", new Argument(String.class, "start / end"));
 
 	private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
+	private MMCommand createBasic = new MMCommand("create");
 	private MMCommand remove = new MMCommand("remove", new Argument(String.class, "region name"));
 	private MMCommand list = new MMCommand("list");
 	private MMCommand lock = new MMCommand("lock");
+	private MMCommand advancedCmd = new MMCommand("advanced");
+	
 	private MMCommand creative = new MMCommand("creative");
 		
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
@@ -71,6 +75,7 @@ public class MineralManager extends JavaPlugin {
 	
 	private Configuration defaultConfiguration;
 	private DefaultDict<String, WorldData> worldData = new DefaultDict<String, WorldData>(WorldData.getMaker());
+	private DefaultDict<String, PlayerInfo> playerInfo = new DefaultDict<String, PlayerInfo>(PlayerInfo.getMaker());
 
 	private SaveTracker saveTracker;
 	private YamlConfiguration dataConfig;
@@ -198,16 +203,11 @@ public class MineralManager extends JavaPlugin {
 		if(!player.hasPermission(MineralListener.PERMISSION_ADMIN)) {
 			return false;
 		}
-		
 		List<String> argumentList = Arrays.asList(args);
+		String commandhelpStr = getCommandUsage(player);
 		
-		String commandList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Commands]\n" + MineralManager.TEXT_COLOR +
-							 "/mm " + select.getUsage() + "\n" +
-							 "/mm " + create.getUsage() + "\n" +
-							 "/mm " + remove.getUsage() + "\n" +
-							 "/mm " + list.getUsage()   + "\n" +
-							 "/mm " + lock.getUsage() + "\n" + 
-							 "/mm " + creative.getUsage() + "\n";
+		String commandList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Commands]\n" + MineralManager.TEXT_COLOR + commandhelpStr;
+							
 		
 		List<Object> validList = null;
 		MMCommand.clearError();
@@ -283,6 +283,16 @@ public class MineralManager extends JavaPlugin {
 				return true;
 			}
 			
+			if ((validList = advancedCmd.validate(argumentList)) != null) {
+				PlayerInfo pi = getPlayerInfo(player.getName());
+				pi.setAdvanced(!pi.getAdvanced());
+				ChatMagic.send(player, 
+						"%sYou are now in %s mode", 
+						MineralManager.PREFIX,
+						(pi.getAdvanced() ? "advanced": "basic")
+				);
+			}
+			
 			String error = MMCommand.getError();
 			player.sendMessage(error.isEmpty() ? commandList : MineralManager.PREFIX + "/mm " + error);
 			return false;
@@ -300,6 +310,35 @@ public class MineralManager extends JavaPlugin {
 		}
 		return false;
 	}
+
+	/**
+	 * Get the usage help for this player.
+	 * @param player who's asking.
+	 * @return a string of lines of usage help.
+	 * TODO: memoize this, there are only ever two possibilities. 
+	 */
+	private String getCommandUsage(Player player) {
+		boolean advanced = getPlayerInfo(player.getName()).getAdvanced();
+		return getCommandHelp(advanced);
+	}
+	
+	private String getCommandHelp(boolean advanced) {
+		MMCommand commandhelp[];
+		if (advanced) {
+			commandhelp = new MMCommand[]{select, create, remove, list, lock, creative};
+		} else {
+			commandhelp = new MMCommand[]{createBasic, remove, list, lock, advancedCmd};
+		}
+		
+		StringBuilder output = new StringBuilder();
+		for (MMCommand cmd : commandhelp) {
+			output.append("/mm ");
+			output.append(cmd.getUsage());
+			output.append("\n");
+		}
+		return output.toString();
+	}
+
 
 	public Configuration getDefaultConfiguration() {
 		return defaultConfiguration;
@@ -325,6 +364,10 @@ public class MineralManager extends JavaPlugin {
 		return items;
 	}
 	
+	public PlayerInfo getPlayerInfo(String playerName) {
+		return playerInfo.ensure(playerName);
+	}
+	
 	/**
 	 * Get the set of all regions known about.
 	 * @return a brand new set.
@@ -339,7 +382,7 @@ public class MineralManager extends JavaPlugin {
 		return allRegions;
 	}
 	
-	private YamlConfiguration getDataConfig() {
+	public YamlConfiguration getDataConfig() {
 		if (dataConfig == null) {
 			dataConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), DATA_YAML_FILENAME));
 		}
