@@ -21,8 +21,12 @@ public class PlayerInfo {
 	}
 	
 	void setAdvanced(boolean advanced) {
-		this.advanced = advanced;
-		findMySection(MineralManager.getInstance().getDataConfig()).set("advanced", advanced);
+		if (advanced != this.advanced) {
+			this.advanced = advanced;
+			MineralManager plugin = MineralManager.getInstance();
+			findMySection(plugin.getDataConfig()).set("advanced", advanced);
+			plugin.saveDataConfig();
+		}
 	}
 	
 

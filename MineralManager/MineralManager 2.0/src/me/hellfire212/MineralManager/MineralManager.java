@@ -291,6 +291,7 @@ public class MineralManager extends JavaPlugin {
 						MineralManager.PREFIX,
 						(pi.getAdvanced() ? "advanced": "basic")
 				);
+				return true;
 			}
 			
 			String error = MMCommand.getError();
@@ -389,7 +390,7 @@ public class MineralManager extends JavaPlugin {
 		return dataConfig;
 	}
 	
-	private boolean saveDataConfig() {
+	public boolean saveDataConfig() {
 		try {
 			getDataConfig().save(new File(getDataFolder(), DATA_YAML_FILENAME));
 		} catch (IOException e) {
