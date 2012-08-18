@@ -3,6 +3,8 @@ package me.hellfire212.MineralManager;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import me.hellfire212.MineralManager.utils.TimeFormat;
+
 import org.bukkit.Material;
 
 public class Tools {
@@ -65,6 +67,8 @@ public class Tools {
 	public static int parseCooldown(Object obj) {
 		if(obj instanceof Integer) {
 			return (Integer) obj;
+		} else if (obj instanceof CharSequence) {
+			return TimeFormat.parse(((CharSequence) obj).toString());
 		} else {
 			return -1;
 		}

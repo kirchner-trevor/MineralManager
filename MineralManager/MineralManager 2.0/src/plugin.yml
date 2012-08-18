@@ -1,5 +1,5 @@
 name: MineralManager
-version: 2.1.1
+version: 2.1.2
 prefix: Mineral Manager
 description: Allows for more control over the purpose of blocks.
 load: POSTWORLD

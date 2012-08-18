@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
+import me.hellfire212.MineralManager.utils.TimeFormat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -168,7 +169,7 @@ public class MineralListener implements Listener {
 		Material blockType = Material.getMaterial(info.getTypeId(Type.BLOCK));
 		displayMessage = displayMessage.replaceAll("%b", ChatColor.GOLD + "" + blockType + ChatColor.WHITE);
 		displayMessage = displayMessage.replaceAll("%c", ChatColor.GOLD + "" + cooldown + ChatColor.WHITE);
-		displayMessage = displayMessage.replaceAll("%r", ChatColor.GOLD + "" + Math.round((info.getRespawn() - System.currentTimeMillis()) / 1000) + ChatColor.WHITE);
+		displayMessage = displayMessage.replaceAll("%r", ChatColor.GOLD + "" + TimeFormat.format((info.getRespawn() - System.currentTimeMillis()) / 1000L) + ChatColor.WHITE);
 		return displayMessage;
 	}
 }
