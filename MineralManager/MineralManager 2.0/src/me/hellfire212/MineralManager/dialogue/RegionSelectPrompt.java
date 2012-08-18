@@ -4,14 +4,12 @@ import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.Location;
-import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
-import org.bukkit.conversations.FixedSetPrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
 /** Create a "Region" type selection */
-class RegionSelectPrompt extends FixedSetPrompt {
+class RegionSelectPrompt extends SlashCommandAllowedPrompt {
 	private Prompt next;
 	private static String endText = ChatMagic.colorize("type {VERB}end {TEXT}to mark the end location");
 	private static String verboseEndText = ChatMagic.colorize(
@@ -25,12 +23,6 @@ class RegionSelectPrompt extends FixedSetPrompt {
 	public RegionSelectPrompt(Prompt next) {
 		super("begin", "start", "end", "help", "check");
 		this.next = next;
-	}
-	
-	@Override
-	public boolean isInputValid(ConversationContext ctx, String s) {
-		if (s.startsWith("/")) return true;
-		return super.isInputValid(ctx, s.toLowerCase());
 	}
 
 	@Override
@@ -48,18 +40,13 @@ class RegionSelectPrompt extends FixedSetPrompt {
 	}
 
 	@Override
-	protected Prompt acceptValidatedInput(ConversationContext ctx, String s) {
-		Conversable c = ctx.getForWhom();
-		//Location loc = null;
-		if (c instanceof Player) {
-			Player player = (Player) c;
+	protected Prompt handleNormalInput(ConversationContext ctx, Player player, String s) {
+		if (player != null) {
+			s = s.toLowerCase();
 			Location loc = player.getLocation();
 			Coordinate current = new Coordinate(loc);
 			boolean has_start = (ctx.getSessionData("region.start") != null);
-			if (s.startsWith("/")) {
-				player.performCommand(s.substring(1));
-				return this;
-			} else if (s.equals("begin") || s.equals("start")) {
+			 if (s.equals("begin") || s.equals("start")) {
 				ctx.getForWhom().sendRawMessage(String.format(
 						"Marked beginning point x=%d, y=%d, z=%d",
 						loc.getBlockX(),
