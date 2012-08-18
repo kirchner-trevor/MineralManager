@@ -20,9 +20,9 @@ public final class TimeFormat {
 	 * @param seconds Total number of seconds.
 	 * @return A string like "5h40m" or "4m30s"
 	 */
-	public static String format(int seconds) {
-		int minutes = seconds / SECONDS_PER_MINUTE;
-		int hours = 0;
+	public static String format(long seconds) {
+		long minutes = seconds / SECONDS_PER_MINUTE;
+		long hours = 0;
 		if (minutes > MINUTES_PER_HOUR) {
 			hours = minutes / MINUTES_PER_HOUR;
 			minutes = minutes % MINUTES_PER_HOUR;
@@ -32,7 +32,7 @@ public final class TimeFormat {
 	}
 
 	/** Internal formatter for building time format. */
-	private static String doFormat(int hours, int minutes, int seconds) {
+	private static String doFormat(long hours, long minutes, long seconds) {
 		StringBuilder sb = new StringBuilder();
 		if (hours != 0) {
 			sb.append(hours);
