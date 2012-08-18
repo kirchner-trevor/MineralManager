@@ -168,7 +168,7 @@ public class MineralListener implements Listener {
 		String displayMessage = ChatColor.AQUA + "[" + plugin.getName() + "] " + ChatColor.WHITE + message;
 		Material blockType = Material.getMaterial(info.getTypeId(Type.BLOCK));
 		displayMessage = displayMessage.replaceAll("%b", ChatColor.GOLD + "" + blockType + ChatColor.WHITE);
-		displayMessage = displayMessage.replaceAll("%c", ChatColor.GOLD + "" + cooldown + ChatColor.WHITE);
+		displayMessage = displayMessage.replaceAll("%c", ChatColor.GOLD + "" + TimeFormat.format(cooldown) + ChatColor.WHITE);
 		displayMessage = displayMessage.replaceAll("%r", ChatColor.GOLD + "" + TimeFormat.format((info.getRespawn() - System.currentTimeMillis()) / 1000L) + ChatColor.WHITE);
 		return displayMessage;
 	}
