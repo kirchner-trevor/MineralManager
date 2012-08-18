@@ -1,7 +1,9 @@
 == Version 2.1.1 ==
-Not yet released
- * Do a lasso selection conversation
- * Lasso selection (both ways) provides insight on how many points are selected.
+Released 2012-08-17
+ * Implement a lasso selection conversation
+ * Lasso selection provides insight on how many points are selected.
+ * the help on the "/mm" command doesn't show advanced commands by default
+ * Add "/mm advanced" command to provide access to advanced commands
 
 == Version 2.1 ==
 Released 2012-08-12

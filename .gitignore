@@ -168,3 +168,6 @@ tests/*.bin
 # Binary
 MineralManager.jar
 makejar.sh
+
+# Symlinks
+/src
