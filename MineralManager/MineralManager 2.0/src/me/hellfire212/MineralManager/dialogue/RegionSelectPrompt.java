@@ -26,6 +26,12 @@ class RegionSelectPrompt extends FixedSetPrompt {
 		super("begin", "start", "end", "help", "check");
 		this.next = next;
 	}
+	
+	@Override
+	public boolean isInputValid(ConversationContext ctx, String s) {
+		if (s.startsWith("/")) return true;
+		return super.isInputValid(ctx, s.toLowerCase());
+	}
 
 	@Override
 	public String getPromptText(ConversationContext ctx) {
@@ -50,8 +56,10 @@ class RegionSelectPrompt extends FixedSetPrompt {
 			Location loc = player.getLocation();
 			Coordinate current = new Coordinate(loc);
 			boolean has_start = (ctx.getSessionData("region.start") != null);
-			
-			if (s.equals("begin") || s.equals("start")) {
+			if (s.startsWith("/")) {
+				player.performCommand(s.substring(1));
+				return this;
+			} else if (s.equals("begin") || s.equals("start")) {
 				ctx.getForWhom().sendRawMessage(String.format(
 						"Marked beginning point x=%d, y=%d, z=%d",
 						loc.getBlockX(),
