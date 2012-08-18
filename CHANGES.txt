@@ -1,5 +1,5 @@
 == Version 2.1.2 ==
-Not yet released
+Released 2012-08-18
  * Lasso selection allows slash commands during selection
  * Accept and show times as 'friendly' strings: '4m30s', etc
 
