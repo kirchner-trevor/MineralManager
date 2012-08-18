@@ -1,5 +1,6 @@
 package me.hellfire212.MineralManager.utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,13 +8,9 @@ import java.util.Map;
 public final class TimeFormat {
 	private static final int SECONDS_PER_MINUTE = 60;
 	private static final int MINUTES_PER_HOUR = 60;
+	private static final int HOURS_PER_DAY = 24;
 	
-	private static Map<Character, Integer> conv_lookup = new HashMap<Character, Integer>();
-	static {
-		conv_lookup.put('s', 1);
-		conv_lookup.put('m', SECONDS_PER_MINUTE);
-		conv_lookup.put('h', SECONDS_PER_MINUTE * MINUTES_PER_HOUR);
-	}
+	private static Map<Character, Integer> convLookup = buildConvLookup();
 
 	/**
 	 * Format a time in seconds to more "friendly" units.
@@ -64,8 +61,8 @@ public final class TimeFormat {
 				sb.append(c);
 			} else if (c == ' ' || c == '\t' || c == ',') {
 				continue;
-			} else if (conv_lookup.containsKey(c)) {
-				int conversion = conv_lookup.get(c);
+			} else if (convLookup.containsKey(c)) {
+				int conversion = convLookup.get(c);
 				int val = Integer.parseInt(sb.toString());
 				output += val * conversion;
 				sb.delete(0, sb.length());
@@ -75,5 +72,14 @@ public final class TimeFormat {
 			output += new Integer(sb.toString());
 		}
 		return output;
+	}
+	
+	private static Map<Character, Integer> buildConvLookup() {
+		Map<Character,Integer> convLookup = new HashMap<Character, Integer>();
+		convLookup.put('s', 1);
+		convLookup.put('m', SECONDS_PER_MINUTE);
+		convLookup.put('h', SECONDS_PER_MINUTE * MINUTES_PER_HOUR);
+		convLookup.put('d', SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY);
+		return Collections.unmodifiableMap(convLookup);
 	}
 }
