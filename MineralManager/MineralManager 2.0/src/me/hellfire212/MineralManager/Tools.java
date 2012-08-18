@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import me.hellfire212.MineralManager.utils.TimeFormat;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class Tools {
 	
@@ -137,5 +138,14 @@ public class Tools {
 		boundaries.add(origin);
 		boundaries.add(zero);
 		return boundaries;
+	}
+
+	public static String parseDispMessage(ConfigurationSection config, String key) {
+		String message = config.getString(key);
+		if (message == null) return null;
+		if (message.equalsIgnoreCase("null") || message.equalsIgnoreCase("false")) {
+			return null;
+		}
+		return message;
 	}
 }

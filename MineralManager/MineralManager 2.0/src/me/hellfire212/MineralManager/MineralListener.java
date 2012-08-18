@@ -102,7 +102,7 @@ public class MineralListener implements Listener {
 				taskMap.put(coordinate, tid);
 				
 				String message = configuration.getOnBlockBreak();
-				if(!message.equals("false")) {
+				if(message != null) {
 					player.sendMessage(getCustomMessage(message, info, cooldown));
 				}
 			}
@@ -142,7 +142,7 @@ public class MineralListener implements Listener {
 				Configuration configuration = region.getConfiguration();
 				if(!configuration.isUsePermissions() || player.hasPermission(PERMISSION_USER)) {
 					String message = configuration.getOnBlockProspect();
-					if(!message.equals("false")) {
+					if(message != null) {
 						BlockInfo info = plugin.blockMap.get(coordinate);
 						Mineral mineral = configuration.getBlockMap().get(info);
 						int cooldown = mineral != null ? mineral.getCooldown() : 0;

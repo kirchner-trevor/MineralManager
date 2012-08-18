@@ -34,8 +34,8 @@ public class Configuration implements Serializable {
 	private boolean isActive = true;
 	private boolean mineOriginalOnly = false;
 	private boolean usePermissions = false;
-	private String onBlockBreak = "";
-	private String onBlockProspect = "";
+	private String onBlockBreak = null;
+	private String onBlockProspect = null;
 	
 	private BlockInfo placeholderBlock = new BlockInfo(Type.BLOCK, 0, 0);
 	private HashMap<BlockInfo, Mineral> blockMap = new HashMap<BlockInfo, Mineral>();
@@ -56,8 +56,8 @@ public class Configuration implements Serializable {
 		isActive = currentConfig.contains(ACTIVE) ? currentConfig.getBoolean(ACTIVE) : def.isActive();
 		mineOriginalOnly = currentConfig.contains(MINE_ORIGINAL_ONLY) ? currentConfig.getBoolean(MINE_ORIGINAL_ONLY) : def.isMineOriginalOnly();
 		usePermissions = currentConfig.contains(USE_PERMISSIONS) ? currentConfig.getBoolean(USE_PERMISSIONS) : def.isUsePermissions();
-		onBlockBreak = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_BREAK) ? currentConfig.getString(DISPLAY_MESSAGES_ON_BLOCK_BREAK) : def.getOnBlockBreak();
-		onBlockProspect = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) ? currentConfig.getString(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) : def.getOnBlockProspect();
+		onBlockBreak = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_BREAK) ? Tools.parseDispMessage(currentConfig, DISPLAY_MESSAGES_ON_BLOCK_BREAK) : def.getOnBlockBreak();
+		onBlockProspect = currentConfig.contains(DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) ? Tools.parseDispMessage(currentConfig, DISPLAY_MESSAGES_ON_BLOCK_PROSPECT) : def.getOnBlockProspect();
 		
 		List<?> mineralList = currentConfig.contains(MANAGED_BLOCKS) ? currentConfig.getList(MANAGED_BLOCKS) : null;
 		HashMap<BlockInfo, Mineral> blockMap = def.blockMap;
