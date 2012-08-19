@@ -3,7 +3,10 @@ package me.hellfire212.MineralManager;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import me.hellfire212.MineralManager.utils.TimeFormat;
+
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 
 public final class Tools {
 	
@@ -65,6 +68,8 @@ public final class Tools {
 	public static int parseCooldown(Object obj) {
 		if(obj instanceof Integer) {
 			return (Integer) obj;
+		} else if (obj instanceof CharSequence) {
+			return TimeFormat.parse(((CharSequence) obj).toString());
 		} else {
 			return -1;
 		}
@@ -132,5 +137,14 @@ public final class Tools {
 		boundaries.add(origin);
 		boundaries.add(zero);
 		return boundaries;
+	}
+
+	public static String parseDispMessage(ConfigurationSection config, String key) {
+		String message = config.getString(key);
+		if (message == null) return null;
+		if (message.equalsIgnoreCase("null") || message.equalsIgnoreCase("false")) {
+			return null;
+		}
+		return message;
 	}
 }

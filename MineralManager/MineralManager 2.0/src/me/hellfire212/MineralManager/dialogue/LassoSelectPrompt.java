@@ -4,11 +4,10 @@ import me.hellfire212.MineralManager.Commands;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 
 import org.bukkit.conversations.ConversationContext;
-import org.bukkit.conversations.FixedSetPrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
-public class LassoSelectPrompt extends FixedSetPrompt {
+public class LassoSelectPrompt extends SlashCommandAllowedPrompt {
 	private final Prompt next;
 	private final String LASSO_HELP = ChatMagic.colorize(
 			"  {GREEN}Lasso Selection:{TEXT} This selection works by having you\n" +
@@ -44,12 +43,13 @@ public class LassoSelectPrompt extends FixedSetPrompt {
 	}
 
 	@Override
-	protected Prompt acceptValidatedInput(ConversationContext ctx, String input) {
+	protected Prompt handleNormalInput(ConversationContext ctx, Player player, String input) {
+		input = input.toLowerCase();
 		if (input.equals("finish") || input.equals("end")) {
 			return next;
 		} else if (input.equals("start") || input.equals("begin")) {
 			ctx.setSessionData("lasso.running", true);
-			Commands.beginLasso((Player) ctx.getForWhom());
+			Commands.beginLasso(player);
 			return this;
 		}
 		return null;

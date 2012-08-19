@@ -7,6 +7,7 @@ import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
 import me.hellfire212.MineralManager.utils.ChatMagic;
+import me.hellfire212.MineralManager.utils.TimeFormat;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -101,7 +102,7 @@ public class MineralListener implements Listener {
 				taskMap.put(coordinate, tid);
 				
 				String message = configuration.getOnBlockBreak();
-				if(!message.equals("false")) {
+				if(message != null) {
 					player.sendMessage(getCustomMessage(message, info, cooldown));
 				}
 			}
@@ -141,7 +142,7 @@ public class MineralListener implements Listener {
 				Configuration configuration = region.getConfiguration();
 				if(!configuration.isUsePermissions() || player.hasPermission(PERMISSION_USER)) {
 					String message = configuration.getOnBlockProspect();
-					if(!message.equals("false")) {
+					if(message != null) {
 						BlockInfo info = plugin.blockMap.get(coordinate);
 						Mineral mineral = configuration.getBlockMap().get(info);
 						int cooldown = mineral != null ? mineral.getCooldown() : 0;
@@ -167,8 +168,8 @@ public class MineralListener implements Listener {
 		String displayMessage = ChatMagic.colorize("{AQUA}[%s] {WHITE}%s", plugin.getName(), message);
 		Material blockType = Material.getMaterial(info.getTypeId(Type.BLOCK));
 		displayMessage = displayMessage.replaceAll("%b", ChatMagic.colorize("{GOLD}%s{WHITE}", blockType));
-		displayMessage = displayMessage.replaceAll("%c", ChatMagic.colorize("{GOLD}%d{WHITE}", cooldown));
-		displayMessage = displayMessage.replaceAll("%r", ChatMagic.colorize("{GOLD}%d{WHITE}", Math.round((info.getRespawn() - System.currentTimeMillis()) / 1000)));
+		displayMessage = displayMessage.replaceAll("%c", ChatMagic.colorize("{GOLD}%d{WHITE}", TimeFormat.format(cooldown)));
+		displayMessage = displayMessage.replaceAll("%r", ChatMagic.colorize("{GOLD}%d{WHITE}", TimeFormat.format(info.getCooldown())));
 		return displayMessage;
 	}
 }
