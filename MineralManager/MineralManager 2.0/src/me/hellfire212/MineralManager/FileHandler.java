@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import me.hellfire212.MineralManager.utils.SaveFlipper;
 import me.hellfire212.MineralManager.utils.Saveable;
 
 public class FileHandler {
@@ -113,14 +114,16 @@ public class FileHandler {
 	 */
 	public <T> boolean saveObject(T object) {
 		write.lock();
+		SaveFlipper sf = new SaveFlipper(file);
 		try {
-			OutputStream os = new FileOutputStream(file);
+			OutputStream os = new FileOutputStream(sf.getSaveTemp());
 			ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(os));
 			try {
 				oos.writeObject(object);
 			} finally {
 				oos.close();
 			}
+			if (!sf.saveFinished()) return false;
 			this.dirty = false;
 			return true;
 		} catch (FileNotFoundException e) {
