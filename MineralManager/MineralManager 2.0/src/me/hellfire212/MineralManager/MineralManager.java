@@ -19,6 +19,7 @@ import me.hellfire212.MineralManager.datastructures.DefaultDict;
 import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 import me.hellfire212.MineralManager.utils.ChatMagic;
+import me.hellfire212.MineralManager.utils.MetricsLite;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -114,6 +115,14 @@ public class MineralManager extends JavaPlugin {
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
 		getServer().getScheduler().scheduleSyncDelayedTask(this, saveTracker, MMConstants.SAVETRACKER_STARTUP_DELAY);		
 		new EnableListenersTask(this).run();
+		
+		// Do plugin metrics
+		try {
+			MetricsLite metrics = new MetricsLite(this);
+			metrics.start();
+		} catch (IOException e) {
+			// TODO
+		}
 	}
 
 
