@@ -1,7 +1,0 @@
-name: MineralManager
-version: 1.4
-description: Allows for more control over the purpose of blocks.
-author: hellfire212
-
-main: me.hellfire212.mineralmanager.MineralManager
-database: false
