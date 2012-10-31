@@ -29,6 +29,7 @@ public class BlockBitmap implements Saveable {
 	private static final int RECORD_SIZE = HEADER_SIZE + BITMAP_SIZE;
 	
 	private RandomAccessFile bitmapFile;
+	private final DirtyFlag dirtyFlag = new DirtyFlag();
 	private long firstEmpty = 0;
 	private Map<BlockCoordinate, BlockBitmapNode> nodes = new HashMap<BlockCoordinate, BlockBitmapNode>();
 
@@ -109,7 +110,7 @@ public class BlockBitmap implements Saveable {
 			int y = bitmapFile.readInt();
 			int z = bitmapFile.readInt();
 			BlockCoordinate coord = new BlockCoordinate(x, y, z);
-			nodes.put(coord, new BlockBitmapNode(bitmapFile.getFilePointer()));
+			nodes.put(coord, new BlockBitmapNode(bitmapFile.getFilePointer(), dirtyFlag));
 			bitmapFile.skipBytes(BITMAP_SIZE);
 		} catch (EOFException e) {
 			
@@ -122,6 +123,9 @@ public class BlockBitmap implements Saveable {
 	 * @return How many nodes were flushed.
 	 */
 	public int flush() {
+		if (!dirtyFlag.isDirty()) {
+			return 0;
+		}
 		int saved = 0;
 		// Make a list of sorted nodes, so we can seek through the file in order.
 		ArrayList<BlockBitmapNode> sortedNodes = new ArrayList<BlockBitmapNode>(nodes.values());
@@ -133,6 +137,7 @@ public class BlockBitmap implements Saveable {
 				saved++; 
 			}
 		}
+		dirtyFlag.clear();
 		return saved;
 	}
 	
@@ -154,7 +159,7 @@ public class BlockBitmap implements Saveable {
 			baseCoord.writeAsIntsToFile(bitmapFile);
 			bitmapFile.write(new byte[512]);
 			firstEmpty += RECORD_SIZE;
-			BlockBitmapNode node = new BlockBitmapNode(firstEmpty - BITMAP_SIZE);
+			BlockBitmapNode node = new BlockBitmapNode(firstEmpty - BITMAP_SIZE, dirtyFlag);
 			nodes.put(baseCoord, node);
 			return node;
 		} catch (IOException e) {

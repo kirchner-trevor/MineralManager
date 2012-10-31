@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.hellfire212.MineralManager.utils.SaveFlipper;
 import me.hellfire212.MineralManager.utils.Saveable;
 
 /**
@@ -62,15 +63,20 @@ public class RegionSetPersistence implements Saveable {
 		}
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		config.set("regions", regions);
+		SaveFlipper sf = new SaveFlipper(file);
 		try {
-			config.save(file);
+			config.save(sf.getSaveTemp());
+			if (sf.saveFinished()) {
+				dirty = false;
+				return true;
+			} else {
+				return false;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
-		dirty = false;
-		return true;
 	}
 
 	/**

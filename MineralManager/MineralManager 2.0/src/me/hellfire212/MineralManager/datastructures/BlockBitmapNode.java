@@ -14,6 +14,7 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 	};
 	private final long fileOffset;
 
+	private final DirtyFlag dirtyFlag;
 	private boolean dirty = false;
 	private boolean loaded = false;
 	private boolean[] map;
@@ -22,7 +23,8 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 	 * Create a new BlockBitmapNode.
 	 * @param offset The offset in the database where our bitmap starts.
 	 */
-	public BlockBitmapNode(long offset) {
+	public BlockBitmapNode(long offset, DirtyFlag flag) {
+		this.dirtyFlag = flag;
 		this.fileOffset = offset;
 	}
 	
@@ -108,6 +110,7 @@ public class BlockBitmapNode implements Comparable<BlockBitmapNode> {
 	public void set(int i, int j, int k, boolean value) {
 		int loc = (i << 8) | (j << 4) | k;
 		map[loc] = value;
+		dirtyFlag.flagDirty();
 		dirty = true;
 	}
 
