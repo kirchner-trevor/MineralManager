@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,9 +62,6 @@ public class MineralManager extends JavaPlugin {
 		
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
-	
-	public Set<Coordinate> lockedSet;
-	public FileHandler lockedSetFH;
 	
 	public MineralListener mineralListener;
 	public LassoListener lassoListener;
@@ -424,6 +420,10 @@ public class MineralManager extends JavaPlugin {
 		if (placedSetFile.exists()) {
 			Upgrader.convertPlaced(this, placedSetFile);
 		}
+		File lockedSetFile = new File(binFolder, LOCKED_SET_FILENAME);
+		if (lockedSetFile.exists()) {
+			Upgrader.convertLocked(this, lockedSetFile);
+		}
 		
 		File regionSetFile = new File(binFolder, REGION_SET_FILENAME);
 		if (regionSetFile.exists()) {
@@ -447,17 +447,11 @@ public class MineralManager extends JavaPlugin {
 		// Initial setup
 		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
 		blockMapFH = new FileHandler(new File(binFolder, BLOCK_MAP_FILENAME));
-		lockedSet = Collections.synchronizedSet(new HashSet<Coordinate>());
-		lockedSetFH = new FileHandler(new File(binFolder, LOCKED_SET_FILENAME));
 
 		// Do actual loading
 		
 		try {
 			blockMap =  blockMapFH.loadObject(blockMap.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		try {
-			lockedSet = lockedSetFH.loadObject(lockedSet.getClass());
 		} catch (FileNotFoundException e) {}
 		
 		SaveTracker.track(blockMapFH.getSaver(blockMap));		

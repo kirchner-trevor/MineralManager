@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import me.hellfire212.MineralManager.datastructures.BitmapChoice;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
 import me.hellfire212.MineralVein.MM13Loader;
 import me.hellfire212.MineralVein.NoData;
@@ -29,37 +30,54 @@ import org.bukkit.configuration.file.YamlConfiguration;
  *
  */
 public class Upgrader {
-
 	/**
 	 * Convert the old serialized-format of the placed blocks to the new bitmap format, separated by world.
 	 * @param plugin The instance of the plugin.
 	 * @param placedSetFile the location of the old placedSet file
 	 */
-	@SuppressWarnings("unchecked")
 	public static void convertPlaced(MineralManager plugin, File placedSetFile) {
 		plugin.getLogger().info("Beginning conversion of placed blocks to new format....");
-		Set<Coordinate> placedSet =  Collections.synchronizedSet(new HashSet<Coordinate>());
-		FileHandler placedSetFH = new FileHandler(placedSetFile);
-		try {
-			placedSet = placedSetFH.loadObject(placedSet.getClass());
-		} catch (FileNotFoundException e) {
-			return;
-		}
+		convertCoordinateBitmap(plugin, placedSetFile, BitmapChoice.PLACED_BLOCKS);
+	}
+	
+	/**
+	 * Convert the old serialized-format of the locked blocks to the new bitmap format, separated by world.
+	 * @param plugin The instance of the plugin.
+	 * @param lockedSetFile the location of the old lockedSet file
+	 */
+	public static void convertLocked(MineralManager plugin, File lockedSetFile) {
+		plugin.getLogger().info("Beginning conversion of locked blocks to new format....");
+		convertCoordinateBitmap(plugin, lockedSetFile, BitmapChoice.LOCKED_BLOCKS);
+	}
+
+	private static void convertCoordinateBitmap(MineralManager plugin, File coordinateSetFile, BitmapChoice choice) {
+		Set<Coordinate> coordinateSet = loadCoordinateSet(coordinateSetFile);
 		
 		// Get the world data for each item, and set the placed blocks for each.
-		for (Coordinate coord: placedSet) {
+		for (Coordinate coord: coordinateSet) {
 			WorldData wdata = plugin.getWorldData(coord.getWorld());
-			wdata.getPlacedBlocks().set(coord, true);
+			wdata.getBitmapData(choice).set(coord, true);
 		}
 		plugin.getLogger().info(" -> Completed setting. Now saving...");
 		for (WorldData wdata : plugin.allWorldDatas()) {
-			wdata.getPlacedBlocks().flush();
+			wdata.getBitmapData(choice).flush();
 		}
 		plugin.getLogger().info(" -> Saved.");
 
 		// Prevent doing the conversion again in the future.
-		renameOld(plugin, placedSetFile, ".old");
-	
+		renameOld(plugin, coordinateSetFile, ".old");
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Set<Coordinate> loadCoordinateSet(File coordinateSetFile) {
+		Set<Coordinate> coordSet =  Collections.synchronizedSet(new HashSet<Coordinate>());
+		FileHandler placedSetFH = new FileHandler(coordinateSetFile);
+		try {
+			coordSet = placedSetFH.loadObject(coordSet.getClass());
+		} catch (FileNotFoundException e) {
+			return null;
+		}
+		return coordSet;
 	}
 	
 	/**
@@ -219,7 +237,8 @@ public class Upgrader {
 	private static void convertMM13Locked(MineralManager plugin, MM13Loader loader) {
 		try {
 			for (Location loc : loader.getLockedBlocks()) {
-				plugin.lockedSet.add(new Coordinate(loc));
+				WorldData wdata = plugin.getWorldData(loc.getWorld());
+				wdata.getLockedBlocks().set(new Coordinate(loc), true);
 			}
 		} catch (NoData e) {
 			plugin.getLogger().warning(e.getMessage());
