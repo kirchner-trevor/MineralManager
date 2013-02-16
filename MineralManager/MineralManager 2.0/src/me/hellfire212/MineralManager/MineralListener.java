@@ -54,8 +54,7 @@ public class MineralListener implements Listener {
 				plugin.blockMapFH.flagDirty();
 			}
 			wdata.getPlacedBlocks().unset(coordinate);
-			plugin.lockedSet.remove(coordinate);
-			//Save sets as well possibly.
+			wdata.getLockedBlocks().unset(coordinate);
 			return;
 		}
 		
@@ -68,8 +67,7 @@ public class MineralListener implements Listener {
 			cancelRespawnAtCoordinate(coordinate);
 			plugin.blockMap.remove(coordinate);
 			wdata.getPlacedBlocks().unset(coordinate);
-			plugin.lockedSet.remove(coordinate);
-			//Save sets as well possibly.
+			wdata.getLockedBlocks().unset(coordinate);
 			return;
 		}
 
@@ -86,7 +84,7 @@ public class MineralListener implements Listener {
 		
 		if(!(configuration.isMineOriginalOnly() && wdata.wasPlaced(block))) {
 
-			if((configuration.isLocked() || plugin.lockedSet.contains(coordinate)) && player.getItemInHand().getEnchantments().toString().contains("SILK_TOUCH")) {
+			if((configuration.isLocked() || wdata.isLocked(block)) && player.getItemInHand().getEnchantments().toString().contains("SILK_TOUCH")) {
 				block.breakNaturally();
 			}
 			

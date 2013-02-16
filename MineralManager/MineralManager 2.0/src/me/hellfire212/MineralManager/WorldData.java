@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.bukkit.block.Block;
 
+import me.hellfire212.MineralManager.datastructures.BitmapChoice;
 import me.hellfire212.MineralManager.datastructures.BlockBitmap;
 import me.hellfire212.MineralManager.datastructures.ObjectMaker;
 import me.hellfire212.MineralManager.utils.StringTools;
@@ -21,6 +22,8 @@ public final class WorldData {
 	private final String worldName;
 	private File worldFolder;
 	private BlockBitmap placedBlocks;
+	private BlockBitmap lockedBlocks;
+
 	private RegionSet regionSet = new RegionSet();
 	private RegionSetPersistence rsPersist;
 
@@ -36,7 +39,9 @@ public final class WorldData {
 	private void load() {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
 		SaveTracker.track(placedBlocks);
-		
+		lockedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.LOCKED_BLOCKS_FILENAME));
+		//SaveTracker.track(lockedBlocks);
+	
 		rsPersist = new RegionSetPersistence(
 				regionSet,
 				new File(worldFolder, MMConstants.REGION_YAML_FILENAME)
@@ -53,6 +58,7 @@ public final class WorldData {
 			placedBlocks.close();
 		} catch (IOException e) {}
 		placedBlocks = null;
+		lockedBlocks = null;
 		regionSet = null;
 		rsPersist.shutdown();
 		rsPersist = null;
@@ -71,6 +77,19 @@ public final class WorldData {
 	/** Convenience function for the use case of Block locations */
 	public boolean wasPlaced(Block block) {
 		return placedBlocks.get(block.getX(), block.getY(), block.getZ());
+	}
+	
+	public BlockBitmap getLockedBlocks() {
+		return lockedBlocks;
+	}
+	
+	public boolean isLocked(int x, int y, int z) {
+		return lockedBlocks.get(x, y, z);
+	}
+
+	/** Convenience function for the use case of Block locations */
+	public boolean isLocked(Block block) {
+		return lockedBlocks.get(block.getX(), block.getY(), block.getZ());
 	}
 
 	/** Get the RegionSet for this world. */
@@ -99,5 +118,15 @@ public final class WorldData {
 				return new WorldData((String) key);
 			}
 		};
+	}
+	
+	public BlockBitmap getBitmapData(BitmapChoice choice) {
+		switch (choice) {
+		case PLACED_BLOCKS:
+			return placedBlocks;
+		case LOCKED_BLOCKS:
+			return lockedBlocks;
+		}
+		return null;
 	}
 }

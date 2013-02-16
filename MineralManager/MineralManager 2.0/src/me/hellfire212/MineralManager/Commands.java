@@ -207,16 +207,18 @@ public final class Commands {
 	public static void lock(MineralManager plugin, Player player, List<Object> args) {
 		Block targetBlock = player.getTargetBlock(null, 20); //The 20 is the maximum distance away a block can be to be "selected".
 		if(targetBlock != null) {
-			Coordinate coordinate = new Coordinate(targetBlock.getLocation());
-			String status = "no longer";
-			if(!plugin.lockedSet.remove(coordinate)) {
+			WorldData wdata = plugin.getWorldData(targetBlock.getWorld());
+			String status;
+			boolean new_flag;
+			if(wdata.isLocked(targetBlock)) {
+				status = "no longer";
+				new_flag = false;
+			} else {
+				new_flag = true;
 				status = "now";
-				plugin.lockedSet.add(coordinate);
-			} 
-			player.sendMessage(MineralManager.PREFIX + "Target block is " + status + " locked.");
-			if(!plugin.lockedSetFH.saveObject(plugin.lockedSet)) {
-				plugin.getServer().getLogger().severe("Failure occured when saving lockedSet during lock command!");
 			}
+			wdata.getLockedBlocks().set(targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), new_flag);
+			player.sendMessage(MineralManager.PREFIX + "Target block is " + status + " locked.");
 		}
 	}
 	
