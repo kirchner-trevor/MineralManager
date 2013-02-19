@@ -18,7 +18,7 @@ public class BlockBitmapTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this.binFile = new java.io.File("tests/bitmap_test.bin");
+		this.binFile = new java.io.File("target/test-classes/bitmap_test.bin");
 		if (binFile.exists()) binFile.delete();
 	}
 
