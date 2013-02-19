@@ -54,9 +54,16 @@ public final class WorldData {
 	 * Do not use any data structures after this has been shut down.
 	 */
 	public void shutdown() {
-		try {
-			placedBlocks.close();
-		} catch (IOException e) {}
+		for (BitmapChoice b : BitmapChoice.values()) {
+			try {
+				getBitmapData(b).close();
+			} catch (IOException e) {
+				MineralManager.getInstance().getLogger().severe(String.format(
+					"Could not save bit-map file %s in world '%s': (reason %s)",
+					b.toString(), this.worldName, e.getMessage()
+				));
+			}
+		}
 		placedBlocks = null;
 		lockedBlocks = null;
 		regionSet = null;
