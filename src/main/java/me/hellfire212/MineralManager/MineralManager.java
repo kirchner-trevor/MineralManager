@@ -176,24 +176,6 @@ public class MineralManager extends JavaPlugin {
 		knownWorlds.addAll(knownWorldsList);
 	}
 	
-	/**
-	 * Executes the given command, returning its success.
-	 * @param sender Source of the command
-	 * @param command Command which was executed
-	 * @param label Alias of the command which was used
-	 * @param args Passed command arguments
-	 * @return true if a valid command, otherwise false
-	 */
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		boolean result = false;
-		if(sender instanceof Player) {
-			result = handleCommand((Player) sender, command, label, args);
-		} else {
-			System.out.println("Non-player command!");
-		}
-		return result;
-	}
 	private void setupCommands() {
         MondoCommand base = new MondoCommand();
         getCommand("mm").setExecutor(base);
@@ -271,9 +253,6 @@ public class MineralManager extends JavaPlugin {
     
          */
 	}
-	
-	private boolean handleCommand(Player player, Command command, String label, String[] args) {
-	    return false;
 		
 				/*
 				List<String> subList = argumentList.subList(1, argumentList.size());
@@ -331,7 +310,6 @@ public class MineralManager extends JavaPlugin {
 			player.sendMessage(error.isEmpty() ? commandList : MineralManager.PREFIX + "/mm " + error);
 			return false;
 			*/
-	}
 
 
 	public Configuration getDefaultConfiguration() {
