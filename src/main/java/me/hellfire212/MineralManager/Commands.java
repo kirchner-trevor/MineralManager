@@ -178,8 +178,7 @@ public final class Commands {
 	}
 
 	//1 Argument
-	public static void remove(MineralManager plugin, Player player, List<Object> args) {
-		String name = (String) args.get(0);
+	public static void remove(MineralManager plugin, Player player, String name) {
 		String status = "was not";
 		for (WorldData wdata : plugin.allWorldDatas()) {
 			if(wdata.getRegionSet().remove(name)) {

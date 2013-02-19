@@ -8,9 +8,9 @@ website: http://dev.bukkit.org/server-mods/mineralmanager/
 main: me.hellfire212.MineralManager.MineralManager
 softdepend: [Multiverse-Core]
 commands:
-  mm:
+  mineralmanager:
     description: Allows for access to MineralManager commands.
-    aliases: [MM, min, mineral, manager, MineralManager]
+    aliases: [mm, min, mineral, manager, MineralManager]
     permission: MineralManager.Admin
     permission-message: You must be an MineralManager Admin to use this command.
   test:

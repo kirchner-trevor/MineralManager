@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,10 +19,15 @@ import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 import me.hellfire212.MineralManager.utils.ChatMagic;
 import me.hellfire212.MineralManager.utils.MetricsLite;
+import mondocommand.CallInfo;
+import mondocommand.MondoCommand;
+import mondocommand.MondoFailure;
+import mondocommand.SubHandler;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -43,21 +48,6 @@ public class MineralManager extends JavaPlugin {
 	private static final String DATA_YAML_FILENAME = "data.yml";
 	
 	private static MineralManager plugin = null;
-	
-	private MMCommand select = new MMCommand("select", true);
-	private MMCommand select_world = new MMCommand("world");
-	private MMCommand select_cube = new MMCommand("cube", new Argument(Integer.class, "xz-radius"), new Argument(Integer.class, "y-radius"));
-	private MMCommand select_region = new MMCommand("region", new Argument(String.class, "start / end"));
-	private MMCommand select_lasso = new MMCommand("lasso", new Argument(String.class, "start / end"));
-
-	private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
-	private MMCommand createBasic = new MMCommand("create");
-	private MMCommand remove = new MMCommand("remove", new Argument(String.class, "region name"));
-	private MMCommand list = new MMCommand("list");
-	private MMCommand lock = new MMCommand("lock");
-	private MMCommand advancedCmd = new MMCommand("advanced");
-	
-	private MMCommand creative = new MMCommand("creative");
 		
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
@@ -119,6 +109,7 @@ public class MineralManager extends JavaPlugin {
 		} catch (IOException e) {
 			// TODO
 		}
+		setupCommands();
 	}
 
 
@@ -204,31 +195,88 @@ public class MineralManager extends JavaPlugin {
 		}
 		return result;
 	}
+	private void setupCommands() {
+        MondoCommand base = new MondoCommand();
+        getCommand("mm").setExecutor(base);
+
+        base.addSub("create")
+            .setDescription("Create a new region")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) {
+                    new CreateRegion(plugin).begin(call.getPlayer());
+                }
+                
+            });
+        
+        base.addSub("remove")
+            .setDescription("Remove MM region")
+            .setMinArgs(1)
+            .setUsage("region name")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) {
+                    Commands.remove(plugin, call.getPlayer(), call.getArg(0));
+                }
+            });
+        
+        base.addSub("list")
+            .setDescription("List MM regions")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    Commands.list(plugin, call.getPlayer(), Collections.emptyList());
+
+                }            
+            });
+        
+        base.addSub("lock")
+            .setDescription("Lock block on your cursor")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    Commands.lock(plugin, call.getPlayer(), Collections.emptyList());
+                }            
+            });
+        
+        base.addSub("creative")
+            .setDescription("Creative Mode")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    Commands.creative(plugin, call.getPlayer(), Collections.emptyList());
+                }            
+            });            
+
+
+        
+        getCommand("test").setExecutor(new CommandExecutor() {
+            public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+                Player player = (Player) sender;
+                Coordinate testCoord = new Coordinate(player.getLocation());
+                WorldData wdata = getWorldData(player.getWorld());
+                Region inRegion = wdata.getRegionSet().contains(testCoord);
+                if(inRegion != null) {
+                    player.sendMessage(MineralManager.PREFIX + "You are in region " + inRegion);
+                } else {
+                    player.sendMessage(MineralManager.PREFIX + "You are not in a region.");
+                }
+                return true;
+            }
+            
+        });
+        //commandhelp = new MMCommand[]{select, create, remove, list, lock, creative};
+        /*
+         * private MMCommand select = new MMCommand("select", true);
+    private MMCommand select_world = new MMCommand("world");
+    private MMCommand select_cube = new MMCommand("cube", new Argument(Integer.class, "xz-radius"), new Argument(Integer.class, "y-radius"));
+    private MMCommand select_region = new MMCommand("region", new Argument(String.class, "start / end"));
+    private MMCommand select_lasso = new MMCommand("lasso", new Argument(String.class, "start / end"));
+
+    private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
+    
+         */
+	}
 	
 	private boolean handleCommand(Player player, Command command, String label, String[] args) {
+	    return false;
 		
-		//We don't want non-admins to be using these commands.
-		if(!player.hasPermission(MineralListener.PERMISSION_ADMIN)) {
-			return false;
-		}
-		List<String> argumentList = Arrays.asList(args);
-		String commandhelpStr = getCommandUsage(player);
-		
-		String commandList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Commands]\n" + MineralManager.TEXT_COLOR + commandhelpStr;
-							
-		
-		List<Object> validList = null;
-		MMCommand.clearError();
-		
-		if(command.getName().equalsIgnoreCase("mm")) {
-			
-			if((validList = select.validate(argumentList)) != null) {
-				String selectList = MineralManager.PREFIX + MineralManager.HEADER_COLOR + "[Selection Commands]\n" + MineralManager.TEXT_COLOR +
-									"/mm select " + select_world.getUsage() + "\n" +
-									"/mm select " + select_cube.getUsage() + "\n" + 
-									"/mm select " + select_region.getUsage() + "\n" +
-									"/mm select " + select_lasso.getUsage() + "\n";
-				
+				/*
 				List<String> subList = argumentList.subList(1, argumentList.size());
 				
 				if ((validList = select_world.validate(subList)) != null) {
@@ -260,37 +308,15 @@ public class MineralManager extends JavaPlugin {
 				String error = MMCommand.getError();
 				player.sendMessage(error.isEmpty() ? selectList : MineralManager.PREFIX + "/mm " + select.getName() + " " + error);
 				return false;
-			}
+			}*/
 
-				
+			/*
 			if((validList = create.validate(argumentList)) != null) {
 				Commands.create(plugin, player, validList);
 				return true;
-			} else if (argumentList.size() == 1 && "create".equals(argumentList.get(0))) {
-				new CreateRegion(this).begin(player);
-				return true;
-			}
-				
-			if((validList = remove.validate(argumentList)) != null) {
-				Commands.remove(plugin, player, validList);
-				return true;
-			}
-				
-			if((validList = list.validate(argumentList)) != null) {
-				Commands.list(plugin, player, validList);
-				return true;
-			}
+			}*/
 			
-			if((validList = lock.validate(argumentList)) != null) {
-				Commands.lock(plugin, player, validList);
-				return true;
-			}
-			
-			if((validList = creative.validate(argumentList)) != null) {
-				Commands.creative(plugin, player, validList);
-				return true;
-			}
-			
+			/*
 			if ((validList = advancedCmd.validate(argumentList)) != null) {
 				PlayerInfo pi = getPlayerInfo(player.getName());
 				pi.setAdvanced(!pi.getAdvanced());
@@ -305,47 +331,7 @@ public class MineralManager extends JavaPlugin {
 			String error = MMCommand.getError();
 			player.sendMessage(error.isEmpty() ? commandList : MineralManager.PREFIX + "/mm " + error);
 			return false;
-			
-		} else if(label.equalsIgnoreCase("test")) {
-			Coordinate testCoord = new Coordinate(player.getLocation());
-			WorldData wdata = getWorldData(player.getWorld());
-			Region inRegion = wdata.getRegionSet().contains(testCoord);
-			if(inRegion != null) {
-				player.sendMessage(MineralManager.PREFIX + "You are in region " + inRegion);
-			} else {
-				player.sendMessage(MineralManager.PREFIX + "You are not in a region.");
-			}
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Get the usage help for this player.
-	 * @param player who's asking.
-	 * @return a string of lines of usage help.
-	 * TODO: memoize this, there are only ever two possibilities. 
-	 */
-	private String getCommandUsage(Player player) {
-		boolean advanced = getPlayerInfo(player.getName()).getAdvanced();
-		return getCommandHelp(advanced);
-	}
-	
-	private String getCommandHelp(boolean advanced) {
-		MMCommand commandhelp[];
-		if (advanced) {
-			commandhelp = new MMCommand[]{select, create, remove, list, lock, creative};
-		} else {
-			commandhelp = new MMCommand[]{createBasic, remove, list, lock, advancedCmd};
-		}
-		
-		StringBuilder output = new StringBuilder();
-		for (MMCommand cmd : commandhelp) {
-			output.append("/mm ");
-			output.append(cmd.getUsage());
-			output.append("\n");
-		}
-		return output.toString();
+			*/
 	}
 
 
