@@ -1,11 +1,11 @@
-package MineralManagerTests;
+package me.hellfire212.MineralManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+
 
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.Assert;
 
 import me.hellfire212.MineralManager.datastructures.BlockBitmap;
 
@@ -62,7 +62,7 @@ public class BlockBitmapTest {
 		try {
 			b.close();
 		} catch (IOException e) {
-			Assert.fail("IOException in close");
+			fail("IOException in close");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

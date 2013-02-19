@@ -1,4 +1,4 @@
-package MineralManagerTests;
+package me.hellfire212.MineralManager;
 
 import static org.junit.Assert.*;
 

@@ -171,3 +171,7 @@ makejar.sh
 
 # Symlinks
 /src
+
+# Maven
+target/
+
