@@ -9,22 +9,108 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.LassoWatcherTask;
 import me.hellfire212.MineralManager.utils.ShapeUtils;
+import mondocommand.CallInfo;
 import mondocommand.ChatMagic;
+import mondocommand.FormatConfig;
+import mondocommand.MondoCommand;
+import mondocommand.MondoFailure;
+import mondocommand.SubHandler;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public final class Commands {
-	
 	private static final String START = "start";
 	private static final String END = "end";
 	private static ConcurrentHashMap<Player, Coordinate> regionStartMap = new ConcurrentHashMap<Player, Coordinate>();
 	public static ConcurrentHashMap<String, ArrayList<Coordinate>> lassoCoordinateMap = new ConcurrentHashMap<String, ArrayList<Coordinate>>();
-	
+    private final MineralManager plugin;
+
+	public Commands(MineralManager plugin) {
+	    this.plugin = plugin;
+	    setup();
+	}
+
+	private void setup() {
+        FormatConfig config = new FormatConfig()
+            .setReplyPrefix(MineralManager.PREFIX);
+
+        MondoCommand base = new MondoCommand(config);
+        plugin.getCommand("mm").setExecutor(base);
+
+        base.addSub("create")
+            .setDescription("Create a new region")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) {
+                    new CreateRegion(plugin).begin(call.getPlayer());
+                }
+                
+            });
+        
+        base.addSub("remove")
+            .allowConsole()
+            .setDescription("Remove MM region")
+            .setMinArgs(1)
+            .setUsage("region name")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) {
+                    remove(call);
+                }
+            });
+        
+        base.addSub("list")
+            .allowConsole()
+            .setDescription("List MM regions")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    list(call);
+
+                }            
+            });
+        
+        base.addSub("lock")
+            .setDescription("Lock block on your cursor")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    lock(call);
+                }
+            });
+        
+        base.addSub("creative")
+            .setDescription("Creative Mode")
+            .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoFailure {
+                    creative(call, call.getPlayer());
+                }            
+            });
+        
+        plugin.getCommand("test").setExecutor(new CommandExecutor() {
+            public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+                Player player = (Player) sender;
+                Coordinate testCoord = new Coordinate(player.getLocation());
+                WorldData wdata = plugin.getWorldData(player.getWorld());
+                Region inRegion = wdata.getRegionSet().contains(testCoord);
+                if(inRegion != null) {
+                    player.sendMessage(MineralManager.PREFIX + "You are in region " + inRegion);
+                } else {
+                    player.sendMessage(MineralManager.PREFIX + "You are not in a region.");
+                }
+                return true;
+            }
+        });
+        
+        ChatMagic.registerAlias("{TEXT}", ChatColor.LIGHT_PURPLE);
+        ChatMagic.registerAlias("{VERB}", ChatColor.GREEN);
+	}
 	//These methods all make the assumption that "args" contains the correct amount of arguments of the correct type.
 
 	//****This method hasn't been cleaned up yet.
@@ -178,33 +264,34 @@ public final class Commands {
 	}
 
 	//1 Argument
-	public static void remove(MineralManager plugin, Player player, String name) {
+	public void remove(CallInfo call) {
 		String status = "was not";
+		String regionName = call.getArg(0);
 		for (WorldData wdata : plugin.allWorldDatas()) {
-			if(wdata.getRegionSet().remove(name)) {
+			if(wdata.getRegionSet().remove(regionName)) {
 				wdata.flagRegionSetDirty();
 				status = "was";
 			}
 		}
-		player.sendMessage(MineralManager.PREFIX + name + " " + status + " removed.");
+		call.reply("%s %s removed", regionName, status);
 	}
 	
 	//0 Arguments
-	public static void list(MineralManager plugin, Player player) {
-		ChatMagic.send(player, "%s{HEADER}[Region List]", MineralManager.PREFIX);
+	public void list(CallInfo call) {
+		call.reply("{HEADER}[Region List]");
 		Collection<WorldData> wds = plugin.allWorldDatas();
 		boolean prefixWorld = (wds.size() > 1);
 		for (WorldData wdata : wds) {
 			RegionSet rs = wdata.getRegionSet();
 			if (rs.size() == 0) continue;
-			if (prefixWorld) ChatMagic.send(player, "{TEXT}%s:", wdata.getWorldName());
-			player.sendMessage(rs.toColorizedString());
+			if (prefixWorld) call.reply("{TEXT}%s:", wdata.getWorldName());
+			call.reply(rs.toColorizedString());
 		}
 	}
 
 	//0 Arguments
-	public static void lock(MineralManager plugin, Player player) {
-		Block targetBlock = player.getTargetBlock(null, 20); //The 20 is the maximum distance away a block can be to be "selected".
+	public void lock(CallInfo call) {
+		Block targetBlock = call.getPlayer().getTargetBlock(null, 20); //The 20 is the maximum distance away a block can be to be "selected".
 		if(targetBlock != null) {
 			WorldData wdata = plugin.getWorldData(targetBlock.getWorld());
 			String status;
@@ -217,20 +304,20 @@ public final class Commands {
 				status = "now";
 			}
 			wdata.getLockedBlocks().set(targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), new_flag);
-			player.sendMessage(MineralManager.PREFIX + "Target block is " + status + " locked.");
+			call.reply("Target block is %s locked.", status);
 		}
 	}
 	
 	//0 Arguments
-	public static void creative(MineralManager manager, Player player) {
+	public void creative(CallInfo call, Player player) {
 		String status = "NORMAL";
 		if(player.hasMetadata(MineralListener.METADATA_CREATIVE)) {
-			player.removeMetadata(MineralListener.METADATA_CREATIVE, manager);
+			player.removeMetadata(MineralListener.METADATA_CREATIVE, plugin);
 		} else {
-			player.setMetadata(MineralListener.METADATA_CREATIVE, new FixedMetadataValue(manager, true));
+			player.setMetadata(MineralListener.METADATA_CREATIVE, new FixedMetadataValue(plugin, true));
 			status = "CREATIVE";
 		}
-		ChatMagic.send(player, "%s You are now in {HEADER}%s{TEXT} mode.", MineralManager.PREFIX, status);
+		call.reply("You are now in {HEADER}%s{TEXT} mode.", status);
 	}
 	
 	public static void shutdown() {

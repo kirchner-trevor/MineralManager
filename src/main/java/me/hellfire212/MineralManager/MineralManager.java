@@ -14,21 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
-import me.hellfire212.MineralManager.dialogue.CreateRegion;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 import me.hellfire212.MineralManager.utils.MetricsLite;
-import mondocommand.CallInfo;
 import mondocommand.ChatMagic;
-import mondocommand.FormatConfig;
-import mondocommand.MondoCommand;
-import mondocommand.MondoFailure;
-import mondocommand.SubHandler;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -109,7 +100,7 @@ public class MineralManager extends JavaPlugin {
 		} catch (IOException e) {
 			// TODO
 		}
-		setupCommands();
+		new Commands(this);
 	}
 
 
@@ -176,71 +167,6 @@ public class MineralManager extends JavaPlugin {
 		List<String> knownWorldsList = dataConfig.getStringList("knownWorlds");
 		knownWorlds.addAll(knownWorldsList);
 	}
-	
-	private void setupCommands() {
-	    FormatConfig config = new FormatConfig()
-	        .setReplyPrefix(PREFIX);
-        MondoCommand base = new MondoCommand(config);
-        getCommand("mm").setExecutor(base);
-
-        base.addSub("create")
-            .setDescription("Create a new region")
-            .setHandler(new SubHandler() {
-                public void handle(CallInfo call) {
-                    new CreateRegion(plugin).begin(call.getPlayer());
-                }
-                
-            });
-        
-        base.addSub("remove")
-            .setDescription("Remove MM region")
-            .setMinArgs(1)
-            .setUsage("region name")
-            .setHandler(new SubHandler() {
-                public void handle(CallInfo call) {
-                    Commands.remove(plugin, call.getPlayer(), call.getArg(0));
-                }
-            });
-        
-        base.addSub("list")
-            .setDescription("List MM regions")
-            .setHandler(new SubHandler() {
-                public void handle(CallInfo call) throws MondoFailure {
-                    Commands.list(plugin, call.getPlayer());
-
-                }            
-            });
-        
-        base.addSub("lock")
-            .setDescription("Lock block on your cursor")
-            .setHandler(new SubHandler() {
-                public void handle(CallInfo call) throws MondoFailure {
-                    Commands.lock(plugin, call.getPlayer());
-                }            
-            });
-        
-        base.addSub("creative")
-            .setDescription("Creative Mode")
-            .setHandler(new SubHandler() {
-                public void handle(CallInfo call) throws MondoFailure {
-                    Commands.creative(plugin, call.getPlayer());
-                }            
-            });
-        
-        getCommand("test").setExecutor(new CommandExecutor() {
-            public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-                Player player = (Player) sender;
-                Coordinate testCoord = new Coordinate(player.getLocation());
-                WorldData wdata = getWorldData(player.getWorld());
-                Region inRegion = wdata.getRegionSet().contains(testCoord);
-                if(inRegion != null) {
-                    player.sendMessage(MineralManager.PREFIX + "You are in region " + inRegion);
-                } else {
-                    player.sendMessage(MineralManager.PREFIX + "You are not in a region.");
-                }
-                return true;
-            }
-        });
         //commandhelp = new MMCommand[]{select, create, remove, list, lock, creative};
         /*
          * private MMCommand select = new MMCommand("select", true);
@@ -252,7 +178,6 @@ public class MineralManager extends JavaPlugin {
     private MMCommand create = new MMCommand("create", new Argument(String.class, "region name"), new Argument(String.class, "configuration"), new Argument(Integer.class, "level"));
     
          */
-	}
 		
 				/*
 				List<String> subList = argumentList.subList(1, argumentList.size());
