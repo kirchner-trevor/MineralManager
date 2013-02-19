@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import me.hellfire212.MineralManager.utils.ChatMagic;
+import mondocommand.ChatMagic;
 
 public final class RegionSet implements Serializable, Iterable<Region> {
 

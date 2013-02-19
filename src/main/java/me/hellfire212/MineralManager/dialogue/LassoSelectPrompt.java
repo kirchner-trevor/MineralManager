@@ -1,7 +1,7 @@
 package me.hellfire212.MineralManager.dialogue;
 
 import me.hellfire212.MineralManager.Commands;
-import me.hellfire212.MineralManager.utils.ChatMagic;
+import mondocommand.ChatMagic;
 
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;

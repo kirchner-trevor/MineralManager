@@ -1,7 +1,7 @@
 package me.hellfire212.MineralManager.dialogue;
 
 import me.hellfire212.MineralManager.Coordinate;
-import me.hellfire212.MineralManager.utils.ChatMagic;
+import mondocommand.ChatMagic;
 
 import org.bukkit.Location;
 import org.bukkit.conversations.ConversationContext;
@@ -70,7 +70,7 @@ class RegionSelectPrompt extends SlashCommandAllowedPrompt {
 			}
 			return this;
 		} else {
-			ChatMagic.send(ctx.getForWhom(), "{RED}You're not a player, whaaat?");
+			ChatMagic.sendRaw(ctx.getForWhom(), "{RED}You're not a player, whaaat?");
 			return Prompt.END_OF_CONVERSATION;
 		}
 	}
@@ -83,7 +83,7 @@ class RegionSelectPrompt extends SlashCommandAllowedPrompt {
 				+ "   {RED}%dx%d {AQUA}wide, {RED}%d {AQUA}tall \n"
 				+ "   from (%d, %d, %d) to (%d, %d, %d)"
 		);
-		ChatMagic.send(ctx.getForWhom(), tpl,
+		ChatMagic.sendRaw(ctx.getForWhom(), tpl,
 				Math.abs(loc.getBlockX() - begin.getBlockX()),
 				Math.abs(loc.getBlockZ() - begin.getBlockZ()),
 				Math.abs(loc.getBlockY() - begin.getBlockY()),

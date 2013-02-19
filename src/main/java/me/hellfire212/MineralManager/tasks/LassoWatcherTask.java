@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import me.hellfire212.MineralManager.Commands;
 import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralManager;
-import me.hellfire212.MineralManager.utils.ChatMagic;
+import mondocommand.ChatMagic;
 
 public class LassoWatcherTask implements Runnable {
 	private static final long delay = 20L * 2L;

@@ -12,7 +12,7 @@ import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralManager;
 import me.hellfire212.MineralManager.Region;
 import me.hellfire212.MineralManager.Selection;
-import me.hellfire212.MineralManager.utils.ChatMagic;
+import mondocommand.ChatMagic;
 
 import org.bukkit.conversations.BooleanPrompt;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -143,7 +143,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 			// FIXME wrong variable we're looking at
 			for (Region r : plugin.allRegions()) {
 				if (r.getName().toLowerCase().equals(input.toLowerCase())) {
-					ChatMagic.send(c.getForWhom(), "{RED}A configuration with this name already exists.");
+					ChatMagic.sendRaw(c.getForWhom(), "{RED}A configuration with this name already exists.");
 					return this;
 				}
 			}
@@ -177,7 +177,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 				context.setSessionData("config", plugin.getConfigurationMap().get(input.toLowerCase()));
 				return levelNumberPrompt;
 			} else {
-				ChatMagic.send(context.getForWhom(), "{RED}Must be one of the provided configuration names.");
+				ChatMagic.sendRaw(context.getForWhom(), "{RED}Must be one of the provided configuration names.");
 				return this;
 			}
 		}
@@ -225,7 +225,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 					(Player) context.getForWhom(), 
 					(Integer) context.getSessionData("level")
 				);
-				ChatMagic.send(context.getForWhom(), "{GREEN}Region made!");
+				ChatMagic.sendRaw(context.getForWhom(), "{GREEN}Region made!");
 			}
 			return null;
 		}
@@ -235,7 +235,7 @@ public class CreateRegion implements ConversationAbandonedListener {
 	@Override
 	public void conversationAbandoned(ConversationAbandonedEvent e) {
 		if (!e.gracefulExit()) {
-			ChatMagic.send(e.getContext().getForWhom(), "{RED}Region Create cancelled");
+			ChatMagic.sendRaw(e.getContext().getForWhom(), "{RED}Region Create cancelled");
 		}
 		
 	}

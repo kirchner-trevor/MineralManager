@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
-import me.hellfire212.MineralManager.utils.ChatMagic;
 import me.hellfire212.MineralManager.utils.TimeFormat;
+import mondocommand.ChatMagic;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

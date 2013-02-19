@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.hellfire212.MineralManager.tasks.LassoWatcherTask;
-import me.hellfire212.MineralManager.utils.ChatMagic;
 import me.hellfire212.MineralManager.utils.ShapeUtils;
+import mondocommand.ChatMagic;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
