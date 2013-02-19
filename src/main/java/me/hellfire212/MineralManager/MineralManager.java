@@ -19,6 +19,7 @@ import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 import me.hellfire212.MineralManager.utils.MetricsLite;
 import mondocommand.CallInfo;
 import mondocommand.ChatMagic;
+import mondocommand.FormatConfig;
 import mondocommand.MondoCommand;
 import mondocommand.MondoFailure;
 import mondocommand.SubHandler;
@@ -177,7 +178,9 @@ public class MineralManager extends JavaPlugin {
 	}
 	
 	private void setupCommands() {
-        MondoCommand base = new MondoCommand();
+	    FormatConfig config = new FormatConfig()
+	        .setReplyPrefix(PREFIX);
+        MondoCommand base = new MondoCommand(config);
         getCommand("mm").setExecutor(base);
 
         base.addSub("create")
@@ -222,9 +225,7 @@ public class MineralManager extends JavaPlugin {
                 public void handle(CallInfo call) throws MondoFailure {
                     Commands.creative(plugin, call.getPlayer());
                 }            
-            });            
-
-
+            });
         
         getCommand("test").setExecutor(new CommandExecutor() {
             public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -239,7 +240,6 @@ public class MineralManager extends JavaPlugin {
                 }
                 return true;
             }
-            
         });
         //commandhelp = new MMCommand[]{select, create, remove, list, lock, creative};
         /*
