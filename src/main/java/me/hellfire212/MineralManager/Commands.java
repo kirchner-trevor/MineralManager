@@ -190,7 +190,7 @@ public final class Commands {
 	}
 	
 	//0 Arguments
-	public static void list(MineralManager plugin, Player player, List<Object> args) {
+	public static void list(MineralManager plugin, Player player) {
 		ChatMagic.send(player, "%s{HEADER}[Region List]", MineralManager.PREFIX);
 		Collection<WorldData> wds = plugin.allWorldDatas();
 		boolean prefixWorld = (wds.size() > 1);
@@ -203,7 +203,7 @@ public final class Commands {
 	}
 
 	//0 Arguments
-	public static void lock(MineralManager plugin, Player player, List<Object> args) {
+	public static void lock(MineralManager plugin, Player player) {
 		Block targetBlock = player.getTargetBlock(null, 20); //The 20 is the maximum distance away a block can be to be "selected".
 		if(targetBlock != null) {
 			WorldData wdata = plugin.getWorldData(targetBlock.getWorld());
@@ -222,7 +222,7 @@ public final class Commands {
 	}
 	
 	//0 Arguments
-	public static void creative(MineralManager manager, Player player, List<Object> args) {
+	public static void creative(MineralManager manager, Player player) {
 		String status = "NORMAL";
 		if(player.hasMetadata(MineralListener.METADATA_CREATIVE)) {
 			player.removeMetadata(MineralListener.METADATA_CREATIVE, manager);

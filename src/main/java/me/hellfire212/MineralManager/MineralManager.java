@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -222,7 +221,7 @@ public class MineralManager extends JavaPlugin {
             .setDescription("List MM regions")
             .setHandler(new SubHandler() {
                 public void handle(CallInfo call) throws MondoFailure {
-                    Commands.list(plugin, call.getPlayer(), Collections.emptyList());
+                    Commands.list(plugin, call.getPlayer());
 
                 }            
             });
@@ -231,7 +230,7 @@ public class MineralManager extends JavaPlugin {
             .setDescription("Lock block on your cursor")
             .setHandler(new SubHandler() {
                 public void handle(CallInfo call) throws MondoFailure {
-                    Commands.lock(plugin, call.getPlayer(), Collections.emptyList());
+                    Commands.lock(plugin, call.getPlayer());
                 }            
             });
         
@@ -239,7 +238,7 @@ public class MineralManager extends JavaPlugin {
             .setDescription("Creative Mode")
             .setHandler(new SubHandler() {
                 public void handle(CallInfo call) throws MondoFailure {
-                    Commands.creative(plugin, call.getPlayer(), Collections.emptyList());
+                    Commands.creative(plugin, call.getPlayer());
                 }            
             });            
 

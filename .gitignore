@@ -169,9 +169,6 @@ tests/*.bin
 MineralManager.jar
 makejar.sh
 
-# Symlinks
-/src
-
 # Maven
 target/
 
