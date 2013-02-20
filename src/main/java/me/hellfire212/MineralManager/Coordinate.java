@@ -56,7 +56,7 @@ public final class Coordinate implements Serializable {
 	
 	@Override
 	public String toString() {
-		return getWorld().getName() + " : " + getX() + ", " + getY() + ", " + getX();
+		return getWorld().getName() + " : " + getX() + ", " + getY() + ", " + getZ();
 	}
 
 	@Override
