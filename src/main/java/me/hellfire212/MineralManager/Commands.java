@@ -51,7 +51,7 @@ public final class Commands {
             .setDescription("Create a new region")
             .setHandler(new SubHandler() {
                 public void handle(CallInfo call) {
-                    new CreateRegion(plugin).begin(call.getPlayer());
+                    new CreateRegion(plugin).begin(call.getPlayer(), call.getArgs());
                 }
                 
             });

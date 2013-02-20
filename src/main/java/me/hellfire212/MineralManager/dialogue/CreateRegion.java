@@ -15,6 +15,7 @@ import me.hellfire212.MineralManager.Selection;
 import mondocommand.ChatMagic;
 
 import org.bukkit.conversations.BooleanPrompt;
+import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.conversations.ConversationContext;
@@ -53,8 +54,12 @@ public class CreateRegion implements ConversationAbandonedListener {
 		levelNumberPrompt.setNext(finishCreatePrompt);
 	}
 	
-	public void begin(Player p) {
-		conversationFactory.buildConversation(p).begin();
+	public void begin(Player p, List<String> skiplist) {
+		Conversation convo = conversationFactory.buildConversation(p);
+		convo.begin();
+		for (String arg: skiplist) {
+		    convo.acceptInput(arg);
+		}
 	}
 	
 	private String formatHelp(String choice, String description) {
