@@ -5,8 +5,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.hellfire212.MineralManager.dialogue.CreateRegion;
@@ -29,8 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public final class Commands {
-	private static final String START = "start";
-	private static final String END = "end";
 	private static ConcurrentHashMap<Player, Coordinate> regionStartMap = new ConcurrentHashMap<Player, Coordinate>();
 	public static ConcurrentHashMap<String, ArrayList<Coordinate>> lassoCoordinateMap = new ConcurrentHashMap<String, ArrayList<Coordinate>>();
     private final MineralManager plugin;
@@ -112,28 +108,6 @@ public final class Commands {
         ChatMagic.registerAlias("{VERB}", ChatColor.GREEN);
 	}
 	//These methods all make the assumption that "args" contains the correct amount of arguments of the correct type.
-
-	//****This method hasn't been cleaned up yet.
-	public static void create(MineralManager plugin, Player player, List<Object> args) {
-		String name = (String) args.get(0);
-		String configName = ((String) args.get(1)).toLowerCase();
-		int level = (Integer) args.get(2);
-	
-		Configuration configuration = plugin.getDefaultConfiguration();
-		HashMap<String, Configuration> configurationMap = plugin.getConfigurationMap();
-		if(configurationMap.containsKey(configName)) {
-			configuration = configurationMap.get(configName);
-		}
-		
-		Selection selection = plugin.getSelection(player);
-		if(selection != null) {
-			Region newRegion = actuallyCreateRegion(plugin, name, configuration, selection, player, level);
-			boolean regionAdded = (newRegion != null);
-			player.sendMessage(MineralManager.PREFIX + newRegion.getName() + (regionAdded ? " was" : " was not") + " added at level " + (int) newRegion.getLevel() + " with configuration " + newRegion.getConfiguration().getName() + ".");
-		} else {
-			player.sendMessage(MineralManager.PREFIX + "No region is currently selected.");
-		}
-	}
 	
 	// TODO refactor this to a utility module or something
 	public static Region actuallyCreateRegion(MineralManager plugin, String name, Configuration configuration, Selection selection, Player player, int level) {
@@ -145,21 +119,9 @@ public final class Commands {
 	}
 
 
-	public static Selection selectWorld(MineralManager plugin, Player player, List<Object> validList) {
+	public static Selection selectWorld(MineralManager plugin, Player player) {
 		player.sendMessage(MineralManager.PREFIX + "Selected whole world " + player.getWorld().getName());
 		return new Selection(null, -1.0D, -1.0D);
-	}
-	
-	//****This method hasn't been cleaned up yet.
-	public static Selection selectLasso(MineralManager plugin, Player player, List<Object> args) {
-		String toggle = (String) args.get(0);
-		if(toggle.equalsIgnoreCase(START)) {
-			beginLasso(player);
-			player.sendMessage(MineralManager.PREFIX + "Recording positions as selection.");
-		} else if(toggle.equalsIgnoreCase(END) && lassoCoordinateMap.containsKey(player.getName())) {
-			return finishLasso(player, MineralManager.PREFIX);
-		}
-		return null;
 	}
 
 	public static void beginLasso(Player player) {
@@ -205,13 +167,6 @@ public final class Commands {
 		return new Selection(poly, floor, ceil);
 	}
 
-	//2 Arguments
-	public static Selection selectCube(MineralManager plugin, Player player, List<Object> args) {
-		int xzRadius = (Integer) args.get(0);
-		int yRadius = (Integer) args.get(1);
-		return selectCube(plugin, player, xzRadius, yRadius);
-	}
-
 	public static Selection selectCube(MineralManager plugin, Player player, int xzRadius, int yRadius) {
 
 		int playerX = player.getLocation().getBlockX();
@@ -226,20 +181,6 @@ public final class Commands {
 
 		player.sendMessage(MineralManager.PREFIX + "A cube spanning (" +  west + ", " + south + ") to (" + east + ", " + north + ") was selected.");
 		return new Selection(rect, playerY - yRadius, playerY + yRadius);
-	}
-	
-	//1 Argument
-	public static Selection selectRegion(MineralManager plugin, Player player, List<Object> args) {
-		String toggle = (String) args.get(0);
-		if(toggle.equalsIgnoreCase(START)) {
-			regionStartMap.put(player, new Coordinate(player.getLocation()));
-			player.sendMessage(MineralManager.PREFIX + "Recording first position of selection.");
-		} else if(toggle.equalsIgnoreCase(END) && regionStartMap.containsKey(player))  {
-			Coordinate startCoordinate = regionStartMap.get(player);
-			Coordinate endCoordinate = new Coordinate(player.getLocation());
-			return actuallySelectRegion(plugin, player, startCoordinate.getLocation(), endCoordinate.getLocation(), MineralManager.PREFIX);
-		}
-		return null;
 	}
 	
 	/** Not a command, but functionality used by the dialogue to do the actual selection. */

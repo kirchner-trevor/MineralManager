@@ -30,7 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MineralManager extends JavaPlugin {
 	public static final ChatColor TEXT_COLOR = ChatColor.LIGHT_PURPLE;
 	public static final ChatColor HEADER_COLOR = ChatColor.GOLD;
-	public static final String PREFIX = ChatMagic.colorize("{AQUA}[MineralManager] {TEXT}");
+	public static final String PREFIX = ChatMagic.colorize("{AQUA}[MineralManager] {LIGHT_PURPLE}");
 	
 	public static final String REGION_SET_FILENAME = "regionSet.bin";
 	public static final String BLOCK_MAP_FILENAME = "blockMap.bin";
