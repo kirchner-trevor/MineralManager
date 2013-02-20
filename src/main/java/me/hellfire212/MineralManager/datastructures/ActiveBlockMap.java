@@ -11,6 +11,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.hellfire212.MineralManager.BlockInfo;
 import me.hellfire212.MineralManager.Coordinate;
+import me.hellfire212.MineralManager.MineralManager;
+import me.hellfire212.MineralManager.utils.SaveFlipper;
 import me.hellfire212.MineralManager.utils.Saveable;
 
 public class ActiveBlockMap implements Saveable {
@@ -31,6 +33,8 @@ public class ActiveBlockMap implements Saveable {
             if (o instanceof ActiveDataPair) {
                 ActiveDataPair p = (ActiveDataPair) o;
                 this.data.put(p.coord, p.info);
+            } else {
+                MineralManager.getInstance().getLogger().severe("Expected ActiveDataPair, got " + o.getClass().toString());
             }
         }
     }
@@ -44,18 +48,29 @@ public class ActiveBlockMap implements Saveable {
             }
             YamlConfiguration config = new YamlConfiguration();
             config.set("active", sBlocks);
+            SaveFlipper sf = new SaveFlipper(file);
             try {
-                config.save(file);
-                this.dirty = false;
+                config.save(sf.getSaveTemp());
+                if (sf.saveFinished()) {
+                    this.dirty = false;
+                    return true;
+                } else {
+                    return false;
+                }
             } catch (IOException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
                 return false;
             }
-            return true;
         }
         return false;
     }
-
+    
+    @Override
+    public String toString() {
+        return String.format("<ActiveBlockMap: %d entries, file %s>", 
+                             this.data.size(), this.file.getAbsolutePath());
+    }
 
     public void add(Coordinate coordinate, BlockInfo info) {
         this.data.put(coordinate, info);

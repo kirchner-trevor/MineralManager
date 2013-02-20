@@ -18,10 +18,16 @@ public class EnableListenersTask implements Runnable {
 	private ArrayList<Entry<Coordinate, BlockInfo>> blockEntryList;
 	private int currentIndex = 0;
 	private int waiting = 0;
+	private final boolean debug;
 
 	public EnableListenersTask(MineralManager mineralManager) {
 		plugin = mineralManager;
 		this.blockEntryList = new ArrayList<Entry<Coordinate, BlockInfo>>(plugin.getActiveBlocks().all());
+		debug = plugin.getConfig().getBoolean("debug.task");
+		if (debug) {
+	        plugin.getLogger().info("Enable listeners: " + blockEntryList.size());
+		}
+
 	}
 
 	@Override
@@ -55,7 +61,9 @@ public class EnableListenersTask implements Runnable {
 			return;
 		}
 		waiting = 0;
-			
+		if (debug) {
+		    plugin.getLogger().info("Getting task for block at " + coordinate.toString() + ", expected block " + info.getTypeId(Type.BLOCK));
+		}
 		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
 		int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown() * 20);
 		MineralListener.taskMap.put(coordinate, tid);
