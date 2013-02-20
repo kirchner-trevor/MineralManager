@@ -41,7 +41,7 @@ public class ActiveDataPair implements ConfigurationSerializable {
         Coordinate coord = new Coordinate(
             decodeDouble(m.get("x")),
             decodeDouble(m.get("y")),
-            decodeDouble(m.get("x")),
+            decodeDouble(m.get("z" )),
             decodeString(m.get("world"), "")
         );
         BlockInfo info = new BlockInfo(
