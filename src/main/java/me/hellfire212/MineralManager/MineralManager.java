@@ -250,11 +250,6 @@ public class MineralManager extends JavaPlugin {
 		if (lockedSetFile.exists()) {
 			Upgrader.convertLocked(this, lockedSetFile);
 		}
-		
-		File regionSetFile = new File(binFolder, REGION_SET_FILENAME);
-		if (regionSetFile.exists()) {
-			Upgrader.convertRegions(this, regionSetFile);
-		}
 	}
 
 	@SuppressWarnings("unchecked")

@@ -2,7 +2,6 @@ package me.hellfire212.MineralManager;
 
 import java.awt.Shape;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
@@ -15,9 +14,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 
-public class Region implements Serializable, Comparable<Region>, ConfigurationSerializable {
-	
-	private static final long serialVersionUID = -2885326328430836535L;
+public class Region implements Comparable<Region>, ConfigurationSerializable {
 	private String name = null;
 	private Double floor = null;
 	private Double ceil = null;

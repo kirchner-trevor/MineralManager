@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 import me.hellfire212.MineralManager.datastructures.BitmapChoice;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 /**
  * Convert data from older versions of MineralManager to the latest format(s).
  * @author James Crasta
@@ -65,36 +62,6 @@ public final class Upgrader {
 			return null;
 		}
 		return coordSet;
-	}
-	
-	/**
-	 * Convert old binary FileHandler regions to the new yaml-based format.
-	 * @param plugin The MineralManager plugin instance
-	 * @param regionSetFile the File where this region set is stored.
-	 */
-	public static void convertRegions(MineralManager plugin, File regionSetFile) {
-		plugin.getLogger().info("Beginning conversion of regions to new format....");
-
-		RegionSet regionSet = new RegionSet();
-		FileHandler regionSetFH = new FileHandler(regionSetFile);
-		try {
-			regionSet = regionSetFH.loadObject(regionSet.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		for (Region region : regionSet) {
-			String configName = region.getConfiguration().getName();
-			Configuration map_config = plugin.getConfigurationMap().get(configName);
-			if (map_config != null) {
-				region.setConfiguration(map_config);
-			}
-			plugin.getLogger().info("  -> " + region.getName());
-			World world = Bukkit.getWorld(region.getWorldUUID());
-			WorldData wd = plugin.getWorldData(world);
-			wd.getRegionSet().add(region);
-			wd.flagRegionSetDirty();
-		}
-		renameOld(plugin, regionSetFile, ".old");
-		plugin.getLogger().info("Finished.");
 	}
 
 	/** 
