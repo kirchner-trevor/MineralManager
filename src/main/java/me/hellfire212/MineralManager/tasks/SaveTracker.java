@@ -1,7 +1,8 @@
-package me.hellfire212.MineralManager;
+package me.hellfire212.MineralManager.tasks;
 
 import java.util.ArrayList;
 
+import me.hellfire212.MineralManager.MineralManager;
 import me.hellfire212.MineralManager.utils.Saveable;
 
 /**
@@ -15,10 +16,10 @@ import me.hellfire212.MineralManager.utils.Saveable;
 public final class SaveTracker implements Runnable {
 	private static ArrayList<Saveable> tracked = new ArrayList<Saveable>();
 	
+    private final int timeBudget;
+    private final boolean debugMode;
 	private int position = 0;
-	private int timeBudget;
 	private MineralManager plugin;
-	private final boolean debugMode;
 	
 	/**
 	 * Create a new SaveTracker.

@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class LassoListener implements Listener {
-	
 	private JavaPlugin plugin = null;
 	private AtomicInteger counter = null;
 	
