@@ -26,10 +26,7 @@ public class RespawnTask implements Runnable {
 	@Override
 	public void run() {
 		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.BLOCK), (byte) info.getData(Type.BLOCK), false);
-		plugin.blockMap.remove(coordinate);
+		plugin.getActiveBlocks().remove(coordinate);
 		MineralListener.taskMap.remove(coordinate);
-		if(plugin.blockMapFH != null) {
-			plugin.blockMapFH.flagDirty();
-		}
 	}
 }

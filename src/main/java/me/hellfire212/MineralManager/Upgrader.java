@@ -4,8 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import me.hellfire212.MineralManager.datastructures.ActiveBlockMap;
 import me.hellfire212.MineralManager.datastructures.BitmapChoice;
+import me.hellfire212.MineralManager.utils.GenericUtil;
 
 /**
  * Convert data from older versions of MineralManager to the latest format(s).
@@ -93,5 +98,17 @@ public final class Upgrader {
 			));
 		}
 	}
+
+    public static void convertBlockMap(MineralManager plugin, File blockMapFile) {
+        Map<Coordinate, BlockInfo> blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
+        FileHandler blockMapFH = new FileHandler(blockMapFile);
+        try {
+            blockMap =  GenericUtil.cast(blockMapFH.loadObject(blockMap.getClass()));
+        } catch (FileNotFoundException e) {}
+        ActiveBlockMap activeBlocks = plugin.getActiveBlocks();
+        for (Map.Entry<Coordinate, BlockInfo> e: blockMap.entrySet()) {
+            activeBlocks.add(e.getKey(), e.getValue());
+        }
+    }
 
 }

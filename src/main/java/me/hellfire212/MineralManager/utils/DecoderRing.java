@@ -21,4 +21,18 @@ public class DecoderRing {
         }
         return defaultValue;
     }
+
+    public static double decodeDouble(Object obj) {
+        if (obj != null && obj instanceof Number) {
+            return ((Number) obj).doubleValue();
+        }
+        return 0;
+    }
+    
+    public static long decodeLong(Object obj) {
+        if (obj != null && obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        return 0;
+    }
 }

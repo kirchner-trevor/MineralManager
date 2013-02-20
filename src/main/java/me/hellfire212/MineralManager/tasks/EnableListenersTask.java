@@ -21,7 +21,7 @@ public class EnableListenersTask implements Runnable {
 
 	public EnableListenersTask(MineralManager mineralManager) {
 		plugin = mineralManager;
-		this.blockEntryList = new ArrayList<Entry<Coordinate, BlockInfo>>(plugin.blockMap.entrySet());
+		this.blockEntryList = new ArrayList<Entry<Coordinate, BlockInfo>>(plugin.getActiveBlocks().all());
 	}
 
 	@Override

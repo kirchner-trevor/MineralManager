@@ -1,15 +1,12 @@
 package me.hellfire212.MineralManager;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 public final class Coordinate implements Serializable {
-	
 	private static final long serialVersionUID = 7400534354401651744L;
 	private final double x;
 	private final double y;
@@ -21,6 +18,13 @@ public final class Coordinate implements Serializable {
 		y = location.getY();
 		z = location.getZ();
 		worldName = location.getWorld().getName();
+	}
+	
+	public Coordinate(double x, double y, double z, String worldName) {
+	    this.x = x;
+	    this.y = y;
+	    this.z = z;
+	    this.worldName = worldName;
 	}
 
 	public double getX() {
@@ -48,19 +52,6 @@ public final class Coordinate implements Serializable {
 	//This will return null if getWorld returns null
 	public Location getLocation() {
 		return new Location(getWorld(), getX(), getY(), getZ());
-	}
-	
-	public boolean inPolygon(ArrayList<Point2D.Double> polygon) {
-		boolean c = false;
-		int nvert = polygon.size();
-		for(int i = 0, j = nvert - 1; i < nvert; j = i++) {
-			Point2D.Double m = polygon.get(i);
-			Point2D.Double n = polygon.get(j);
-			if(((m.getY() > z) != (n.getY() > z)) && (x < (n.getX() - m.getX()) * (z - m.getY()) / (n.getY() - m.getY()) + m.getX())) {
-				c = !c;
-			}
-		}
-		return c;
 	}
 	
 	@Override

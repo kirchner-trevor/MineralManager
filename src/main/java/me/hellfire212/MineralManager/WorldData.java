@@ -24,7 +24,6 @@ public final class WorldData {
 	private File worldFolder;
 	private BlockBitmap placedBlocks;
 	private BlockBitmap lockedBlocks;
-
 	private RegionSet regionSet = new RegionSet();
 	private RegionSetPersistence rsPersist;
 
@@ -41,8 +40,7 @@ public final class WorldData {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
 		SaveTracker.track(placedBlocks);
 		lockedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.LOCKED_BLOCKS_FILENAME));
-		//SaveTracker.track(lockedBlocks);
-	
+	    SaveTracker.track(lockedBlocks);
 		rsPersist = new RegionSetPersistence(
 				regionSet,
 				new File(worldFolder, MMConstants.REGION_YAML_FILENAME)

@@ -5,6 +5,7 @@ public final class MMConstants {
 
 	public static final String PLACED_BLOCKS_FILENAME = "placedBlocks.db";
 	public static final String LOCKED_BLOCKS_FILENAME = "lockedBlocks.db";
+	public static final String ACTIVE_BLOCKS_FILENAME = "activeBlocks.yml";
 
 	public static final String REGION_YAML_FILENAME = "regions.yml";
 

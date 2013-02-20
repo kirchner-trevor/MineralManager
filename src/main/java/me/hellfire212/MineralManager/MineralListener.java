@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.hellfire212.MineralManager.BlockInfo.Type;
+import me.hellfire212.MineralManager.datastructures.ActiveBlockMap;
 import me.hellfire212.MineralManager.tasks.PlaceholderTask;
 import me.hellfire212.MineralManager.tasks.RespawnTask;
 import me.hellfire212.MineralManager.utils.TimeFormat;
@@ -28,9 +29,11 @@ public class MineralListener implements Listener {
 	public static ConcurrentHashMap<Coordinate, Integer> taskMap = new ConcurrentHashMap<Coordinate, Integer>();
 	
 	private MineralManager plugin;
+	private ActiveBlockMap activeBlocks;
 
 	public MineralListener(MineralManager plugin) {
 		this.plugin = plugin;
+		this.activeBlocks = plugin.getActiveBlocks();
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
@@ -50,26 +53,24 @@ public class MineralListener implements Listener {
 		Block block = e.getBlock();
 		Coordinate coordinate = new Coordinate(block.getLocation());
 		WorldData wdata = plugin.getWorldData(block.getWorld());
-		Region region = wdata.getRegionSet().contains(coordinate);
-		if(player.hasMetadata(METADATA_CREATIVE)) {
-			if(plugin.blockMap.containsKey(coordinate)) {
+		if (player.hasMetadata(METADATA_CREATIVE)) {
+		    if (activeBlocks.remove(coordinate) != null) {
 				cancelRespawnAtCoordinate(coordinate);
-				plugin.blockMap.remove(coordinate);
-				plugin.blockMapFH.flagDirty();
 			}
 			wdata.getPlacedBlocks().unset(coordinate);
 			wdata.getLockedBlocks().unset(coordinate);
 			return;
 		}
-		
+		Region region = wdata.getRegionSet().contains(coordinate);
+
 		if(region == null) return;
 		
 		Configuration configuration = region.getConfiguration();
 		if(!configuration.isActive()) return;
 		
-		if(configuration.isVolatile() && plugin.blockMap.containsKey(coordinate)) {
+		if(configuration.isVolatile() && activeBlocks.has(coordinate)) {
 			cancelRespawnAtCoordinate(coordinate);
-			plugin.blockMap.remove(coordinate);
+			activeBlocks.remove(coordinate);
 			wdata.getPlacedBlocks().unset(coordinate);
 			wdata.getLockedBlocks().unset(coordinate);
 			return;
@@ -97,8 +98,7 @@ public class MineralListener implements Listener {
 				long cooldown = mineral.getCooldown();
 
 				info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
-				plugin.blockMap.put(coordinate, info);
-				plugin.blockMapFH.flagDirty();
+				activeBlocks.add(coordinate, info);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
 				int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);
 				taskMap.put(coordinate, tid);
@@ -137,7 +137,7 @@ public class MineralListener implements Listener {
 
 		Coordinate coordinate = new Coordinate(e.getBlock().getLocation());
 		
-		if(plugin.blockMap.containsKey(coordinate)) {
+		if(activeBlocks.has(coordinate)) {
 			WorldData wdata = plugin.getWorldData(player.getWorld());
 			Region region = wdata.getRegionSet().contains(coordinate);
 			if(region != null) {
@@ -145,7 +145,7 @@ public class MineralListener implements Listener {
 				if(!configuration.isUsePermissions() || player.hasPermission(PERMISSION_USER)) {
 					String message = configuration.getOnBlockProspect();
 					if(message != null) {
-						BlockInfo info = plugin.blockMap.get(coordinate);
+						BlockInfo info = activeBlocks.get(coordinate);
 						Mineral mineral = configuration.getBlockMap().get(info);
 						int cooldown = mineral != null ? mineral.getCooldown() : 0;
 						player.sendMessage(getCustomMessage(message, info, cooldown));

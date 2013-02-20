@@ -1,7 +1,6 @@
 package me.hellfire212.MineralManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 
+import me.hellfire212.MineralManager.datastructures.ActiveBlockMap;
+import me.hellfire212.MineralManager.datastructures.ActiveDataPair;
 import me.hellfire212.MineralManager.datastructures.DefaultDict;
 import me.hellfire212.MineralManager.tasks.EnableListenersTask;
 import me.hellfire212.MineralManager.tasks.SaveTracker;
@@ -40,13 +41,11 @@ public class MineralManager extends JavaPlugin {
 	private static final String DATA_YAML_FILENAME = "data.yml";
 	
 	private static MineralManager plugin = null;
-		
-	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
-	public FileHandler blockMapFH;
 	
 	private MineralListener mineralListener;
 	public LassoListener lassoListener;
 	
+	private ActiveBlockMap activeBlockMap;
 	private HashMap<String, Configuration> configurationMap;
 	private ConcurrentHashMap<Player, Selection> selectionMap;
 	private Set<String> knownWorlds = new HashSet<String>();
@@ -90,8 +89,9 @@ public class MineralManager extends JavaPlugin {
 		}
 
 		WorldData.BASE_FOLDER = binFolder;
-		
-		loadFileHandlerDatabases(binFolder);
+
+		activeBlockMap = new ActiveBlockMap(new File(binFolder, MMConstants.ACTIVE_BLOCKS_FILENAME));
+		SaveTracker.track(activeBlockMap);
 		performDataUpgrades(binFolder);
 				
 		saveTracker = new SaveTracker(this, MMConstants.SAVE_DEADLINE);
@@ -114,9 +114,6 @@ public class MineralManager extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
-		if(plugin.blockMapFH != null) {
-			plugin.blockMapFH.saveObject(plugin.blockMap);
-		}
 		if (saveTracker != null) {
 			saveTracker.shutdown();
 			saveTracker = null;
@@ -180,6 +177,10 @@ public class MineralManager extends JavaPlugin {
 
 	public Selection getSelection(Player player) {
 		return selectionMap.get(player);
+	}
+	
+	public ActiveBlockMap getActiveBlocks() {
+	    return activeBlockMap;
 	}
 
 	public HashMap<String, Configuration> getConfigurationMap() {
@@ -252,22 +253,20 @@ public class MineralManager extends JavaPlugin {
 		if (lockedSetFile.exists()) {
 			Upgrader.convertLocked(this, lockedSetFile);
 		}
+		File blockMapFile = new File(binFolder, BLOCK_MAP_FILENAME);
+		if (blockMapFile.exists()) {
+		    Upgrader.convertBlockMap(this, blockMapFile);
+		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void loadFileHandlerDatabases(File binFolder) {
-		// Initial setup
-		blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
-		blockMapFH = new FileHandler(new File(binFolder, BLOCK_MAP_FILENAME));
+    /**
+     * Called by EnableListenersTask to let us finish enabling listeners.
+     */
+    public void finishEnablingListeners() {
+        this.mineralListener = new MineralListener(this);
+        this.lassoListener = new LassoListener(this);
 
-		// Do actual loading
-		
-		try {
-			blockMap =  blockMapFH.loadObject(blockMap.getClass());
-		} catch (FileNotFoundException e) {}
-		
-		SaveTracker.track(blockMapFH.getSaver(blockMap));		
-	}
+    }
 	
 	/**
 	 * Used to get the current plugin instance, for cases we don't have the state available.
@@ -276,18 +275,11 @@ public class MineralManager extends JavaPlugin {
 		return plugin;
 	}
 
-	/**
-     * Called by EnableListenersTask to let us finish enabling listeners.
-     */
-    public void finishEnablingListeners() {
-        this.mineralListener = new MineralListener(this);
-        this.lassoListener = new LassoListener(this);
-
-    }
 
 	/** Static block to set up Bukkit serialization */
 	static {
 		ConfigurationSerialization.registerClass(Region.class);
+		ConfigurationSerialization.registerClass(ActiveDataPair.class);
 	}
 
 
