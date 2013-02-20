@@ -72,9 +72,13 @@ public class MineralManager extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		// Initial setup of files and paths.
-		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
-			saveDefaultConfig();
-		}
+	    File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            this.saveResource("config-example.yml", true);
+            File exampleFile = new File(this.getDataFolder(), "config-example.yml");
+            exampleFile.renameTo(configFile);
+            reloadConfig();
+        }
 		parseConfigurationValues();
 
 		File binFolder = new File(plugin.getDataFolder(), "bin");
