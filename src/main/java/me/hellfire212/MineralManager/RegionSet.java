@@ -1,14 +1,11 @@
 package me.hellfire212.MineralManager;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import mondocommand.ChatMagic;
 
-public final class RegionSet implements Serializable, Iterable<Region> {
-
-	private static final long serialVersionUID = 3833726660750427658L;
+public final class RegionSet implements Iterable<Region> {
 	private ConcurrentSkipListSet<Region> regionSet = null;
 	
 	/**
