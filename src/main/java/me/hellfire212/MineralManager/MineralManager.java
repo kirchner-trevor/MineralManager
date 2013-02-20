@@ -44,7 +44,7 @@ public class MineralManager extends JavaPlugin {
 	public ConcurrentHashMap<Coordinate, BlockInfo> blockMap;
 	public FileHandler blockMapFH;
 	
-	public MineralListener mineralListener;
+	private MineralListener mineralListener;
 	public LassoListener lassoListener;
 	
 	private HashMap<String, Configuration> configurationMap;
@@ -128,6 +128,7 @@ public class MineralManager extends JavaPlugin {
 		worldData.clear();
 		Commands.shutdown();
 		lassoListener.shutdown();
+	    mineralListener.shutdown();
 		plugin = null;
 	}
 	
@@ -274,10 +275,20 @@ public class MineralManager extends JavaPlugin {
 	public static MineralManager getInstance() {
 		return plugin;
 	}
-	
-	
+
+	/**
+     * Called by EnableListenersTask to let us finish enabling listeners.
+     */
+    public void finishEnablingListeners() {
+        this.mineralListener = new MineralListener(this);
+        this.lassoListener = new LassoListener(this);
+
+    }
+
 	/** Static block to set up Bukkit serialization */
 	static {
 		ConfigurationSerialization.registerClass(Region.class);
 	}
+
+
 }

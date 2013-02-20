@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import me.hellfire212.MineralManager.BlockInfo;
 import me.hellfire212.MineralManager.Coordinate;
-import me.hellfire212.MineralManager.LassoListener;
 import me.hellfire212.MineralManager.MMConstants;
 import me.hellfire212.MineralManager.MineralListener;
 import me.hellfire212.MineralManager.MineralManager;
@@ -28,8 +27,7 @@ public class EnableListenersTask implements Runnable {
 	@Override
 	public void run() {
 		if (currentIndex >= blockEntryList.size()) {
-			plugin.mineralListener = new MineralListener(plugin);
-			plugin.lassoListener = new LassoListener(plugin);
+		    plugin.finishEnablingListeners();
 			blockEntryList = null;
 			plugin = null;
 			return;

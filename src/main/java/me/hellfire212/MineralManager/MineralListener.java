@@ -27,11 +27,15 @@ public class MineralListener implements Listener {
 
 	public static ConcurrentHashMap<Coordinate, Integer> taskMap = new ConcurrentHashMap<Coordinate, Integer>();
 	
-	private MineralManager plugin = null;
+	private MineralManager plugin;
 
-	public MineralListener(MineralManager p) {
-		plugin = p;
+	public MineralListener(MineralManager plugin) {
+		this.plugin = plugin;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
+	
+	public void shutdown() {
+	    plugin = null;
 	}
 	
 	/**
