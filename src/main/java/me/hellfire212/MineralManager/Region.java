@@ -6,45 +6,52 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 
+import me.hellfire212.MineralManager.utils.DecoderRing;
 import me.hellfire212.MineralManager.utils.GenericUtil;
 import me.hellfire212.MineralManager.utils.ShapeUtils;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 
-public class Region implements Comparable<Region>, ConfigurationSerializable {
-	private String name = null;
-	private Double floor = null;
-	private Double ceil = null;
-	private UUID world = null;
-	private int level = 0;
-	private boolean global = false;
-	private Shape shape;
+public final class Region implements Comparable<Region>, ConfigurationSerializable {
+	private final String name;
+	private final double floor;
+	private final double ceil;
+	private final UUID world;
+	private final int level;
+	private boolean global;
+	private final Shape shape;
 	
-	private Configuration configuration = new Configuration();
+	private Configuration configuration;
 	
 	/**
-	 * Creates a polyprism with a given name and attributes.
-	 * @param n the unique name of the region
-	 * @param s a shape describing the x/z bounds of the region.
-	 * @param f the lowest y coordinate of the region
-	 * @param c the highest y coordinate of the region
-	 * @param w the world in which the region resides
-	 * @param l the level of the Region, higher levels are seen first
+	 * Creates a region with a given name and attributes.
+	 * @param name the unique name of the region
+	 * @param config The Configuration we're using.
+	 * @param shape a shape describing the x/z bounds of the region.
+	 * @param floor the lowest y coordinate of the region
+	 * @param ceil the highest y coordinate of the region
+	 * @param world the world in which the region resides
+	 * @param level the level of the Region, higher levels are seen first
 	 */
-	public Region(String n, Configuration config, Shape s, Double f, Double c, World w, int l) {
-		name = (n != null)? n : "";
-		configuration = config;
-		shape = s;
-		floor = f;
-		ceil = c;
-		world = w.getUID();
-		level = l;
+	public Region(String name, Configuration config, Shape shape, double floor, 
+	              double ceil, World world, int level) {
+	    Validate.notNull(name);
+	    Validate.notNull(config);
+	    Validate.notNull(world);
+		this.name = (name != null)? name : "";
+		this.configuration = config;
+		this.shape = shape;
+		this.floor = floor;
+		this.ceil = ceil;
+		this.world = world.getUID();
+		this.level = level;
 		// Region is global if boundaries are empty and floor/ceiling are both negative.
 		// XXX Still contains old config global setting for conversion purposes
-		global = config.isGlobal() || (shape == null && f < -0.9D && c < -0.9D);
+		global = config.isGlobal() || (shape == null && floor < -0.9D && ceil < -0.9D);
 	}
 
 	/**
@@ -64,6 +71,7 @@ public class Region implements Comparable<Region>, ConfigurationSerializable {
 	 * @param newConfiguration the new configuration
 	 */
 	public void setConfiguration(Configuration newConfiguration) {
+	    Validate.notNull(newConfiguration);
 		configuration = newConfiguration;
 		// XXX legacy compatibility holdover
 		if (newConfiguration.isGlobal()) global = true;
@@ -164,15 +172,12 @@ public class Region implements Comparable<Region>, ConfigurationSerializable {
 	 * @return new Region instance.
 	 */
 	public static Region deserialize(Map<String, Object> values) {
-		boolean global = false;
+		boolean global = DecoderRing.decodeBool(values.get("global"), false);
+		String name = DecoderRing.decodeString(values.get("name"), "");
+
 		double ceil = -1D, floor = -1D;
 		Configuration config;
 		Shape shape = null;
-		
-		Object oglobal = values.get("global");
-		if (oglobal != null && oglobal instanceof Boolean) {
-			global = ((Boolean) oglobal).booleanValue();
-		}
 
 		if (!global) {
 			ceil = (Double) values.get("ceil");
@@ -185,7 +190,7 @@ public class Region implements Comparable<Region>, ConfigurationSerializable {
 					shape = ShapeUtils.deserializeShape(shapeInfo);
 				}
 			} else {
-				shape = ShapeUtils.shapeFromBounds(GenericUtil.<ArrayList<Point2D>>cast(points));
+				shape = ShapeUtils.shapeFromBounds(points);
 			}
 		}
 		
@@ -198,15 +203,16 @@ public class Region implements Comparable<Region>, ConfigurationSerializable {
 			config = plugin.getConfigurationMap().get(configName);
 			if (config == null) config = plugin.getDefaultConfiguration();
 		}
+		String worldName = DecoderRing.decodeString(values.get("world"), "");
 
 		return new Region(
-				(String) values.get("name"),
+				name,
 				config,
 				shape,
 				floor,
 				ceil,
-				Bukkit.getWorld(UUID.fromString((String) values.get("world"))),
-				((Number)values.get("level")).intValue()
+				Bukkit.getWorld(UUID.fromString(worldName)),
+				DecoderRing.decodeInt(values.get("level"), 0)
 		);
 	}
 }
