@@ -114,9 +114,12 @@ public class MineralListener implements Listener {
 	}
 
 	/**
-	 * This is used when a player destroys a block while in "creative" mode or when the block is in a volatile region and it's placeholder is destroyed.
-	 * This method assumes that MineralManager.blockMap.containsKey(coordinate) is true, however this method will simply do nothing if it doesn't.
-	 * MineralManager.blockMap is a parallel map to MineralListener.taskMap however blockMap contains BlockInfo's while taskMap contains task ID's.
+	 * This is used when a player destroys a block while in "creative" mode or when 
+	 * the block is in a volatile region and its placeholder is destroyed.
+	 * This method assumes that MineralManager.blockMap.containsKey(coordinate) is 
+	 * true, however this method will simply do nothing if it doesn't.
+	 * MineralManager.blockMap is a parallel map to MineralListener.taskMap however 
+	 * blockMap contains BlockInfo's while taskMap contains task ID's.
 	 * @param coordinate
 	 */
 	private void cancelRespawnAtCoordinate(Coordinate coordinate) {
@@ -127,17 +130,17 @@ public class MineralListener implements Listener {
 		taskMap.remove(coordinate);
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBlockDamageEvent(final BlockDamageEvent e) {
 		Player player = e.getPlayer();
 		//We don't want to spam players in creative mode with messages so we simply return immediately.
-		if(player.hasMetadata(METADATA_CREATIVE)) {
+		if (player.hasMetadata(METADATA_CREATIVE)) {
 			return;
 		}
 
 		Coordinate coordinate = new Coordinate(e.getBlock().getLocation());
 		
-		if(activeBlocks.has(coordinate)) {
+		if (activeBlocks.has(coordinate)) {
 			WorldData wdata = plugin.getWorldData(player.getWorld());
 			Region region = wdata.getRegionSet().contains(coordinate);
 			if(region != null) {

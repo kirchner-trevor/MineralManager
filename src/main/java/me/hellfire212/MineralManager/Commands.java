@@ -225,8 +225,8 @@ public final class Commands {
 		for (WorldData wdata : wds) {
 			RegionSet rs = wdata.getRegionSet();
 			if (rs.size() == 0) continue;
-			if (prefixWorld) call.reply("{TEXT}%s:", wdata.getWorldName());
-			call.reply(rs.toColorizedString());
+			if (prefixWorld) call.reply(false, "{TEXT}%s:", wdata.getWorldName());
+			call.reply(false, rs.toColorizedString());
 		}
 	}
 

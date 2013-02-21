@@ -1,11 +1,6 @@
 package me.hellfire212.MineralManager;
 
-import java.io.Serializable;
-
-public class Mineral implements Serializable {
-
-	private static final long serialVersionUID = -2569665927266852145L;
-	
+public class Mineral {	
 	private int cooldown;
 	private double degrade;
 	private final BlockInfo blockInfo;

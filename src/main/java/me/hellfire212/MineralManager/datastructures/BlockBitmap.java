@@ -195,4 +195,8 @@ public class BlockBitmap implements Saveable {
 		
 	}
 	
+	@Override
+	public String toString() {
+	    return String.format("<BlockBitmap: %d nodes>", firstEmpty / RECORD_SIZE);
+	}
 }
