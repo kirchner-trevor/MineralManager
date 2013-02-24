@@ -140,7 +140,7 @@ public final class Commands {
     
     // TODO refactor this to a utility module or something
     public static Region actuallyCreateRegion(MineralManager plugin, String name, Configuration configuration, Selection selection, Player player, int level) {
-        Region newRegion = new Region(name, configuration, selection.getShape(), selection.getFloor(), selection.getCeil(), player.getWorld(), level);
+        Region newRegion = new Region(name, configuration, selection.getShape(), selection.getFloor(), selection.getCeil(), level);
         WorldData wdata = plugin.getWorldData(player.getWorld());
         boolean regionAdded = wdata.getRegionSet().add(newRegion);
         wdata.flagRegionSetDirty();

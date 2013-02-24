@@ -4,15 +4,12 @@ import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.UUID;
 
 import me.hellfire212.MineralManager.utils.DecoderRing;
 import me.hellfire212.MineralManager.utils.GenericUtil;
 import me.hellfire212.MineralManager.utils.ShapeUtils;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 
@@ -20,7 +17,6 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 	private final String name;
 	private final double floor;
 	private final double ceil;
-	private final UUID world;
 	private final int level;
 	private boolean global;
 	private final Shape shape;
@@ -38,16 +34,14 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 	 * @param level the level of the Region, higher levels are seen first
 	 */
 	public Region(String name, Configuration config, Shape shape, double floor, 
-	              double ceil, World world, int level) {
+	              double ceil, int level) {
 	    Validate.notNull(name);
 	    Validate.notNull(config);
-	    Validate.notNull(world);
 		this.name = (name != null)? name : "";
 		this.configuration = config;
 		this.shape = shape;
 		this.floor = floor;
 		this.ceil = ceil;
-		this.world = world.getUID();
 		this.level = level;
 		// Region is global if boundaries are empty and floor/ceiling are both negative.
 		// XXX Still contains old config global setting for conversion purposes
@@ -93,10 +87,6 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 		return level;
 	}
 	
-	public UUID getWorldUUID() {
-		return world;
-	}
-	
 	/**
 	 * Returns the name of the Region
 	 * @return the name of the Region
@@ -115,7 +105,6 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 	public String toString() {
 		return name;
 	}
-	
 	
 	@Override
 	public int compareTo(Region r) {
@@ -136,25 +125,19 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Region other = (Region) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+		if (obj instanceof Region) {
+    		Region other = (Region) obj;
+    		return name.equals(other.getName());
+		}
+		return false;
 	}
 
-	/** Used for serialization to bukkit configs.
-	 */
+	/** Used for serialization to bukkit configs. */
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> values = new java.util.HashMap<String, Object>();
 		values.put("name", name);
 		values.put("configuration", configuration.getName());
-		values.put("world", world.toString());
 		values.put("level", level);
 		if (global) {
 			values.put("global", global);
@@ -203,7 +186,6 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 			config = plugin.getConfigurationMap().get(configName);
 			if (config == null) config = plugin.getDefaultConfiguration();
 		}
-		String worldName = DecoderRing.decodeString(values.get("world"), "");
 
 		return new Region(
 				name,
@@ -211,7 +193,6 @@ public final class Region implements Comparable<Region>, ConfigurationSerializab
 				shape,
 				floor,
 				ceil,
-				Bukkit.getWorld(UUID.fromString(worldName)),
 				DecoderRing.decodeInt(values.get("level"), 0)
 		);
 	}
