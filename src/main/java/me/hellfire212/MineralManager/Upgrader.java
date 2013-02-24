@@ -100,6 +100,7 @@ public final class Upgrader {
 	}
 
     public static void convertBlockMap(MineralManager plugin, File blockMapFile) {
+        plugin.getLogger().info("Converting MM 2.1 blockMap...");
         Map<Coordinate, BlockInfo> blockMap = new ConcurrentHashMap<Coordinate, BlockInfo>();
         FileHandler blockMapFH = new FileHandler(blockMapFile);
         try {
@@ -109,6 +110,7 @@ public final class Upgrader {
         for (Map.Entry<Coordinate, BlockInfo> e: blockMap.entrySet()) {
             activeBlocks.add(e.getKey(), e.getValue());
         }
+        renameOld(plugin, blockMapFile, ".old");
     }
 
 }
