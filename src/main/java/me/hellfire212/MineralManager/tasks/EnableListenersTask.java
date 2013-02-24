@@ -68,6 +68,7 @@ public class EnableListenersTask implements Runnable {
 		int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown() * 20);
 		MineralListener.taskMap.put(coordinate, tid);
 		currentIndex++;
-		server.getScheduler().scheduleSyncDelayedTask(plugin, this);
+		long delay = (currentIndex > 10)? 1 : 0;
+		server.getScheduler().scheduleSyncDelayedTask(plugin, this, delay);
 	}
 }
