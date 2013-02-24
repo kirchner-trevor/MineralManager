@@ -19,7 +19,7 @@ DEFAULT:
     onBlockProspect: This %b has already been mined.
 
   # What to use as the placeholder. Block ID 0 = AIR
-  placeholder: 0
+  placeholder: AIR
 
 # Here follows multiple configuration sections.
 # Configuration sections are used to define different sets of managed
