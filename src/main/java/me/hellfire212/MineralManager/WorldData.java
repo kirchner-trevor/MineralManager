@@ -38,9 +38,10 @@ public final class WorldData {
 	/** Load/initialize any enclosed data structures. */
 	private void load() {
 		placedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.PLACED_BLOCKS_FILENAME));
-		SaveTracker.track(placedBlocks);
 		lockedBlocks = new BlockBitmap(new File(worldFolder, MMConstants.LOCKED_BLOCKS_FILENAME));
-	    SaveTracker.track(lockedBlocks);
+		for (BitmapChoice b : BitmapChoice.values()) {
+		    SaveTracker.track(getBitmapData(b));
+		}
 		rsPersist = new RegionSetPersistence(
 				regionSet,
 				new File(worldFolder, MMConstants.REGION_YAML_FILENAME)
