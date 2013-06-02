@@ -1,5 +1,5 @@
 == Version 2.2 ==
-Not yet Released
+Released 2013-06-01
 
  * Major performance tweaks in polygon containership algorithm (speed boost!)
  * Major code re-factoring for consistency and performance.

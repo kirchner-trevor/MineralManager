@@ -1,18 +1,17 @@
 name: MineralManager
-version: 2.2-pre1
-prefix: Mineral Manager
+version: 2.2
 description: Allows for more control over the purpose of blocks.
 load: POSTWORLD
-author: hellfire212
+author: hellfire212, crast
 website: http://dev.bukkit.org/server-mods/mineralmanager/
 main: me.hellfire212.MineralManager.MineralManager
 softdepend: [Multiverse-Core]
 commands:
   mineralmanager:
     description: Allows for access to MineralManager commands.
-    aliases: [mm, min, mineral, manager, MineralManager]
+    aliases: [mm, min]
     permission: MineralManager.Admin
-    permission-message: You must be an MineralManager Admin to use this command.
+    permission-message: You must be a MineralManager Admin to use this command.
   test:
     description: Used for testing functionality.
 permissions:
