@@ -1,0 +1,27 @@
+######### MineralManager 2.1 config
+
+# The DEFAULT section sets the defaults for the application.
+DEFAULT:
+  # If true, only applies to blocks which were there, not placed.
+  mineOriginalOnly: false
+
+  # If true, you need the MineralManager.User permission for mining 
+  # to cause respawn.
+  usePermissions: false
+
+  # Configurable messages.
+  # Can be interpolated with special variables:
+  #     %b = block name
+  #     %c = cooldown, looks like '4m50s'
+  #     %r = remaining cooldown, looks like '4m20s'
+  displayMessages:
+    onBlockBreak: This %b will be available in %c.
+    onBlockProspect: This %b has already been mined.
+
+  # What to use as the placeholder. Block ID 0 = AIR
+  placeholder: 0
+
+# Here follows multiple configuration sections.
+# Configuration sections are used to define different sets of managed
+# blocks, and can be assigned to regions or even to entire worlds.
+CONFIGURATION: {}

@@ -1,0 +1,29 @@
+name: MineralManager
+version: 2.2
+description: Allows for more control over the purpose of blocks.
+load: POSTWORLD
+author: hellfire212, crast
+website: http://dev.bukkit.org/server-mods/mineralmanager/
+main: me.hellfire212.MineralManager.MineralManager
+softdepend: [Multiverse-Core]
+commands:
+  mineralmanager:
+    description: Allows for access to MineralManager commands.
+    aliases: [mm, min]
+    permission: MineralManager.Admin
+    permission-message: You must be a MineralManager Admin to use this command.
+  test:
+    description: Used for testing functionality.
+permissions:
+  MineralManager.*:
+    description: Allows access to all MineralManager commands.
+    default: false
+    children:
+      MineralManager.Admin: true
+      MineralManager.User: true
+  MineralManager.Admin:
+    description: Allows access to all MineralManager Admin commands.
+    default: op
+  MineralManager.User:
+    description: Allows for player to cause block respawns.
+    default: true
