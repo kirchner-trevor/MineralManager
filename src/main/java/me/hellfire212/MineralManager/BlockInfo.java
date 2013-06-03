@@ -117,4 +117,8 @@ public class BlockInfo implements Serializable {
 			return false;
 		return true;
 	}
+	
+	public BlockInfo clone() {
+	    return new BlockInfo(blockData, blockTypeId, placeholderData, placeholderTypeId);
+	}
 }

@@ -3,8 +3,8 @@ package me.hellfire212.MineralManager;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.DataFormatException;
 
 import me.hellfire212.MineralManager.BlockInfo.Type;
@@ -62,27 +62,40 @@ public class Configuration implements Serializable {
 		List<?> mineralList = currentConfig.contains(MANAGED_BLOCKS) ? currentConfig.getList(MANAGED_BLOCKS) : null;
 		blockMap = def.blockMap;
 		
+		if (currentConfig.contains(PLACEHOLDER)) {
+		    placeholderBlock = parsePlaceholderMaterial(currentConfig.getString(PLACEHOLDER));
+	        if(placeholderBlock == null) {
+	            throw new DataFormatException("[" + name + "]->[placeholder] : The value contains an error.");
+	        }
+		} else {
+		    placeholderBlock = def.getPlaceholderBlock();
+		}
+		
 		if(mineralList != null) {
-			blockMap = new HashMap<BlockInfo, MineralConfig>(8);
+			blockMap = new HashMap<BlockInfo, MineralConfig>();
 			int count = 0;
-			for(Object currList : mineralList) {
-				LinkedHashMap<?, ?> lhm = (LinkedHashMap<?, ?>) currList;
-				
+			for(Object current : mineralList) {
+				Map<?, ?> m = (Map<?, ?>) current;
+				BlockInfo myPlaceholder = placeholderBlock;
+				if (m.containsKey(PLACEHOLDER)) {
+				    myPlaceholder = parsePlaceholderMaterial((String) m.get(PLACEHOLDER));
+				}
 				//****XXX I think we're allowed to pass null parameters into the "generate" methods but I need to test to be sure!
-				Object typeObject = lhm.get("type");
-				BlockInfo info = new BlockInfo(Type.BLOCK, generate(Field.TYPE_ID, count, typeObject).intValue(), generate(Field.DATA, count, typeObject).intValue());
-				blockMap.put(info, new MineralConfig(info, generate(Field.COOLDOWN, count, lhm.get("cooldown")).intValue(), generate(Field.DEGRADE, count, lhm.get("degrade")).doubleValue()));
+				Object typeObject = m.get("type");
+				BlockInfo info = new BlockInfo(
+				    generate(Field.TYPE_ID, count, typeObject).intValue(), 
+				    generate(Field.DATA, count, typeObject).intValue(),
+				    myPlaceholder.getData(Type.PLACEHOLDER),
+				    myPlaceholder.getTypeId(Type.PLACEHOLDER)
+				);
+				blockMap.put(info, new MineralConfig(
+				    info, 
+				    generate(Field.COOLDOWN, count, m.get("cooldown")).intValue(), 
+				    generate(Field.DEGRADE, count, m.get("degrade")).doubleValue()
+				));
 				count++;
 			}
 		}
-		
-	
-		BlockInfo placeholderBlock = parsePlaceholderMaterial(currentConfig.contains(PLACEHOLDER) ? currentConfig.getString(PLACEHOLDER) : def.getPlaceholderBlock().toString(Type.PLACEHOLDER));
-		if(placeholderBlock == null) {
-			throw new DataFormatException("[" + name + "]->[placeholder] : The value contains an error.");
-		}
-		
-		this.placeholderBlock = placeholderBlock;
 	}
 	
 	private Number generate(Field field, int count, Object object) throws ParseException, NumberFormatException {

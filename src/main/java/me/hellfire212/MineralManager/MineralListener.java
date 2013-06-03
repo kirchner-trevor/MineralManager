@@ -81,11 +81,12 @@ public class MineralListener implements Listener {
 			return;
 		}
 
-		BlockInfo placeholder = configuration.getPlaceholderBlock();
 		HashMap<BlockInfo, MineralConfig> blockMap = configuration.getBlockMap();
-		BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), placeholder.getTypeId(Type.PLACEHOLDER), placeholder.getData(Type.PLACEHOLDER));
+		BlockInfo finder = new BlockInfo(Type.BLOCK, block.getTypeId(), block.getData());
 		
-		if(!blockMap.containsKey(info)) return;
+        MineralConfig mineral = blockMap.get(finder);
+
+		if(mineral == null) return;
 		
 		if(!(configuration.isMineOriginalOnly() && wdata.wasPlaced(block))) {
 
@@ -93,10 +94,9 @@ public class MineralListener implements Listener {
 				block.breakNaturally();
 			}
 			
-			MineralConfig mineral = blockMap.get(info);
 			if(Math.random() > mineral.getDegrade()) {
 				long cooldown = mineral.getCooldown();
-
+				BlockInfo info = mineral.getBlockInfo().clone();
 				info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
 				activeBlocks.add(coordinate, info);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
