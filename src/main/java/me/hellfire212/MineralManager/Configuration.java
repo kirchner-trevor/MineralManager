@@ -38,7 +38,7 @@ public class Configuration implements Serializable {
 	private String onBlockProspect = null;
 	
 	private BlockInfo placeholderBlock = new BlockInfo(Type.BLOCK, 0, 0);
-	private HashMap<BlockInfo, Mineral> blockMap = new HashMap<BlockInfo, Mineral>();
+	private HashMap<BlockInfo, MineralConfig> blockMap = new HashMap<BlockInfo, MineralConfig>();
 	private String name = "";
 	
 	public Configuration() {}
@@ -63,7 +63,7 @@ public class Configuration implements Serializable {
 		blockMap = def.blockMap;
 		
 		if(mineralList != null) {
-			blockMap = new HashMap<BlockInfo, Mineral>(8);
+			blockMap = new HashMap<BlockInfo, MineralConfig>(8);
 			int count = 0;
 			for(Object currList : mineralList) {
 				LinkedHashMap<?, ?> lhm = (LinkedHashMap<?, ?>) currList;
@@ -71,7 +71,7 @@ public class Configuration implements Serializable {
 				//****XXX I think we're allowed to pass null parameters into the "generate" methods but I need to test to be sure!
 				Object typeObject = lhm.get("type");
 				BlockInfo info = new BlockInfo(Type.BLOCK, generate(Field.TYPE_ID, count, typeObject).intValue(), generate(Field.DATA, count, typeObject).intValue());
-				blockMap.put(info, new Mineral(info, generate(Field.COOLDOWN, count, lhm.get("cooldown")).intValue(), generate(Field.DEGRADE, count, lhm.get("degrade")).doubleValue()));
+				blockMap.put(info, new MineralConfig(info, generate(Field.COOLDOWN, count, lhm.get("cooldown")).intValue(), generate(Field.DEGRADE, count, lhm.get("degrade")).doubleValue()));
 				count++;
 			}
 		}
@@ -155,7 +155,7 @@ public class Configuration implements Serializable {
 		return placeholderBlock;
 	}
 	
-	public HashMap<BlockInfo, Mineral> getBlockMap() {
+	public HashMap<BlockInfo, MineralConfig> getBlockMap() {
 		return  blockMap;
 	}
 	

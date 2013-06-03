@@ -82,7 +82,7 @@ public class MineralListener implements Listener {
 		}
 
 		BlockInfo placeholder = configuration.getPlaceholderBlock();
-		HashMap<BlockInfo, Mineral> blockMap = configuration.getBlockMap();
+		HashMap<BlockInfo, MineralConfig> blockMap = configuration.getBlockMap();
 		BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), placeholder.getTypeId(Type.PLACEHOLDER), placeholder.getData(Type.PLACEHOLDER));
 		
 		if(!blockMap.containsKey(info)) return;
@@ -93,7 +93,7 @@ public class MineralListener implements Listener {
 				block.breakNaturally();
 			}
 			
-			Mineral mineral = blockMap.get(info);
+			MineralConfig mineral = blockMap.get(info);
 			if(Math.random() > mineral.getDegrade()) {
 				long cooldown = mineral.getCooldown();
 
@@ -149,7 +149,7 @@ public class MineralListener implements Listener {
 					String message = configuration.getOnBlockProspect();
 					if(message != null) {
 						BlockInfo info = activeBlocks.get(coordinate);
-						Mineral mineral = configuration.getBlockMap().get(info);
+						MineralConfig mineral = configuration.getBlockMap().get(info);
 						int cooldown = mineral != null ? mineral.getCooldown() : 0;
 						player.sendMessage(getCustomMessage(message, info, cooldown));
 					}
