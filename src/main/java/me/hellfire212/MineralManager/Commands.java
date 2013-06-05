@@ -87,7 +87,7 @@ public final class Commands {
 		call.reply("%s %s removed", regionName, status);
 	}
 	
-	@Sub(description = "List MM Regions")
+	@Sub(description="List MM Regions")
 	public void list(CallInfo call) {
 		call.reply("{HEADER}[Region List]");
 		Collection<WorldData> wds = plugin.allWorldDatas();
