@@ -85,8 +85,8 @@ public class Configuration implements Serializable {
 				BlockInfo info = new BlockInfo(
 				    generate(Field.TYPE_ID, count, typeObject).intValue(), 
 				    generate(Field.DATA, count, typeObject).intValue(),
-				    myPlaceholder.getData(Type.PLACEHOLDER),
-				    myPlaceholder.getTypeId(Type.PLACEHOLDER)
+				    myPlaceholder.getPlaceholderData(),
+				    myPlaceholder.getPlaceholderTypeId()
 				);
 				blockMap.put(info, new MineralConfig(
 				    info, 

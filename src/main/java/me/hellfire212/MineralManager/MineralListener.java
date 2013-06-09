@@ -171,7 +171,7 @@ public class MineralListener implements Listener {
 	
 	private String getCustomMessage(String message, BlockInfo info, long cooldown) {
 		String displayMessage = ChatMagic.colorize("{AQUA}[%s] {WHITE}%s", plugin.getName(), message);
-		Material blockType = Material.getMaterial(info.getTypeId(Type.BLOCK));
+		Material blockType = Material.getMaterial(info.getBlockTypeId());
 		displayMessage = displayMessage.replaceAll("%b", ChatMagic.colorize("{GOLD}%s{WHITE}", blockType));
 		displayMessage = displayMessage.replaceAll("%c", ChatMagic.colorize("{GOLD}%s{WHITE}", TimeFormat.format(cooldown)));
 		displayMessage = displayMessage.replaceAll("%r", ChatMagic.colorize("{GOLD}%s{WHITE}", TimeFormat.format(info.getCooldown())));

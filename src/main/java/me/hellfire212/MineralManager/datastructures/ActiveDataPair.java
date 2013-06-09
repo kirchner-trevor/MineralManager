@@ -5,7 +5,6 @@ import java.util.Map;
 
 import me.hellfire212.MineralManager.BlockInfo;
 import me.hellfire212.MineralManager.Coordinate;
-import me.hellfire212.MineralManager.BlockInfo.Type;
 import static me.hellfire212.MineralManager.utils.DecoderRing.*;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -29,10 +28,10 @@ public class ActiveDataPair implements ConfigurationSerializable {
         m.put("z", (int) coord.getZ());
         m.put("world", coord.getWorldName());
          
-        m.put("bType", info.getTypeId(Type.BLOCK));
-        m.put("pType", info.getTypeId(Type.PLACEHOLDER));
-        m.put("bData", info.getData(Type.BLOCK));
-        m.put("pData", info.getData(Type.PLACEHOLDER));
+        m.put("bType", info.getBlockTypeId());
+        m.put("pType", info.getPlaceholderTypeId());
+        m.put("bData", info.getBlockData());
+        m.put("pData", info.getPlaceholderData());
         m.put("respawn", info.getRespawn());
         return m;
     }

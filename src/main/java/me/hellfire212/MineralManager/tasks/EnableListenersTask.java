@@ -62,9 +62,9 @@ public class EnableListenersTask implements Runnable {
 		}
 		waiting = 0;
 		if (debug) {
-		    plugin.getLogger().info("Getting task for block at " + coordinate.toString() + ", expected block " + info.getTypeId(Type.BLOCK));
+		    plugin.getLogger().info("Getting task for block at " + coordinate.toString() + ", expected block " + info.getBlockTypeId());
 		}
-		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
+		coordinate.getLocation().getBlock().setTypeIdAndData(info.getPlaceholderTypeId(), (byte) info.getPlaceholderData(), false);
 		int tid = server.getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), info.getCooldown() * 20);
 		MineralListener.taskMap.put(coordinate, tid);
 		currentIndex++;

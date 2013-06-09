@@ -42,6 +42,23 @@ public class BlockInfo implements Serializable {
 		this.placeholderData = placeholderData;
 	}
 	
+	public int getBlockTypeId() {
+	    return blockTypeId;
+	}
+	
+	public int getPlaceholderTypeId() {
+	    return placeholderTypeId;
+	}
+	
+	public int getBlockData() {
+        return blockData;
+    }
+	
+	public int getPlaceholderData() {
+	    return placeholderData;
+	}
+	
+	@Deprecated
 	public int getTypeId(Type type) {
 		switch(type) {
 		case BLOCK :
@@ -53,6 +70,7 @@ public class BlockInfo implements Serializable {
 		}
 	}
 	
+	@Deprecated
 	public int getData(Type type) {
 		switch(type) {
 		case BLOCK :

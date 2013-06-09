@@ -4,7 +4,6 @@ import me.hellfire212.MineralManager.BlockInfo;
 import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralListener;
 import me.hellfire212.MineralManager.MineralManager;
-import me.hellfire212.MineralManager.BlockInfo.Type;
 
 public class RespawnTask implements Runnable {
 
@@ -25,7 +24,7 @@ public class RespawnTask implements Runnable {
 	
 	@Override
 	public void run() {
-		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.BLOCK), (byte) info.getData(Type.BLOCK), false);
+		coordinate.getLocation().getBlock().setTypeIdAndData(info.getBlockTypeId(), (byte) info.getBlockData(), false);
 		plugin.getActiveBlocks().remove(coordinate);
 		MineralListener.taskMap.remove(coordinate);
 	}
