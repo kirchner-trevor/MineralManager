@@ -8,7 +8,6 @@ import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MMConstants;
 import me.hellfire212.MineralManager.MineralListener;
 import me.hellfire212.MineralManager.MineralManager;
-import me.hellfire212.MineralManager.BlockInfo.Type;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
