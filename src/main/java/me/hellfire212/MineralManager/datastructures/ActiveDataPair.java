@@ -29,8 +29,8 @@ public class ActiveDataPair implements ConfigurationSerializable {
         m.put("world", coord.getWorldName());
          
         m.put("bType", info.getBlockTypeId());
-        m.put("pType", info.getPlaceholderTypeId());
         m.put("bData", info.getBlockData());
+        m.put("pType", info.getPlaceholderTypeId());
         m.put("pData", info.getPlaceholderData());
         m.put("respawn", info.getRespawn());
         return m;
@@ -45,8 +45,8 @@ public class ActiveDataPair implements ConfigurationSerializable {
         );
         BlockInfo info = new BlockInfo(
             decodeInt(m.get("bType"), 0),
-            decodeInt(m.get("pType"), 0),
             decodeInt(m.get("bData"), 0),
+            decodeInt(m.get("pType"), 0),
             decodeInt(m.get("pData"), 0)
         );
         info.setRespawn(decodeLong(m.get("respawn")));
