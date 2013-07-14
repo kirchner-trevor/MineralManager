@@ -1,6 +1,7 @@
 == Version 2.2.1 ==
 Not yet released
- * Placeholder block per mineral
+ * Support different placeholder block per mineral
+ * Fix bug in placeholders going away on reload
 
 == Version 2.2 ==
 Released 2013-06-01

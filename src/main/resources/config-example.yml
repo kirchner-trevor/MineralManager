@@ -28,9 +28,8 @@ CONFIGURATION:
   # Section names are used in the command when adding regions.
   # Names must be unique and must only contain letters, numbers, and underscores.
   example_home:
-    # Volatile means that if the placeholder block is broken
-    # then the block it's associated with will not respawn.
-    volatile: true
+    placeholder: WOOL 1
+
 
     # Set the managed blocks for this config.
     # Each managed block can have its own cooldown and 
@@ -84,6 +83,11 @@ CONFIGURATION:
   forest:
     placeholder: 18 3
     mineOriginalOnly: true
+
+    # Volatile means that if the placeholder block is broken
+    # then the block it's associated with will not respawn.
+    volatile: true
+
     managedBlocks:
     - type: LOG 0
       cooldown: 30s

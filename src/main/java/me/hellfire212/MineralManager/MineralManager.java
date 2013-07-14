@@ -135,7 +135,7 @@ public class MineralManager extends JavaPlugin {
 		if (debug) getLogger().info("Loading configuration sections...");
 		ConfigurationSection currentConfig = getConfig().getConfigurationSection("DEFAULT");
 		try {
-			defaultConfiguration = new Configuration(currentConfig, new Configuration());
+			defaultConfiguration = new Configuration(currentConfig, new Configuration(), debug);
 		} catch (NumberFormatException e) {
 			getLogger().severe(e.getLocalizedMessage());
 		} catch (ParseException e) {
@@ -154,7 +154,7 @@ public class MineralManager extends JavaPlugin {
 			currentConfig = regionConfig.getConfigurationSection(name);
 			Configuration tempConfig = null;
 			try {
-				tempConfig = new Configuration(currentConfig, defaultConfiguration);
+				tempConfig = new Configuration(currentConfig, defaultConfiguration, debug);
 			} catch (NumberFormatException e) {
 				getLogger().severe(e.getLocalizedMessage());
 			} catch (ParseException e) {
