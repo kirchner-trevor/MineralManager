@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
+import static me.hellfire212.MineralManager.utils.LogTools.logInfo;
 import me.hellfire212.MineralManager.BlockInfo.Type;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,13 +44,11 @@ public class Configuration implements Serializable {
 	
 	public Configuration() {}
 	
-	public Configuration(String name) {
-		this();
-		this.name = name;
-	}
-	
-	public Configuration(ConfigurationSection currentConfig, Configuration def) throws ParseException, NumberFormatException, DataFormatException {
-		this(currentConfig.getName());
+	public Configuration(ConfigurationSection currentConfig, Configuration def, boolean debug) throws ParseException, NumberFormatException, DataFormatException {
+		this.name = currentConfig.getName();
+		if (debug) {
+		    logInfo("Parsing configuration section %s", this.name);
+		}
 		isLocked = currentConfig.contains(LOCKED) ? currentConfig.getBoolean(LOCKED) : def.isLocked();
 		isVolatile = currentConfig.contains(VOLATILE) ? currentConfig.getBoolean(VOLATILE) : def.isVolatile();
 		isGlobal = currentConfig.contains(GLOBAL) ? currentConfig.getBoolean(GLOBAL) : def.isGlobal();
@@ -75,18 +74,25 @@ public class Configuration implements Serializable {
 			blockMap = new HashMap<BlockInfo, MineralConfig>();
 			int count = 0;
 			for(Object current : mineralList) {
-				Map<?, ?> m = (Map<?, ?>) current;
+	            Map<?, ?> m = (Map<?, ?>) current;
+	            Object typeObject = m.get("type");
+	            if (debug) {
+	                logInfo(" - Parsing mineral config for %s", typeObject);
+	            }
 				BlockInfo myPlaceholder = placeholderBlock;
 				if (m.containsKey(PLACEHOLDER)) {
 				    myPlaceholder = parsePlaceholderMaterial((String) m.get(PLACEHOLDER));
+                    if (debug) {
+                        logInfo("    Has placeholder: %d %d %s", myPlaceholder.getPlaceholderTypeId(), myPlaceholder.getPlaceholderData(), m.get(PLACEHOLDER));
+                    }
+
 				}
 				//****XXX I think we're allowed to pass null parameters into the "generate" methods but I need to test to be sure!
-				Object typeObject = m.get("type");
 				BlockInfo info = new BlockInfo(
 				    generate(Field.TYPE_ID, count, typeObject).intValue(), 
 				    generate(Field.DATA, count, typeObject).intValue(),
-				    myPlaceholder.getData(Type.PLACEHOLDER),
-				    myPlaceholder.getTypeId(Type.PLACEHOLDER)
+				    myPlaceholder.getPlaceholderTypeId(),
+				    myPlaceholder.getPlaceholderData()
 				);
 				blockMap.put(info, new MineralConfig(
 				    info, 
@@ -97,8 +103,8 @@ public class Configuration implements Serializable {
 			}
 		}
 	}
-	
-	private Number generate(Field field, int count, Object object) throws ParseException, NumberFormatException {
+
+    private Number generate(Field field, int count, Object object) throws ParseException, NumberFormatException {
 		Number result;
 		String branch = "type";
 		String value = "";

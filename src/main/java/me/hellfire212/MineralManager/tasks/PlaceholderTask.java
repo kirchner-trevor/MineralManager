@@ -3,7 +3,6 @@ package me.hellfire212.MineralManager.tasks;
 import me.hellfire212.MineralManager.BlockInfo;
 import me.hellfire212.MineralManager.Coordinate;
 import me.hellfire212.MineralManager.MineralManager;
-import me.hellfire212.MineralManager.BlockInfo.Type;
 
 public class PlaceholderTask implements Runnable {
 
@@ -26,6 +25,8 @@ public class PlaceholderTask implements Runnable {
 	
 	@Override
 	public void run() {
-		coordinate.getLocation().getBlock().setTypeIdAndData(info.getTypeId(Type.PLACEHOLDER), (byte) info.getData(Type.PLACEHOLDER), false);
+		coordinate.getLocation().getBlock().setTypeIdAndData(
+		    info.getPlaceholderTypeId(), (byte) info.getPlaceholderData(), false
+		);
 	}
 }

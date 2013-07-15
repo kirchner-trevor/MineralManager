@@ -26,11 +26,10 @@ DEFAULT:
 # blocks, and can be assigned to regions or even to entire worlds.
 CONFIGURATION:
   # Section names are used in the command when adding regions.
-  # Section names must be unique and must not contain spaces.
+  # Names must be unique and must only contain letters, numbers, and underscores.
   example_home:
-    # Volatile means that if the placeholder block is broken
-    # then the block it's associated with will not respawn.
-    volatile: true
+    placeholder: WOOL 1
+
 
     # Set the managed blocks for this config.
     # Each managed block can have its own cooldown and 
@@ -48,6 +47,7 @@ CONFIGURATION:
     - type: DIAMOND_ORE
       cooldown: 30m
       degrade: 0.04
+      placeholder: BEDROCK  # We can now set a placeholder per managed block.
     - type: GOLD_ORE
       cooldown: 45m
       degrade: 0.05
@@ -82,6 +82,12 @@ CONFIGURATION:
   #### Additional example sections.
   forest:
     placeholder: 18 3
+    mineOriginalOnly: true
+
+    # Volatile means that if the placeholder block is broken
+    # then the block it's associated with will not respawn.
+    volatile: true
+
     managedBlocks:
     - type: LOG 0
       cooldown: 30s
@@ -98,5 +104,3 @@ CONFIGURATION:
     displayMessages:
       onBlockBreak: This tree is enchanted and will reappear in %c.
       onBlockProspect: Magic is gathering in this area... be patient.
-    mineOriginalOnly: true
-
