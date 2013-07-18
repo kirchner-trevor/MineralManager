@@ -1,9 +1,7 @@
 package me.hellfire212.MineralManager.tasks;
 
-import me.hellfire212.MineralManager.BlockInfo;
-import me.hellfire212.MineralManager.Coordinate;
-import me.hellfire212.MineralManager.MineralListener;
-import me.hellfire212.MineralManager.MineralManager;
+import me.hellfire212.MineralManager.*;
+import org.bukkit.Location;
 
 public class RespawnTask implements Runnable {
 
@@ -24,8 +22,10 @@ public class RespawnTask implements Runnable {
 	
 	@Override
 	public void run() {
-		coordinate.getLocation().getBlock().setTypeIdAndData(info.getBlockTypeId(), (byte) info.getBlockData(), false);
+        Location location = coordinate.getLocation();
+		location.getBlock().setTypeIdAndData(info.getBlockTypeId(), (byte) info.getBlockData(), false);
 		plugin.getActiveBlocks().remove(coordinate);
+        plugin.getWorldData(location.getWorld()).getPlacedBlocks().unset(coordinate);
 		MineralListener.taskMap.remove(coordinate);
 	}
 }
