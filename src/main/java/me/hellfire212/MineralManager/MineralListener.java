@@ -53,15 +53,10 @@ public class MineralListener implements Listener {
 		Block block = e.getBlock();
 		Coordinate coordinate = new Coordinate(block.getLocation());
 		WorldData wdata = plugin.getWorldData(block.getWorld());
-		if (player.hasMetadata(METADATA_CREATIVE)) {
-		    if (activeBlocks.remove(coordinate) != null) {
-				cancelRespawnAtCoordinate(coordinate);
-			}
-			wdata.getPlacedBlocks().unset(coordinate);
-			wdata.getLockedBlocks().unset(coordinate);
-			return;
-		}
-		Region region = wdata.getRegionSet().contains(coordinate);
+
+        if (breakBlockCreative(player, coordinate, wdata)) return;
+
+        Region region = wdata.getRegionSet().contains(coordinate);
 
 		if(region == null) return;
 		
@@ -113,7 +108,19 @@ public class MineralListener implements Listener {
 		}
 	}
 
-	/**
+    private boolean breakBlockCreative(Player player, Coordinate coordinate, WorldData wdata) {
+        if (player.hasMetadata(METADATA_CREATIVE)) {
+            if (activeBlocks.remove(coordinate) != null) {
+                cancelRespawnAtCoordinate(coordinate);
+            }
+            wdata.getPlacedBlocks().unset(coordinate);
+            wdata.getLockedBlocks().unset(coordinate);
+            return true;
+        }
+        return false;
+    }
+
+    /**
 	 * This is used when a player destroys a block while in "creative" mode or when 
 	 * the block is in a volatile region and its placeholder is destroyed.
 	 * This method assumes that MineralManager.blockMap.containsKey(coordinate) is 
