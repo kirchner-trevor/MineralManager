@@ -36,7 +36,7 @@ public final class Tools {
 	}
 	
 	/**
-	 * Attempts to parse an Object into a byte. If the Object contains a single value, 0 is returned.
+	 * Attempts to parse an Object into a byte. If the Object contains a single value, -1 is returned.
 	 * If the Object contains two values separated by a space the second value is returned if it is 
 	 * a valid byte, otherwise INVALID_PARSE is returned.
 	 * @param obj
@@ -53,7 +53,7 @@ public final class Tools {
 				return tryParseByte(info[1]);
 			}
 		} else {
-			return 0;
+			return -1; //Return wildcard as no data value is present if the object isn't a string
 		}
 	}
 	
@@ -67,7 +67,7 @@ public final class Tools {
 		if(obj instanceof Integer) {
 			return (Integer) obj;
 		} else if (obj instanceof CharSequence) {
-			return TimeFormat.parse(((CharSequence) obj).toString());
+			return TimeFormat.parse(obj.toString());
 		} else {
 			return INVALID_PARSE;
 		}
@@ -83,7 +83,7 @@ public final class Tools {
 		if(obj instanceof Double) {
 			return (Double) obj;
 		} else if(obj instanceof Integer) {
-			return (Double) Double.parseDouble(obj.toString());
+			return Double.parseDouble(obj.toString());
 		} else {
 			return INVALID_PARSE;
 		}
@@ -96,13 +96,11 @@ public final class Tools {
 	 * @return
 	 */
 	private static int tryParseInteger(String string) {
-		Integer result = -1;
 		try {
-			result = Integer.parseInt(string);
+			return Integer.parseInt(string);
 		} catch (NumberFormatException e) {
-			result = -1;
+			return -1;
 		}
-		return result;
 	}
 	
 	/**
@@ -112,13 +110,11 @@ public final class Tools {
 	 * @return
 	 */
 	private static byte tryParseByte(String string) {
-		Byte result = -1;
 		try {
-			result = Byte.parseByte(string);
+			return Byte.parseByte(string);
 		} catch (NumberFormatException e) {
-			result = -1;
+			return -1;
 		}
-		return result;
 	}
 
 	public static String parseDispMessage(ConfigurationSection config, String key) {

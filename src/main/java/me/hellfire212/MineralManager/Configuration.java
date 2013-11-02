@@ -81,7 +81,7 @@ public class Configuration implements Serializable {
 	            }
 				BlockInfo myPlaceholder = placeholderBlock;
 				if (m.containsKey(PLACEHOLDER)) {
-				    myPlaceholder = parsePlaceholderMaterial((String) m.get(PLACEHOLDER));
+				    myPlaceholder = parsePlaceholderMaterial(String.valueOf(m.get(PLACEHOLDER)));
                     if (debug) {
                         logInfo("    Has placeholder: %d %d %s", myPlaceholder.getPlaceholderTypeId(), myPlaceholder.getPlaceholderData(), m.get(PLACEHOLDER));
                     }

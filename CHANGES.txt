@@ -4,6 +4,7 @@ Not yet released
  * Changed blockMap to accept -1 as a wildcard in the data value slot by modifying the
    equals and the hash code methods of the BlockInfo class.
  * BlockInfo now generates a hash code based only on the block type id.
+ * Fixed an issue with per block placeholder incorrectly casting Integer to String.
 
 == Version 2.2.1 ==
  * Support different placeholder block per mineral
