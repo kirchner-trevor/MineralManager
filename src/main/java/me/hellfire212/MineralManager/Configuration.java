@@ -126,9 +126,9 @@ public class Configuration implements Serializable {
 			branch = "degrade";
 			break;
 		default:
-			result = -1;
+			result = Tools.INVALID_PARSE;
 		}
-		if(result.intValue() == -1) {
+		if(result.intValue() == Tools.INVALID_PARSE) {
 			if(object == null) {
 				throw new ParseException("[" + name + "]->[managedBlocks]->[" + count + "]->[" + branch + "] : The key contains an error.", count);
 			} else {
@@ -184,11 +184,11 @@ public class Configuration implements Serializable {
 	
 	private BlockInfo parsePlaceholderMaterial(String string) {
 		int typeId = Tools.parseTypeId(string);
-		if(typeId == -1) {
+		if(typeId == Tools.INVALID_PARSE) {
 			return null;
 		}
 		byte typeData = Tools.parseTypeData(string);
-		if(typeData == -1) {
+		if(typeData == Tools.INVALID_PARSE) {
 			return null;
 		}
 		return new BlockInfo(Type.PLACEHOLDER, typeId, typeData);

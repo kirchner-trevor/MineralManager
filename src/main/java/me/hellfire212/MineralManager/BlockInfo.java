@@ -114,7 +114,7 @@ public class BlockInfo implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + blockData;
+		//result = prime * result + blockData;
 		result = prime * result + blockTypeId;
 		return result;
 	}
@@ -129,7 +129,7 @@ public class BlockInfo implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		BlockInfo other = (BlockInfo) obj;
-		if (blockData != other.blockData)
+		if (blockData != -1 && other.blockData != -1 && blockData != other.blockData)
 			return false;
 		if (blockTypeId != other.blockTypeId)
 			return false;

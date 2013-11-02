@@ -91,8 +91,9 @@ public class MineralListener implements Listener {
 			
 			if(Math.random() > mineral.getDegrade()) {
 				long cooldown = mineral.getCooldown();
-				BlockInfo info = mineral.getBlockInfo().clone();
-				info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
+                BlockInfo managedBlock = mineral.getBlockInfo();
+				BlockInfo info = new BlockInfo(block.getTypeId(), block.getData(), managedBlock.getPlaceholderTypeId(), managedBlock.getPlaceholderData());
+                          info.setRespawn(System.currentTimeMillis() + (cooldown * 1000));
 				activeBlocks.add(coordinate, info);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new PlaceholderTask(plugin, coordinate, info));
 				int tid = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new RespawnTask(plugin, coordinate, info), cooldown * 20);

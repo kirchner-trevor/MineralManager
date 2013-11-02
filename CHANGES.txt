@@ -1,5 +1,11 @@
-== Version 2.2.1 ==
+== Version 2.2.2 ==
 Not yet released
+ * Changed managedBlocks configuration to have the default data value as -1 instead of 0.
+ * Changed blockMap to accept -1 as a wildcard in the data value slot by modifying the
+   equals and the hash code methods of the BlockInfo class.
+ * BlockInfo now generates a hash code based only on the block type id.
+
+== Version 2.2.1 ==
  * Support different placeholder block per mineral
  * Fix bug in placeholders going away on reload
 

@@ -6,14 +6,15 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 public final class Tools {
-	
+
+    public static byte INVALID_PARSE = -7;
 	//This class is used as a toolbox of sorts for static methods that don't really belong in any specific class.
 	
 	/**
 	 * Attempts to parse an Object into an int. If the Object contains a single value,
 	 * that value is returned if it is a valid Material id. If the Object contains two 
 	 * values separated by a space, the first value is returned if it is a valid Material id,
-	 * otherwise -1 is returned.
+	 * otherwise INVALID_PARSE is returned.
 	 * @param obj
 	 * @return
 	 */
@@ -23,21 +24,21 @@ public final class Tools {
 			Material tempMaterial = Material.getMaterial(info[0]);
 			if(tempMaterial == null) {
 				int tempInteger = tryParseInteger(info[0]);
-				tempMaterial = tempInteger == -1 ? null : Material.getMaterial(tempInteger);
+				tempMaterial = tempInteger == INVALID_PARSE ? null : Material.getMaterial(tempInteger);
 			}
-			return tempMaterial == null ? -1 : tempMaterial.getId();
+			return tempMaterial == null ? INVALID_PARSE : tempMaterial.getId();
 		} else if(obj instanceof Integer) {
 			Material tempMaterial = Material.getMaterial((Integer) obj);
-			return tempMaterial == null ? -1 : tempMaterial.getId();
+			return tempMaterial == null ? INVALID_PARSE : tempMaterial.getId();
 		} else {
-			return -1;
+			return INVALID_PARSE;
 		}
 	}
 	
 	/**
 	 * Attempts to parse an Object into a byte. If the Object contains a single value, 0 is returned.
 	 * If the Object contains two values separated by a space the second value is returned if it is 
-	 * a valid byte, otherwise -1 is returned.
+	 * a valid byte, otherwise INVALID_PARSE is returned.
 	 * @param obj
 	 * @return
 	 */
@@ -45,9 +46,9 @@ public final class Tools {
 		if(obj instanceof String) {
 			String[] info = ((String) obj).split(" ");
 			if(info.length < 2) {
-				return 0;
-			} else if(info.length > 2) {
 				return -1;
+			} else if(info.length > 2) {
+				return INVALID_PARSE;
 			} else {
 				return tryParseByte(info[1]);
 			}
@@ -58,7 +59,7 @@ public final class Tools {
 	
 	/**
 	 * Attempts to parse an Object into an int. If the Object cannot be parsed into a
-	 * valid int, then -1 is returned.
+	 * valid int, then INVALID_PARSE is returned.
 	 * @param obj
 	 * @return
 	 */
@@ -68,13 +69,13 @@ public final class Tools {
 		} else if (obj instanceof CharSequence) {
 			return TimeFormat.parse(((CharSequence) obj).toString());
 		} else {
-			return -1;
+			return INVALID_PARSE;
 		}
 	}
 	
 	/**
 	 * Attempts to parse an Object into a double. If the Object cannot be parsed into a
-	 * valid double, then -1 is returned.
+	 * valid double, then INVALID_PARSE is returned.
 	 * @param obj
 	 * @return
 	 */
@@ -84,7 +85,7 @@ public final class Tools {
 		} else if(obj instanceof Integer) {
 			return (Double) Double.parseDouble(obj.toString());
 		} else {
-			return -1;
+			return INVALID_PARSE;
 		}
 	}
 	
@@ -123,7 +124,7 @@ public final class Tools {
 	public static String parseDispMessage(ConfigurationSection config, String key) {
 		String message = config.getString(key);
 		if (message == null) return null;
-		if (message.equalsIgnoreCase("null") || message.equalsIgnoreCase("false")) {
+		if (message.equalsIgnoreCase("null") || message.equalsIgnoreCase("false") || message.equalsIgnoreCase("none")) {
 			return null;
 		}
 		return message;
